@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "uUzwfKV3uEOc+ZJRHmziTgrRD5aqpz4U2YWzjit9HIc1zd06IGwOvN6oL9H43566uHVlbXXk7I/P+PdRixBMGg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\argor\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
