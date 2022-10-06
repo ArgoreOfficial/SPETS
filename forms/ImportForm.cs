@@ -21,6 +21,8 @@ namespace SPETS.forms
         List<Vector3> vectorPoints = new List<Vector3>(); // used for checking vertices with x y and z
         string[] factions;
         string saveName;
+        int totalWork;
+        int selectedFaction;
 
         public ImportForm()
         {
@@ -46,14 +48,14 @@ namespace SPETS.forms
             compRoot = new CompartmentRoot(name);
             saveName = name;
             FileNameLabel.Text = name;
-            FileSizeLabel.Text = fileSize + " bytes";
+            FileSizeLabel.Text = fileSize;
         }
 
         private void ImportButton_Click(object sender, EventArgs e)
         {
-            faceWorker.RunWorkerAsync();
+            ImportWorker.RunWorkerAsync();
             ImportButton.Enabled = false;
-
+            selectedFaction = FactionsCombobox.SelectedIndex;
         }
 
 
@@ -72,10 +74,27 @@ namespace SPETS.forms
             return face;
         }
 
-        private void faceWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void ImportWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            Debug.WriteLine("totalwork");
+
+            totalWork += loaded.Vertices.Count;
+            for (int i = 0; i < loaded.Faces.Count; i++)
+            {
+                for (int f = 0; f < loaded.Faces[i].Count; f++)
+                {
+                    totalWork += 4;
+                }
+            }
+            int doneWork = 0;
+
+
+            Debug.WriteLine("facemap");
+
             for (int f = 0; f < loaded.Faces.Count; f++)
             {
+                doneWork++;
+                ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
 
                 // null face check
                 if (loaded.Faces[f].Count < 3 || loaded.Faces[f].Count > ResourceHandler.NGonLookup.Count) continue;
@@ -92,32 +111,29 @@ namespace SPETS.forms
 
                     vectorPoints.Add(loaded.Vertices[loaded.Faces[f][fP] - 1] * new Vector3(-1, 1, 1));
                 }
-
-                faceWorker.ReportProgress((int)(MathF.Ceiling((float)f / (loaded.Faces.Count - 1)) * 100.0f));
-
             }
-        }
 
-       
 
-        private void thicknessWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
+            Debug.WriteLine("thicknessmap");
+
             // thicknessmap
             for (int i = 0; i < compRoot.compartment.points.Count; i++)
             {
+                doneWork++;
+                ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
+
                 compRoot.compartment.thicknessMap.Add(1);
-
-                thicknessWorker.ReportProgress((int)(MathF.Ceiling((float)i / (compRoot.compartment.points.Count - 1)) * 100.0f));
             }
-        }
 
-        private void sharedPointWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
+
+            Debug.WriteLine("sharedpoints");
+
             // sharedpoints
             List<int> foundIndexes = new List<int>();
             for (int p1 = 0; p1 < vectorPoints.Count; p1++)
             {
-                
+                doneWork++;
+                ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
                 if (foundIndexes.Contains(p1)) continue;
 
                 List<int> shared = new List<int>();
@@ -134,58 +150,29 @@ namespace SPETS.forms
                 }
 
                 compRoot.compartment.sharedPoints.Add(shared);
-
-                sharedPointWorker.ReportProgress((int)(MathF.Ceiling((float)p1 / (vectorPoints.Count - 1)) * 100.0f));
             }
-        }
 
-        private void faceWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            sharedPointWorker.RunWorkerAsync();
-            thicknessWorker.RunWorkerAsync();
-        }
-        private void faceWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            PolygonProgress.Value = e.ProgressPercentage;
-        }
 
-        private void sharedPointWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            SharedPointsProgress.Value = e.ProgressPercentage;
-        }
+            Debug.WriteLine("saving");
 
-        private void thicknessWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            ThicknessMapProgress.Value = e.ProgressPercentage;
-        }
-
-        private void sharedPointWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if(!thicknessWorker.IsBusy)
-            {
-                SaveFile();
-            }
-        }
-
-        private void thicknessWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (!thicknessWorker.IsBusy)
-            {
-                SaveFile();
-            }
-        }
-
-        void SaveFile()
-        {
-            string savePath = factions[FactionsCombobox.SelectedIndex];
+            string savePath = factions[selectedFaction];
 
             if (!Directory.Exists($"{savePath}/Blueprints/Compartments"))
             {
                 Directory.CreateDirectory($"{savePath}/Blueprints/Compartments");
             }
+            string compJson = JsonConvert.SerializeObject(compRoot);
 
-            CompartmentBaseRoot cbRoot = new CompartmentBaseRoot("Compartment", JsonConvert.SerializeObject(compRoot), "");
+            CompartmentBaseRoot cbRoot = new CompartmentBaseRoot("Compartment", compJson, "");
             File.WriteAllText($"{savePath}/Blueprints/Compartments/{saveName}.blueprint", $"[\n{JsonConvert.SerializeObject(cbRoot, Formatting.Indented)},\n]");
+
+            Debug.WriteLine("done");
+            ImportWorker.ReportProgress(100);
+        }
+
+        private void ImportWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            ImportingProgress.Value = e.ProgressPercentage;
         }
     }
 }

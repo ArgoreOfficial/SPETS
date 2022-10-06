@@ -34,15 +34,8 @@ namespace SPETS.forms
             this.FileSizeLabel = new System.Windows.Forms.Label();
             this.ImportButton = new System.Windows.Forms.Button();
             this.FactionsCombobox = new System.Windows.Forms.ComboBox();
-            this.PolygonsLabel = new System.Windows.Forms.Label();
-            this.SharedPointsLabel = new System.Windows.Forms.Label();
-            this.PolygonProgress = new System.Windows.Forms.ProgressBar();
-            this.SharedPointsProgress = new System.Windows.Forms.ProgressBar();
-            this.ThicknessMapProgress = new System.Windows.Forms.ProgressBar();
-            this.ThicknessMapLabel = new System.Windows.Forms.Label();
-            this.faceWorker = new System.ComponentModel.BackgroundWorker();
-            this.sharedPointWorker = new System.ComponentModel.BackgroundWorker();
-            this.thicknessWorker = new System.ComponentModel.BackgroundWorker();
+            this.ImportingProgress = new System.Windows.Forms.ProgressBar();
+            this.ImportWorker = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // FileNameLabel
@@ -82,86 +75,25 @@ namespace SPETS.forms
             this.FactionsCombobox.Size = new System.Drawing.Size(121, 23);
             this.FactionsCombobox.TabIndex = 7;
             // 
-            // PolygonsLabel
+            // ImportingProgress
             // 
-            this.PolygonsLabel.AutoSize = true;
-            this.PolygonsLabel.Location = new System.Drawing.Point(12, 101);
-            this.PolygonsLabel.Name = "PolygonsLabel";
-            this.PolygonsLabel.Size = new System.Drawing.Size(56, 15);
-            this.PolygonsLabel.TabIndex = 10;
-            this.PolygonsLabel.Text = "Polygons";
+            this.ImportingProgress.Location = new System.Drawing.Point(12, 71);
+            this.ImportingProgress.Name = "ImportingProgress";
+            this.ImportingProgress.Size = new System.Drawing.Size(248, 23);
+            this.ImportingProgress.TabIndex = 12;
             // 
-            // SharedPointsLabel
+            // ImportWorker
             // 
-            this.SharedPointsLabel.AutoSize = true;
-            this.SharedPointsLabel.Location = new System.Drawing.Point(12, 145);
-            this.SharedPointsLabel.Name = "SharedPointsLabel";
-            this.SharedPointsLabel.Size = new System.Drawing.Size(76, 15);
-            this.SharedPointsLabel.TabIndex = 11;
-            this.SharedPointsLabel.Text = "SharedPoints";
-            // 
-            // PolygonProgress
-            // 
-            this.PolygonProgress.Location = new System.Drawing.Point(12, 119);
-            this.PolygonProgress.Name = "PolygonProgress";
-            this.PolygonProgress.Size = new System.Drawing.Size(248, 23);
-            this.PolygonProgress.TabIndex = 12;
-            // 
-            // SharedPointsProgress
-            // 
-            this.SharedPointsProgress.Location = new System.Drawing.Point(12, 163);
-            this.SharedPointsProgress.Name = "SharedPointsProgress";
-            this.SharedPointsProgress.Size = new System.Drawing.Size(248, 23);
-            this.SharedPointsProgress.TabIndex = 13;
-            // 
-            // ThicknessMapProgress
-            // 
-            this.ThicknessMapProgress.Location = new System.Drawing.Point(12, 207);
-            this.ThicknessMapProgress.Name = "ThicknessMapProgress";
-            this.ThicknessMapProgress.Size = new System.Drawing.Size(248, 23);
-            this.ThicknessMapProgress.TabIndex = 15;
-            // 
-            // ThicknessMapLabel
-            // 
-            this.ThicknessMapLabel.AutoSize = true;
-            this.ThicknessMapLabel.Location = new System.Drawing.Point(12, 189);
-            this.ThicknessMapLabel.Name = "ThicknessMapLabel";
-            this.ThicknessMapLabel.Size = new System.Drawing.Size(82, 15);
-            this.ThicknessMapLabel.TabIndex = 14;
-            this.ThicknessMapLabel.Text = "ThicknessMap";
-            // 
-            // faceWorker
-            // 
-            this.faceWorker.WorkerReportsProgress = true;
-            this.faceWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.faceWorker_DoWork);
-            this.faceWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.faceWorker_ProgressChanged);
-            this.faceWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.faceWorker_RunWorkerCompleted);
-            // 
-            // sharedPointWorker
-            // 
-            this.sharedPointWorker.WorkerReportsProgress = true;
-            this.sharedPointWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.sharedPointWorker_DoWork);
-            this.sharedPointWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.sharedPointWorker_ProgressChanged);
-            this.sharedPointWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.sharedPointWorker_RunWorkerCompleted);
-            // 
-            // thicknessWorker
-            // 
-            this.thicknessWorker.WorkerReportsProgress = true;
-            this.thicknessWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.thicknessWorker_DoWork);
-            this.thicknessWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.thicknessWorker_ProgressChanged);
-            this.thicknessWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.thicknessWorker_RunWorkerCompleted);
+            this.ImportWorker.WorkerReportsProgress = true;
+            this.ImportWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ImportWorker_DoWork);
+            this.ImportWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.ImportWorker_ProgressChanged);
             // 
             // ImportForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(272, 242);
-            this.Controls.Add(this.ThicknessMapProgress);
-            this.Controls.Add(this.ThicknessMapLabel);
-            this.Controls.Add(this.SharedPointsProgress);
-            this.Controls.Add(this.PolygonProgress);
-            this.Controls.Add(this.SharedPointsLabel);
-            this.Controls.Add(this.PolygonsLabel);
+            this.ClientSize = new System.Drawing.Size(272, 106);
+            this.Controls.Add(this.ImportingProgress);
             this.Controls.Add(this.FactionsCombobox);
             this.Controls.Add(this.ImportButton);
             this.Controls.Add(this.FileSizeLabel);
@@ -183,14 +115,7 @@ namespace SPETS.forms
         private System.Windows.Forms.Label FileSizeLabel;
         private System.Windows.Forms.Button ImportButton;
         private System.Windows.Forms.ComboBox FactionsCombobox;
-        private System.Windows.Forms.Label PolygonsLabel;
-        private System.Windows.Forms.Label SharedPointsLabel;
-        private System.Windows.Forms.ProgressBar PolygonProgress;
-        private System.Windows.Forms.ProgressBar SharedPointsProgress;
-        private System.Windows.Forms.ProgressBar ThicknessMapProgress;
-        private System.Windows.Forms.Label ThicknessMapLabel;
-        private System.ComponentModel.BackgroundWorker faceWorker;
-        private System.ComponentModel.BackgroundWorker sharedPointWorker;
-        private System.ComponentModel.BackgroundWorker thicknessWorker;
+        private System.Windows.Forms.ProgressBar ImportingProgress;
+        private System.ComponentModel.BackgroundWorker ImportWorker;
     }
 }
