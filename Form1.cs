@@ -16,7 +16,8 @@ namespace SPETS
 {
     public partial class ActionSelectForm : Form
     {
-        ImportForm importForm = new ImportForm();
+        ImportForm importForm;
+        ExportForm exportForm;
 
         public ActionSelectForm()
         {
@@ -32,6 +33,7 @@ namespace SPETS
 
             if (ToolDropdown.SelectedIndex == 0) // import model
             {
+                
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Filter = "Wavefront Model (*.OBJ)|*.OBJ";
 
@@ -44,20 +46,48 @@ namespace SPETS
                     if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
                     {
                         FileInfo file = new FileInfo(ofd.FileName);
-                        long fileSize = file.Length;
-                        string fileSizeString = fileSize.ToString() + " Bytes";
-                        if (fileSize > 1000000000) { fileSizeString = (fileSize / 1000000000).ToString() + " GB"; }
-                        else if(fileSize > 1000000) { fileSizeString = (fileSize / 1000000).ToString() + " MB"; }
-                        else if (fileSize > 1000) { fileSizeString = (fileSize / 1000).ToString() + " KB"; }
-
-                        Debug.WriteLine(file.Extension);
-
+                        
+                        importForm = new ImportForm(this);
                         importForm.Show();
-                        importForm.LoadModel(loadMesh, ofd.FileName.Split('\\').Last().Replace(file.Extension, ""), fileSizeString);
+                        importForm.LoadModel(loadMesh, ofd.FileName.Split('\\').Last().Replace(file.Extension, ""), GetFileSize(file));
                         StartButton.Enabled = false;
                     }
                 }
             }
+            else if (ToolDropdown.SelectedIndex == 1) // export model 
+            {
+                
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Sprocket Blueprint (*.BLUEPRINT)|*.BLUEPRINT";
+
+                DialogResult dr = ofd.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    
+                    FileInfo file = new FileInfo(ofd.FileName);
+                    
+                    exportForm = new ExportForm(this);
+                    exportForm.Show();
+                    exportForm.LoadModel(ofd.FileName, ofd.FileName.Split('\\').Last().Replace(file.Extension, ""), GetFileSize(file));
+                    StartButton.Enabled = false;
+                }
+            }
+        }
+
+        public void EnableButton()
+        {
+            StartButton.Enabled = true;
+        }
+
+        string GetFileSize(FileInfo file)
+        {
+            long fileSize = file.Length;
+            string fileSizeString = fileSize.ToString() + " Bytes";
+            if (fileSize > 1000000000) { fileSizeString = (fileSize / 1000000000).ToString() + " GB"; }
+            else if (fileSize > 1000000) { fileSizeString = (fileSize / 1000000).ToString() + " MB"; }
+            else if (fileSize > 1000) { fileSizeString = (fileSize / 1000).ToString() + " KB"; }
+
+            return fileSizeString;
         }
     }
 }

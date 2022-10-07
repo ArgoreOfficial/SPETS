@@ -16,6 +16,8 @@ namespace SPETS.forms
 {
     public partial class ImportForm : Form
     {
+        ActionSelectForm asf;
+
         Mesh loaded;
         CompartmentRoot compRoot;
         List<Vector3> vectorPoints = new List<Vector3>(); // used for checking vertices with x y and z
@@ -24,9 +26,10 @@ namespace SPETS.forms
         int totalWork;
         int selectedFaction;
 
-        public ImportForm()
+        public ImportForm(ActionSelectForm asf)
         {
             InitializeComponent();
+            this.asf = asf;
         }
 
         private void ImportForm_Load(object sender, EventArgs e)
@@ -173,6 +176,11 @@ namespace SPETS.forms
         private void ImportWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             ImportingProgress.Value = e.ProgressPercentage;
+        }
+
+        private void ImportForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            asf.EnableButton();
         }
     }
 }

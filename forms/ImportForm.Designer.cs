@@ -103,6 +103,7 @@ namespace SPETS.forms
             this.MaximizeBox = false;
             this.Name = "ImportForm";
             this.Text = "Import Model";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImportForm_FormClosing);
             this.Load += new System.EventHandler(this.ImportForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
