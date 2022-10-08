@@ -7,7 +7,7 @@
     <Compile Update="forms\BlueprintEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="forms\AdvancedImportForm.cs">
+    <Compile Update="forms\AdvancedEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="forms\ExportForm.cs">

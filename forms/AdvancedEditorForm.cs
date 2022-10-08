@@ -1,9 +1,12 @@
-﻿using SPETS.Classes;
+﻿using Newtonsoft.Json;
+using SPETS.Classes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -62,7 +65,7 @@ namespace SPETS.forms
         }
     }
 
-    public partial class AdvancedImportForm : Form
+    public partial class AdvancedEditorForm : Form
     {
         ActionSelectForm asf;
         List<ImportObject> ImportObjects = new List<ImportObject>();
@@ -77,7 +80,7 @@ namespace SPETS.forms
         Matrix4x4 rotateYMatrix;
         Matrix4x4 rotateZMatrix;
         Matrix4x4 rotationMatrix;
-        public AdvancedImportForm(ActionSelectForm asf)
+        public AdvancedEditorForm(ActionSelectForm asf)
         {
             InitializeComponent();
             this.asf = asf;
@@ -92,6 +95,8 @@ namespace SPETS.forms
         {
             asf.EnableButton();
         }
+
+        #region FILE_LOADING
 
         private void LoadTextureButton_Click(object sender, EventArgs e)
         {
@@ -166,11 +171,40 @@ namespace SPETS.forms
         }
 
 
-        #region MeshRenderer
+
+        private void LoadBlueprintButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Sprocket Blueprint (*.BLUEPRINT)|*.BLUEPRINT";
+
+            DialogResult dr = ofd.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                List<Mesh> loadedMeshes = LoadBlueprintToMesh(ofd.FileName);
+                
+                for (int i = 0; i < loadedMeshes.Count; i++)
+                {
+                    if(loadedMeshes[i].Faces.Count != 0 && loadedMeshes[i].Vertices.Count != 0)
+                    {
+                        ImportObjects.Add(new ImportObject(
+                                    null,
+                                    loadedMeshes[i],
+                                    "",
+                                    ofd.FileName
+                                ));
+                    }
+                }
+
+                RefreshObjectList();
+            }
+        }
+        #endregion
+
+        #region MESH_RENDERER
 
         private void MeshPreview_Paint(object sender, PaintEventArgs e)
         {
-            if(ImportObjects.Count > 0)
+            if (ImportObjects.Count > 0)
             {
                 RenderMeshPreview(e.Graphics, ImportObjects[lastSelected].Model, ImportObjects[lastSelected].PreviewZBuffer);
             }
@@ -205,12 +239,30 @@ namespace SPETS.forms
 
             brush.Color = faceColor;
             g.FillPolygon(brush, tri);
-            //g.DrawLines(pen, tri);
+            if(ShowWireframeCheckbox.Checked)
+            {
+                g.DrawPolygon(pen, tri);
+            }
+
+            if(true)
+            {
+                pen.Color = Color.Red;
+                for (int i = 0; i < tri.Length; i++)
+                {
+                    g.DrawRectangle(pen, new Rectangle((int)tri[i].X, (int)tri[i].Y, 1, 1));
+                }
+                pen.Color = Color.Black;
+            }
         }
 
         #endregion
 
-        #region PreviewControls
+        #region PREVIEW_CONTROLS
+
+        private void ShowWireframeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            MeshPreview.Invalidate();
+        }
 
         private void LeftButton_Click(object sender, EventArgs e)
         {
@@ -250,7 +302,7 @@ namespace SPETS.forms
 
         #endregion
 
-        #region ItemList
+        #region ITEM_LIST
 
         private void AddItemButton_Click(object sender, EventArgs e)
         {
@@ -295,5 +347,64 @@ namespace SPETS.forms
 
 
         #endregion
+
+
+        List<Mesh> LoadBlueprintToMesh(string filePath)
+        {
+            // get file
+            string[] blueprintFile = File.ReadAllLines(filePath);
+            List<Mesh> meshes = new List<Mesh>();
+
+            // go through lines
+            for (int i = 0; i < blueprintFile.Length; i++)
+            {
+                if (blueprintFile[i].Trim() == "\"id\": \"Compartment\",")
+                {
+                    // create mesh
+                    Mesh mesh = new Mesh();
+                    
+                    // isolate compartment
+                    string[] compartment = blueprintFile.Skip(i - 1).Take(5).ToArray();
+                    compartment[4] = compartment[4].Trim(',');
+
+                    // deserialize
+                    var BaseRoot = JsonConvert.DeserializeObject<CompartmentBaseRoot>(string.Join("", compartment));
+                    var DataRoot = JsonConvert.DeserializeObject<CompartmentRoot>(BaseRoot.data);
+
+                    if (DataRoot.compartment != null)
+                    {
+                        // vertices
+                        for (int p = 0; p < DataRoot.compartment.points.Count; p += 3)
+                        {
+                            // add vertex
+                            mesh.Vertices.Add(
+                                new Vector3((float)-DataRoot.compartment.points[p],
+                                            (float)DataRoot.compartment.points[p + 1],
+                                            (float)DataRoot.compartment.points[p + 2]));
+                        }
+                        
+
+                        //faces
+                        for (int f = 0; f < DataRoot.compartment.faceMap.Count; f++)
+                        {
+                            List<int> face = new List<int>();
+
+                            for (int n = 0; n < DataRoot.compartment.faceMap[f].Count; n += 3)
+                            {
+                                face.Add(DataRoot.compartment.faceMap[f][n] + 1);
+                                face.Add(DataRoot.compartment.faceMap[f][n + 1] + 1);
+                                face.Add(DataRoot.compartment.faceMap[f][n + 2] + 1);
+                            }
+                            mesh.Faces.Add(face);
+
+                        }
+                    }
+
+                    meshes.Add(mesh);
+                }
+            }
+
+            return meshes;
+        }
     }
 }

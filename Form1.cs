@@ -18,7 +18,7 @@ namespace SPETS
     {
         ImportForm importForm;
         ExportForm exportForm;
-        AdvancedImportForm advImporterForm;
+        AdvancedEditorForm advImporterForm;
 
         public ActionSelectForm()
         {
@@ -100,7 +100,7 @@ namespace SPETS
             }
             else if (ToolDropdown.SelectedIndex == 2)
             {
-                advImporterForm = new AdvancedImportForm(this);
+                advImporterForm = new AdvancedEditorForm(this);
                 advImporterForm.Show();
                 StartButton.Enabled = false;
             }
