@@ -4,6 +4,12 @@
     <Compile Update="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="forms\BlueprintEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="forms\AdvancedImportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="forms\ExportForm.cs">
       <SubType>Form</SubType>
     </Compile>
