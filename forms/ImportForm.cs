@@ -81,7 +81,7 @@ namespace SPETS.forms
 
         private void ImportWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            Debug.WriteLine("totalwork");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("sv-SE");
 
             totalWork += loaded.Vertices.Count;
             for (int i = 0; i < loaded.Faces.Count; i++)
@@ -94,7 +94,6 @@ namespace SPETS.forms
             int doneWork = 0;
 
 
-            Debug.WriteLine("facemap");
 
             for (int f = 0; f < loaded.Faces.Count; f++)
             {
@@ -119,7 +118,6 @@ namespace SPETS.forms
             }
 
 
-            Debug.WriteLine("thicknessmap");
 
             // thicknessmap
             for (int i = 0; i < compRoot.compartment.points.Count; i++)
@@ -131,7 +129,6 @@ namespace SPETS.forms
             }
 
 
-            Debug.WriteLine("sharedpoints");
 
             // sharedpoints
             List<int> foundIndexes = new List<int>();
@@ -158,7 +155,6 @@ namespace SPETS.forms
             }
 
 
-            Debug.WriteLine("saving");
 
             string savePath = factions[selectedFaction];
 

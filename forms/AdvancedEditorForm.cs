@@ -18,11 +18,15 @@ namespace SPETS.forms
     {
         public List<Vector3> Vertices;
         public Vector3 Position;
+        public Vector3 Normal;
+        public Vector3 TrueNormal;
 
+        public bool FrontFacing;
         public VirtualFace(List<Vector3> vertices, Matrix4x4 rotationMatrix)
         {
             Position = new Vector3();
             Vertices = new List<Vector3>();
+            TrueNormal = Math3D.GetNormal(vertices);
 
             for (int i = 0; i < vertices.Count; i++)
             {
@@ -34,6 +38,9 @@ namespace SPETS.forms
                 Position.Z += vert.Z;
             }
             Position /= vertices.Count;
+
+            Normal = Math3D.GetNormal(Vertices);
+            FrontFacing = (Normal.X < 0);
         }
     }
     struct ImportObject
@@ -59,7 +66,13 @@ namespace SPETS.forms
                 {
                     points.Add(Model.Vertices[Model.Faces[f][p] - 1]);
                 }
-                PreviewZBuffer.Add(new VirtualFace(points, Matrix4x4.CreateRotationY(-0.7853982f) * Matrix4x4.CreateRotationZ(0.7853982f)));
+                VirtualFace vFace = new VirtualFace(
+                    points, 
+                    Matrix4x4.CreateRotationY(-0.7853982f) * Matrix4x4.CreateRotationZ(0.7853982f));
+
+                
+                PreviewZBuffer.Add(vFace);
+                
             }
             PreviewZBuffer = PreviewZBuffer.OrderBy(v => v.Position.X).Reverse().ToList();
         }
@@ -212,23 +225,22 @@ namespace SPETS.forms
 
         public void RenderMeshPreview(Graphics g, Mesh model, List<VirtualFace> faces)
         {
-            float far = faces[0].Position.X;
-            float near = faces.Last().Position.X;
-
             for (int f = 0; f < faces.Count; f++)
             {
-                int zColor = (int)((float)f / (float)faces.Count * 255.0f);
+                //int zColor = (int)((float)f / (float)faces.Count * 255f);
+                int zColor = (int)((-faces[f].TrueNormal.X + 1f) / 2f * 255f);
+
                 if(zColor > 255) { zColor = 255; }
                 else if(zColor < 0) { zColor = 0; }
 
                 Color faceColor = Color.FromArgb(zColor, zColor, zColor);
-                DrawTriangle(g, faces[f].Vertices, renderSize, renderOffset, faceColor);
+                DrawTriangle(g, faces[f].Vertices, renderSize, renderOffset, faceColor, faces[f].FrontFacing);
             }
         }
 
-        void DrawTriangle(Graphics g, List<Vector3> triangle, float size, Point offset, Color faceColor)
+        void DrawTriangle(Graphics g, List<Vector3> triangle, float size, Point offset, Color faceColor, bool frontFacing)
         {
-
+            
             PointF[] tri = new PointF[triangle.Count + 1];
             for (int i = 0; i < triangle.Count; i++)
             {
@@ -237,27 +249,48 @@ namespace SPETS.forms
             }
             tri[tri.Length - 1] = tri[0];
 
-            brush.Color = faceColor;
-            g.FillPolygon(brush, tri);
-            if(ShowWireframeCheckbox.Checked)
+            if (ShowFacesCheckbox.Checked && frontFacing)
             {
-                g.DrawPolygon(pen, tri);
+                brush.Color = faceColor;
+                g.FillPolygon(brush, tri);
             }
 
-            if(true)
+            if (ShowWireframeCheckbox.Checked)
             {
-                pen.Color = Color.Red;
-                for (int i = 0; i < tri.Length; i++)
+                if (ShowFacesCheckbox.Checked && frontFacing || !ShowFacesCheckbox.Checked)
                 {
-                    g.DrawRectangle(pen, new Rectangle((int)tri[i].X, (int)tri[i].Y, 1, 1));
+                    g.DrawPolygon(pen, tri);
                 }
-                pen.Color = Color.Black;
+            }
+
+            if(ShowVerticesCheckbox.Checked)
+            {
+                if(ShowFacesCheckbox.Checked && frontFacing || !ShowFacesCheckbox.Checked)
+                {
+                    pen.Color = Color.Red;
+                    for (int i = 0; i < tri.Length; i++)
+                    {
+                        g.DrawRectangle(pen, new Rectangle((int)tri[i].X, (int)tri[i].Y, 1, 1));
+                    }
+                    pen.Color = Color.Black;
+                }
             }
         }
 
         #endregion
 
         #region PREVIEW_CONTROLS
+
+
+        private void ShowFacesCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            MeshPreview.Invalidate();
+        }
+
+        private void ShowVerticesCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            MeshPreview.Invalidate();
+        }
 
         private void ShowWireframeCheckbox_CheckedChanged(object sender, EventArgs e)
         {

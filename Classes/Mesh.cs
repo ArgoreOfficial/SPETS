@@ -33,11 +33,11 @@ namespace SPETS.Classes
 
             for (int i = 0; i < file.Length; i++) // load vertices
             {
+                string[] vertexString = file[i].Split(' ');
                 if (file[i][0] == 'v' &&
                     file[i][1] == ' ')
                 {
                     // split coords
-                    string[] vertexString = file[i].Split(' ');
                     Vector3 vertex = new Vector3(
                             float.Parse(vertexString[1].Replace(".", ",")),
                             float.Parse(vertexString[2].Replace(".", ",")),

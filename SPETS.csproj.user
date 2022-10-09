@@ -4,9 +4,6 @@
     <Compile Update="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="forms\BlueprintEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Update="forms\AdvancedEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
