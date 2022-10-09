@@ -29,30 +29,6 @@ namespace SPETS
             ToolDropdown.SelectedIndex = 0;
         }
 
-        /*
-        // for loading BlueprintEditor
-        OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Wavefront Model (*.OBJ)|*.OBJ";
-
-
-
-            DialogResult dr = ofd.ShowDialog();
-            if (dr == DialogResult.OK)
-            {
-                Mesh loadMesh = MeshLoader.LoadOBJ(ofd.FileName);
-
-                /// null check
-                if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
-                {
-                    FileInfo file = new FileInfo(ofd.FileName);
-
-                    BlueprintEditorForm bef = new BlueprintEditorForm();
-                    bef.LoadModel(loadMesh);
-                    bef.Show();
-                }
-            }
-        */
-
 
         private void StartButton_Click(object sender, EventArgs e)
         {
@@ -66,7 +42,7 @@ namespace SPETS
                 DialogResult dr = ofd.ShowDialog();
                 if (dr == DialogResult.OK)
                 {
-                    Mesh loadMesh = MeshLoader.LoadOBJ(ofd.FileName);
+                    Mesh loadMesh = MeshLoader.FromOBJ(ofd.FileName);
                     
                     /// null check
                     if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)

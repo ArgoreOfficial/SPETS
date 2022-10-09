@@ -13,7 +13,7 @@ namespace SPETS.Classes
     {
         public static bool ImportJson(string filePath, string savePath, string saveName)
         {
-            Mesh loaded = MeshLoader.LoadOBJ(filePath);
+            Mesh loaded = MeshLoader.FromOBJ(filePath);
             CompartmentRoot compRoot = new CompartmentRoot(saveName);
             List<Vector3> vectorPoints = new List<Vector3>(); // used for checking vertices with x y and z
             /// null check

@@ -58,6 +58,7 @@ namespace SPETS.forms
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.ShowVerticesCheckbox = new System.Windows.Forms.CheckBox();
             this.ShowFacesCheckbox = new System.Windows.Forms.CheckBox();
+            this.BFCullingCheckbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).BeginInit();
@@ -78,7 +79,6 @@ namespace SPETS.forms
             this.ImportListView.HideSelection = false;
             this.ImportListView.LabelWrap = false;
             this.ImportListView.Location = new System.Drawing.Point(12, 274);
-            this.ImportListView.MultiSelect = false;
             this.ImportListView.Name = "ImportListView";
             this.ImportListView.Size = new System.Drawing.Size(394, 191);
             this.ImportListView.TabIndex = 0;
@@ -265,7 +265,7 @@ namespace SPETS.forms
             // ShowWireframeCheckbox
             // 
             this.ShowWireframeCheckbox.AutoSize = true;
-            this.ShowWireframeCheckbox.Location = new System.Drawing.Point(12, 169);
+            this.ShowWireframeCheckbox.Location = new System.Drawing.Point(12, 144);
             this.ShowWireframeCheckbox.Name = "ShowWireframeCheckbox";
             this.ShowWireframeCheckbox.Size = new System.Drawing.Size(113, 19);
             this.ShowWireframeCheckbox.TabIndex = 20;
@@ -314,7 +314,7 @@ namespace SPETS.forms
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(192, 447);
+            this.tabPage2.Size = new System.Drawing.Size(192, 425);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Decal";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -322,7 +322,7 @@ namespace SPETS.forms
             // ShowVerticesCheckbox
             // 
             this.ShowVerticesCheckbox.AutoSize = true;
-            this.ShowVerticesCheckbox.Location = new System.Drawing.Point(11, 144);
+            this.ShowVerticesCheckbox.Location = new System.Drawing.Point(12, 119);
             this.ShowVerticesCheckbox.Name = "ShowVerticesCheckbox";
             this.ShowVerticesCheckbox.Size = new System.Drawing.Size(98, 19);
             this.ShowVerticesCheckbox.TabIndex = 23;
@@ -335,7 +335,7 @@ namespace SPETS.forms
             this.ShowFacesCheckbox.AutoSize = true;
             this.ShowFacesCheckbox.Checked = true;
             this.ShowFacesCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowFacesCheckbox.Location = new System.Drawing.Point(11, 119);
+            this.ShowFacesCheckbox.Location = new System.Drawing.Point(12, 94);
             this.ShowFacesCheckbox.Name = "ShowFacesCheckbox";
             this.ShowFacesCheckbox.Size = new System.Drawing.Size(87, 19);
             this.ShowFacesCheckbox.TabIndex = 24;
@@ -343,11 +343,23 @@ namespace SPETS.forms
             this.ShowFacesCheckbox.UseVisualStyleBackColor = true;
             this.ShowFacesCheckbox.CheckedChanged += new System.EventHandler(this.ShowFacesCheckbox_CheckedChanged);
             // 
+            // BFCullingCheckbox
+            // 
+            this.BFCullingCheckbox.AutoSize = true;
+            this.BFCullingCheckbox.Location = new System.Drawing.Point(12, 169);
+            this.BFCullingCheckbox.Name = "BFCullingCheckbox";
+            this.BFCullingCheckbox.Size = new System.Drawing.Size(114, 19);
+            this.BFCullingCheckbox.TabIndex = 25;
+            this.BFCullingCheckbox.Text = "Backface Culling";
+            this.BFCullingCheckbox.UseVisualStyleBackColor = true;
+            this.BFCullingCheckbox.CheckedChanged += new System.EventHandler(this.BFCullingCheckbox_CheckedChanged);
+            // 
             // AdvancedEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(621, 514);
+            this.Controls.Add(this.BFCullingCheckbox);
             this.Controls.Add(this.ShowFacesCheckbox);
             this.Controls.Add(this.ShowVerticesCheckbox);
             this.Controls.Add(this.tabControl1);
@@ -413,5 +425,6 @@ namespace SPETS.forms
         private System.Windows.Forms.ColumnHeader ItemTypeColumnHeader;
         private System.Windows.Forms.CheckBox ShowVerticesCheckbox;
         private System.Windows.Forms.CheckBox ShowFacesCheckbox;
+        private System.Windows.Forms.CheckBox BFCullingCheckbox;
     }
 }

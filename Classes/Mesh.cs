@@ -24,7 +24,7 @@ namespace SPETS.Classes
 
     static class MeshLoader
     {
-        public static Mesh LoadOBJ(string filePath)
+        public static Mesh FromOBJ(string filePath)
         {
             Mesh objMesh = new Mesh();
             Thread.CurrentThread.CurrentCulture = new CultureInfo("se-SV");
@@ -81,6 +81,13 @@ namespace SPETS.Classes
 
 
             return objMesh;
+        }
+
+        public static Mesh FromBlueprint(string filePath)
+        {
+
+
+            return null;
         }
     }
 }

@@ -154,7 +154,7 @@ namespace SPETS.forms
             DialogResult dr = ofd.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                Mesh loadMesh = MeshLoader.LoadOBJ(ofd.FileName);
+                Mesh loadMesh = MeshLoader.FromOBJ(ofd.FileName);
 
                 if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
                 {
@@ -249,7 +249,7 @@ namespace SPETS.forms
             }
             tri[tri.Length - 1] = tri[0];
 
-            if (ShowFacesCheckbox.Checked && frontFacing)
+            if (ShowFacesCheckbox.Checked && (frontFacing || !BFCullingCheckbox.Checked))
             {
                 brush.Color = faceColor;
                 g.FillPolygon(brush, tri);
@@ -257,7 +257,7 @@ namespace SPETS.forms
 
             if (ShowWireframeCheckbox.Checked)
             {
-                if (ShowFacesCheckbox.Checked && frontFacing || !ShowFacesCheckbox.Checked)
+                if (frontFacing || !BFCullingCheckbox.Checked)
                 {
                     g.DrawPolygon(pen, tri);
                 }
@@ -265,7 +265,7 @@ namespace SPETS.forms
 
             if(ShowVerticesCheckbox.Checked)
             {
-                if(ShowFacesCheckbox.Checked && frontFacing || !ShowFacesCheckbox.Checked)
+                if(frontFacing || !BFCullingCheckbox.Checked)
                 {
                     pen.Color = Color.Red;
                     for (int i = 0; i < tri.Length; i++)
@@ -284,6 +284,7 @@ namespace SPETS.forms
 
         private void ShowFacesCheckbox_CheckedChanged(object sender, EventArgs e)
         {
+            BFCullingCheckbox.Checked = ShowFacesCheckbox.Checked;
             MeshPreview.Invalidate();
         }
 
@@ -293,6 +294,11 @@ namespace SPETS.forms
         }
 
         private void ShowWireframeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            MeshPreview.Invalidate();
+        }
+
+        private void BFCullingCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             MeshPreview.Invalidate();
         }
@@ -345,11 +351,13 @@ namespace SPETS.forms
 
         private void DeleteItemButton_Click(object sender, EventArgs e)
         {
-            if(ImportListView.SelectedIndices.Count > 0)
+            
+            for (int i = ImportListView.SelectedIndices.Count - 1; i >= 0; i--)
             {
-                ImportObjects.RemoveAt(ImportListView.SelectedIndices[0]);
-                RefreshObjectList();
+                ImportObjects.RemoveAt(ImportListView.SelectedIndices[i]);
             }
+            RefreshObjectList();
+            
         }
 
         void RefreshObjectList()
@@ -371,9 +379,9 @@ namespace SPETS.forms
         {
             if(ImportListView.SelectedIndices.Count > 0) 
             { 
-                lastSelected = ImportListView.SelectedIndices[0]; 
+                lastSelected = ImportListView.SelectedIndices[0];
             }
-            
+
             MeshPreview.Invalidate();
             TexturePreview.Image = ImportObjects[lastSelected].Texture;
         }
@@ -439,5 +447,6 @@ namespace SPETS.forms
 
             return meshes;
         }
+
     }
 }
