@@ -1,0 +1,120 @@
+{
+  "version": {
+    "Major": 0,
+    "Minor": 5
+  },
+  "name": "DecalNormals",
+  "era": "Latewar",
+  "desc": "",
+  "fullMass": 5271.261,
+  "blueprints": [
+    {
+      "id": "Compartment",
+      "data": "{\"version\":{\"Major\":0,\"Minor\":3},\"name\":\"NormalPlanes\",\"ID\":0,\"parentID\":-1,\"flags\":3,\"displacement\":5.137221,\"armourVolume\":0.007999897,\"pos\":[0.0,0.0,0.0],\"rot\":[0.0,0.0,0.0],\"turret\":null,\"genID\":null,\"genData\":null,\"compartment\":{\"version\":{\"Major\":0,\"Minor\":1},\"points\":[-1.0,0.852916,-1.0,-1.0,2.852916,-1.0,-1.0,2.852916,1.0,-1.0,0.852916,1.0,-1.0,2.852916,-1.0,1.0,2.852916,-1.0,1.0,2.852916,1.0,-1.0,2.852916,1.0],\"sharedPoints\":[[0],[1,4],[2,7],[3],[5],[6]],\"thicknessMap\":[1,1,1,1,1,1,1,1],\"faceMap\":[[0,2,1,0,3,2],[4,6,5,4,7,6]],\"smooth\":0.0}}",
+      "metaData": ""
+    },
+    {
+      "id": "AMO",
+      "data": "{\"version\":{\"Major\":1,\"Minor\":1},\"name\":\"Untitled\",\"racks\":[{\"version\":{\"Major\":0,\"Minor\":1},\"capacity\":30,\"shellType\":0,\"sid\":0,\"diameter\":0,\"length\":0}]}",
+      "metaData": ""
+    },
+    {
+      "id": "SS",
+      "data": "{\"version\":{\"Major\":0,\"Minor\":0},\"name\":\"Untitled\"}",
+      "metaData": "CB"
+    },
+    {
+      "id": "TRK",
+      "data": "{\"version\":{\"Major\":0,\"Minor\":2},\"name\":\"Unnamed Track Blueprint\",\"separation\":1.6,\"length\":6.0,\"roadSpacing\":0.05,\"rollerSpacing\":1.0,\"interleaveFraction\":0.75,\"roadGroupSpacing\":0.0,\"roadPerGroup\":0,\"frontalTransmission\":false,\"rollers\":true,\"interleavedRoadwheels\":false,\"rrCoeff\":1.0,\"wheels\":[{\"version\":{\"Major\":0,\"Minor\":0},\"wheelID\":\"6ff435e173c54f241948a1e7c86558b8\",\"perAxle\":1,\"spacingOnAxle\":0.0,\"xOffset\":0.05,\"zOffset\":0.1,\"yOffset\":0.23,\"diameter\":0.6,\"width\":0.51000005},{\"version\":{\"Major\":0,\"Minor\":0},\"wheelID\":\"27c3f9feb1d54fa4db459147be281760\",\"perAxle\":2,\"spacingOnAxle\":0.15,\"xOffset\":0.05,\"zOffset\":-0.25,\"yOffset\":0.18,\"diameter\":0.6,\"width\":0.15},{\"version\":{\"Major\":0,\"Minor\":0},\"wheelID\":\"912084bb13f74d0499afb55dd47e5500\",\"perAxle\":2,\"spacingOnAxle\":0.05,\"xOffset\":0.05,\"zOffset\":0.0,\"yOffset\":0.1,\"diameter\":0.75,\"width\":0.14},{\"version\":{\"Major\":0,\"Minor\":0},\"wheelID\":\"8bc6e0bd58d041e4a907de05da7671ba\",\"perAxle\":2,\"spacingOnAxle\":0.1,\"xOffset\":0.05,\"zOffset\":0.5,\"yOffset\":0.36,\"diameter\":0.25,\"width\":0.1}],\"wheelMounts\":[{\"version\":{\"Major\":0,\"Minor\":0},\"mountID\":\"c32c8426a3f14f6498412a2a364c96b4\",\"scale\":1.0},{\"version\":{\"Major\":0,\"Minor\":0},\"mountID\":\"0cfefa4ec4e3f234d86b5e9d5e744048\",\"scale\":1.0},{\"version\":{\"Major\":0,\"Minor\":0},\"mountID\":\"7d6b56e2af2ae5345b817db9891d8d12\",\"scale\":1.0}],\"suspensions\":{\"version\":{\"Major\":0,\"Minor\":3},\"suspensionID\":\"164fd672ab4c132498154cc9550ec7f5\",\"targetAngle\":0.0,\"TBLength\":1.0,\"TBDiameter\":0.06,\"upTravelLimit\":1.0,\"xAdjust\":0.0,\"assemblySpring\":10000.0,\"damper\":200.0,\"scale\":1.0},\"belt\":{\"version\":{\"Major\":0,\"Minor\":0},\"segmentID\":\"711e1a7f772b0a84fa2780e0eba99fe4\",\"z\":0.2,\"y\":0.07,\"x\":0.6}}",
+      "metaData": ""
+    },
+    {
+      "id": "ENG",
+      "data": "{\"version\":{\"Major\":0,\"Minor\":2},\"name\":\"Untitled\",\"cylinders\":6,\"idleRPM\":400,\"cylinderDisplacement\":1.0,\"tech\":1.0,\"targetMinRPM\":1600,\"targetMaxRPM\":2400,\"torqueCoeff\":1.0}",
+      "metaData": ""
+    },
+    {
+      "id": "TSN",
+      "data": "{\"version\":{\"Major\":0,\"Minor\":0},\"name\":\"Untitled\",\"d\":[4.0,2.0,1.333,1.0,0.8,0.666,0.571,0.5],\"r\":[2.0,1.333,1.0,0.8]}",
+      "metaData": ""
+    },
+    {
+      "id": "FLT",
+      "data": "{\"version\":{\"Major\":0,\"Minor\":0},\"name\":\"Untitled\",\"L\":600.0}",
+      "metaData": ""
+    },
+    {
+      "id": "FDR",
+      "data": "{\"version\":{\"Major\":0,\"Minor\":1},\"name\":\"Untitled\",\"ffa\":\"2964cc197b83d52499b2fa42e669fca2\",\"mfa\":\"d78494fb9bf5d2f4fae04fb757441fff\",\"f\":[0.85,0.6,-3.0,0.85,0.6,2.7,0.1,0.0,1.0,1.2,0.0,30.0,1.0,0.0,0.0]}",
+      "metaData": ""
+    },
+    {
+      "id": "CRW",
+      "data": "{\"version\":{\"Major\":1,\"Minor\":0},\"name\":\"Untitled\",\"seats\":[{\"version\":{\"Major\":0,\"Minor\":0},\"spaceAlloc\":1.0,\"workSpace\":0,\"roles\":[\"commander\"],\"custom\":null},{\"version\":{\"Major\":0,\"Minor\":0},\"spaceAlloc\":1.0,\"workSpace\":0,\"roles\":[\"driver\"],\"custom\":null},{\"version\":{\"Major\":0,\"Minor\":0},\"spaceAlloc\":1.0,\"workSpace\":0,\"roles\":[\"gunner\"],\"custom\":[{\"SaveID\":\"sight\",\"ComponentID\":-1}]},{\"version\":{\"Major\":0,\"Minor\":0},\"spaceAlloc\":1.0,\"workSpace\":0,\"roles\":[\"loader\"],\"custom\":[{\"SaveID\":\"loadee\",\"ComponentID\":-1}]}]}",
+      "metaData": ""
+    },
+    {
+      "id": "PTJ",
+      "data": "{\"version\":{\"Major\":1,\"Minor\":2},\"name\":\"Untitled\",\"colourMap\":null,\"config\":{\"scale\":0.5,\"roughness\":0.5,\"metallic\":0.5,\"hue\":0.0,\"saturation\":1.0,\"brightness\":0.7},\"weather\":{\"condition\":0.9,\"grime\":0.0},\"customID\":\"\"}",
+      "metaData": ""
+    }
+  ],
+  "ext": [
+    {
+      "REF": "356f883c9f9bc9344aa34cd4f646d36e",
+      "CID": 0,
+      "T": [
+        -1.0,
+        1.90188622,
+        0.01776123,
+        0.0,
+        270.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "DAT": [
+        {
+          "id": "decal",
+          "data": "{\"ID\":1}",
+          "metaData": ""
+        },
+        {
+          "id": "asset",
+          "data": "{\"data\":\"668df41fc04e17c4bb38bdb866418fd6\",\"type\":0}",
+          "metaData": ""
+        }
+      ]
+    },
+    {
+      "REF": "356f883c9f9bc9344aa34cd4f646d36e",
+      "CID": 0,
+      "T": [
+        0.0,
+        2.852916,
+        -0.01675415,
+        270.0,
+        180.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0
+      ],
+      "DAT": [
+        {
+          "id": "decal",
+          "data": "{\"ID\":3}",
+          "metaData": ""
+        },
+        {
+          "id": "asset",
+          "data": "{\"data\":\"668df41fc04e17c4bb38bdb866418fd6\",\"type\":0}",
+          "metaData": ""
+        }
+      ]
+    }
+  ]
+}

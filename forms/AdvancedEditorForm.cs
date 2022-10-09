@@ -6,10 +6,12 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SPETS.forms
@@ -103,6 +105,8 @@ namespace SPETS.forms
             rotateYMatrix = Matrix4x4.CreateRotationY(-0.7853982f);
             rotateZMatrix = Matrix4x4.CreateRotationZ(0.7853982f);
             rotationMatrix = rotateYMatrix * rotateZMatrix;
+
+
         }
         private void AdvancedImportForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -115,7 +119,6 @@ namespace SPETS.forms
         {
             if (ImportListView.SelectedIndices.Count > 0)
             {
-
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Filter = "Image Files|*.BMP;*.GIF;*.JPG;*.JPEG;*.PNG;*.TIFF";
 
@@ -125,7 +128,7 @@ namespace SPETS.forms
                     ImportObjects[lastSelected] = new ImportObject(
                         Image.FromFile(ofd.FileName),
                         ImportObjects[lastSelected].Model,
-                        ofd.FileName,
+                        ofd.FileName.Split("\\").Last(),
                         ImportObjects[lastSelected].ModelPath
                         );
                     RefreshObjectList();
@@ -164,7 +167,7 @@ namespace SPETS.forms
                             ImportObjects[lastSelected].Texture,
                             loadMesh,
                             ImportObjects[lastSelected].TexturePath,
-                            ofd.FileName
+                            ofd.FileName.Split("\\").Last()
                             );
                     }
                     else
@@ -173,7 +176,7 @@ namespace SPETS.forms
                                 null,
                                 loadMesh,
                                 "",
-                                ofd.FileName
+                                ofd.FileName.Split("\\").Last()
                             ));
                     }
 
@@ -448,5 +451,58 @@ namespace SPETS.forms
             return meshes;
         }
 
+        private void ImportButton_Click(object sender, EventArgs e)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            string decal = "";
+            for (int i = 0; i < ImportObjects.Count; i++)
+            {
+                for (int f = 0; f < ImportObjects[i].Model.Faces.Count; f++)
+                {
+                    List<Vector3> points = new List<Vector3>();
+                    Vector3 faceCenter = new Vector3();
+                    for (int p = 0; p < ImportObjects[i].Model.Faces[f].Count; p++)
+                    {
+                        points.Add(ImportObjects[i].Model.Vertices[ImportObjects[i].Model.Faces[f][p] - 1]);
+                        faceCenter += ImportObjects[i].Model.Vertices[ImportObjects[i].Model.Faces[f][p] - 1];
+                    }
+                    faceCenter /= ImportObjects[i].Model.Faces[f].Count;
+                    Vector3 normal = Vector3.Normalize(Math3D.GetNormal(points));
+                    Vector3 position = faceCenter + normal * 0.74f;
+                    Vector3 angle = Math3D.DirectionToAngle(normal) * 57.29578f;
+
+                    decal += "    {" + Environment.NewLine;
+                    decal += "      \"REF\": \"356f883c9f9bc9344aa34cd4f646d36e\"," + Environment.NewLine;
+                    decal += "      \"CID\": 0," + Environment.NewLine;
+                    decal += "      \"T\": [" + Environment.NewLine;
+                    decal += $"        {-position.X}," + Environment.NewLine;
+                    decal += $"        {position.Y}," + Environment.NewLine;
+                    decal += $"        {position.Z}," + Environment.NewLine;
+                    decal += $"        {angle.X}," + Environment.NewLine;
+                    decal += $"        {angle.Y}," + Environment.NewLine;
+                    decal += $"        {angle.Z}," + Environment.NewLine;
+                    decal += "        0.999," + Environment.NewLine;
+                    decal += "        0.999," + Environment.NewLine;
+                    decal += "        0.999," + Environment.NewLine;
+                    decal += "        0.0" + Environment.NewLine;
+                    decal += "      ]," + Environment.NewLine;
+                    decal += "      \"DAT\": [" + Environment.NewLine;
+                    decal += "        {" + Environment.NewLine;
+                    decal += "          \"id\": \"decal\"," + Environment.NewLine;
+                    decal += "          \"data\": \"{\\\"ID\\\":{" + f + "}}\"," + Environment.NewLine;
+                    decal += "          \"metaData\": \"\"" + Environment.NewLine;
+                    decal += "        }," + Environment.NewLine;
+                    decal += "        {" + Environment.NewLine;
+                    decal += "          \"id\": \"asset\"," + Environment.NewLine;
+                    decal += "          \"data\": \"{\\\"data\\\":\\\"" + ImportObjects[i].TexturePath + "\\\",\\\"type\\\":1}\"," + Environment.NewLine;
+                    decal += "          \"metaData\": \"\"" + Environment.NewLine;
+                    decal += "        }" + Environment.NewLine;
+                    decal += "      ]" + Environment.NewLine;
+                    decal += "    },";
+                }
+            }
+
+            File.WriteAllText("decals.txt", decal);
+        }
     }
 }

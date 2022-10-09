@@ -85,8 +85,6 @@ namespace SPETS.Classes
 
         public static Mesh FromBlueprint(string filePath)
         {
-
-
             return null;
         }
     }

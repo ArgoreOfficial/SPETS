@@ -50,7 +50,7 @@ namespace SPETS.forms
             this.RightButton = new System.Windows.Forms.Button();
             this.ZoomInButton = new System.Windows.Forms.Button();
             this.ZoomOutButton = new System.Windows.Forms.Button();
-            this.ToolDropdown = new System.Windows.Forms.ComboBox();
+            this.FactionDropdown = new System.Windows.Forms.ComboBox();
             this.ShowWireframeCheckbox = new System.Windows.Forms.CheckBox();
             this.LoadBlueprintButton = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -109,15 +109,20 @@ namespace SPETS.forms
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(81, 144);
+            this.numericUpDown1.Location = new System.Drawing.Point(64, 144);
             this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(53, 23);
+            this.numericUpDown1.Size = new System.Drawing.Size(70, 23);
             this.numericUpDown1.TabIndex = 2;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // DistanceLabel
             // 
             this.DistanceLabel.AutoSize = true;
-            this.DistanceLabel.Location = new System.Drawing.Point(6, 152);
+            this.DistanceLabel.Location = new System.Drawing.Point(6, 146);
             this.DistanceLabel.Name = "DistanceLabel";
             this.DistanceLabel.Size = new System.Drawing.Size(52, 15);
             this.DistanceLabel.TabIndex = 3;
@@ -132,6 +137,7 @@ namespace SPETS.forms
             this.ImportButton.TabIndex = 4;
             this.ImportButton.Text = "Import";
             this.ImportButton.UseVisualStyleBackColor = true;
+            this.ImportButton.Click += new System.EventHandler(this.ImportButton_Click);
             // 
             // LoadMeshButton
             // 
@@ -249,18 +255,18 @@ namespace SPETS.forms
             this.ZoomOutButton.UseVisualStyleBackColor = true;
             this.ZoomOutButton.Click += new System.EventHandler(this.ZoomOutButton_Click);
             // 
-            // ToolDropdown
+            // FactionDropdown
             // 
-            this.ToolDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.ToolDropdown.FormattingEnabled = true;
-            this.ToolDropdown.Items.AddRange(new object[] {
+            this.FactionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FactionDropdown.FormattingEnabled = true;
+            this.FactionDropdown.Items.AddRange(new object[] {
             "Import from OBJ",
             "Export to OBJ",
             "Advanced Import"});
-            this.ToolDropdown.Location = new System.Drawing.Point(414, 479);
-            this.ToolDropdown.Name = "ToolDropdown";
-            this.ToolDropdown.Size = new System.Drawing.Size(100, 23);
-            this.ToolDropdown.TabIndex = 19;
+            this.FactionDropdown.Location = new System.Drawing.Point(414, 479);
+            this.FactionDropdown.Name = "FactionDropdown";
+            this.FactionDropdown.Size = new System.Drawing.Size(100, 23);
+            this.FactionDropdown.TabIndex = 19;
             // 
             // ShowWireframeCheckbox
             // 
@@ -365,7 +371,7 @@ namespace SPETS.forms
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.LoadBlueprintButton);
             this.Controls.Add(this.ShowWireframeCheckbox);
-            this.Controls.Add(this.ToolDropdown);
+            this.Controls.Add(this.FactionDropdown);
             this.Controls.Add(this.ZoomOutButton);
             this.Controls.Add(this.ZoomInButton);
             this.Controls.Add(this.RightButton);
@@ -416,7 +422,7 @@ namespace SPETS.forms
         private System.Windows.Forms.Button RightButton;
         private System.Windows.Forms.Button ZoomInButton;
         private System.Windows.Forms.Button ZoomOutButton;
-        private System.Windows.Forms.ComboBox ToolDropdown;
+        private System.Windows.Forms.ComboBox FactionDropdown;
         private System.Windows.Forms.CheckBox ShowWireframeCheckbox;
         private System.Windows.Forms.Button LoadBlueprintButton;
         private System.Windows.Forms.TabControl tabControl1;

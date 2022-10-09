@@ -18,5 +18,15 @@ public static class Math3D
 
         return Vector3.Zero;
     }
+
+    public static Vector3 DirectionToAngle(Vector3 direction)
+    {
+        Vector3 angles = new Vector3();
+        //angle_H = atan2(ZD, XD)
+        //angle_P=asin(YD)
+        angles.X = MathF.Asin(direction.Y);
+        angles.Y = MathF.Atan2(direction.X, -direction.Z);
+        return angles;
+    }
 }
 
