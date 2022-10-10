@@ -206,7 +206,7 @@ namespace SPETS.forms
                                     null,
                                     loadedMeshes[i],
                                     "",
-                                    ofd.FileName
+                                    ofd.FileName.Split("\\").Last()
                                 ));
                     }
                 }

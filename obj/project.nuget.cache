@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "uUzwfKV3uEOc+ZJRHmziTgrRD5aqpz4U2YWzjit9HIc1zd06IGwOvN6oL9H43566uHVlbXXk7I/P+PdRixBMGg==",
+  "dgSpecHash": "quja07e+xl9lcR52UqYGf4YI0CMIh1Xasa65wm5RMXDQKSPswE4Pfeca19IIYXZhVPSn2rJIDK+ZGMrpAxqZqA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj",
+  "projectFilePath": "C:\\Users\\jonatan.ostberg\\Desktop\\Github\\SPETS\\SPETS.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\argor\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
   ],
   "logs": []
 }
