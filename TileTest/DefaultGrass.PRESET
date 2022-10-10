@@ -1,0 +1,44 @@
+[
+  {
+    "Type": "mesh",
+    "ModelPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\FullMap.obj",
+    "TexturePath": "",
+    "TextureDistance": 0.749,
+    "TextureSize": 0.999
+  },
+  {
+    "Type": "mesh",
+    "ModelPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\CraftSideMap.obj",
+    "TexturePath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\bookshelf.png",
+    "TextureDistance": 0.749,
+    "TextureSize": 0.999
+  },
+  {
+    "Type": "mesh",
+    "ModelPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\CraftTopMap.obj",
+    "TexturePath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\planks_oak.png",
+    "TextureDistance": 0.749,
+    "TextureSize": 0.999
+  },
+  {
+    "Type": "mesh",
+    "ModelPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\DirtMap.obj",
+    "TexturePath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\dirt.png",
+    "TextureDistance": 0.749,
+    "TextureSize": 0.999
+  },
+  {
+    "Type": "mesh",
+    "ModelPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\GrassMap.obj",
+    "TexturePath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\grass_top.png",
+    "TextureDistance": 0.749,
+    "TextureSize": 0.999
+  },
+  {
+    "Type": "mesh",
+    "ModelPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\GrassSideMap.obj",
+    "TexturePath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\TileTest\\grass_side.png",
+    "TextureDistance": 0.749,
+    "TextureSize": 0.999
+  }
+]

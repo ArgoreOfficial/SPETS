@@ -35,8 +35,8 @@ namespace SPETS.forms
             this.ItemTypeColumnHeader = new System.Windows.Forms.ColumnHeader();
             this.MeshColumbHeader = new System.Windows.Forms.ColumnHeader();
             this.TexturePreview = new System.Windows.Forms.PictureBox();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.DistanceLabel = new System.Windows.Forms.Label();
+            this.DecalDistanceNumeric = new System.Windows.Forms.NumericUpDown();
+            this.DecalDistanceLabel = new System.Windows.Forms.Label();
             this.ImportButton = new System.Windows.Forms.Button();
             this.LoadMeshButton = new System.Windows.Forms.Button();
             this.DeleteItemButton = new System.Windows.Forms.Button();
@@ -44,33 +44,37 @@ namespace SPETS.forms
             this.LoadTextureButton = new System.Windows.Forms.Button();
             this.TextureTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ClearTextureButton = new System.Windows.Forms.Button();
-            this.LeftButton = new System.Windows.Forms.Button();
-            this.UpButton = new System.Windows.Forms.Button();
-            this.DownButton = new System.Windows.Forms.Button();
-            this.RightButton = new System.Windows.Forms.Button();
             this.ZoomInButton = new System.Windows.Forms.Button();
             this.ZoomOutButton = new System.Windows.Forms.Button();
-            this.FactionDropdown = new System.Windows.Forms.ComboBox();
+            this.FactionsCombobox = new System.Windows.Forms.ComboBox();
             this.ShowWireframeCheckbox = new System.Windows.Forms.CheckBox();
             this.LoadBlueprintButton = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.PropertiesTabControl = new System.Windows.Forms.TabControl();
+            this.PropertiesPage = new System.Windows.Forms.TabPage();
+            this.DecalPage = new System.Windows.Forms.TabPage();
+            this.DecalSizeNumeric = new System.Windows.Forms.NumericUpDown();
+            this.DecalSizeLabel = new System.Windows.Forms.Label();
             this.ShowVerticesCheckbox = new System.Windows.Forms.CheckBox();
             this.ShowFacesCheckbox = new System.Windows.Forms.CheckBox();
             this.BFCullingCheckbox = new System.Windows.Forms.CheckBox();
+            this.MeshPreviewTimer = new System.Windows.Forms.Timer(this.components);
+            this.ZoomInTimer = new System.Windows.Forms.Timer(this.components);
+            this.ZoomOutTimer = new System.Windows.Forms.Timer(this.components);
+            this.LoadPresetButton = new System.Windows.Forms.Button();
+            this.SavePresetButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).BeginInit();
-            this.tabControl1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.PropertiesTabControl.SuspendLayout();
+            this.DecalPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).BeginInit();
             this.SuspendLayout();
             // 
             // ImportListView
             // 
             this.ImportListView.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.ImportListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.ImportListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ImportListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ItemTypeColumnHeader,
             this.MeshColumbHeader});
@@ -98,40 +102,53 @@ namespace SPETS.forms
             // 
             // TexturePreview
             // 
+            this.TexturePreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.TexturePreview.Location = new System.Drawing.Point(6, 10);
             this.TexturePreview.Name = "TexturePreview";
             this.TexturePreview.Size = new System.Drawing.Size(128, 128);
             this.TexturePreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.TexturePreview.TabIndex = 1;
             this.TexturePreview.TabStop = false;
-            this.TextureTooltip.SetToolTip(this.TexturePreview, "Decal to place on every face.\r\nLeave blank for none (recommended for large models" +
-        ")");
+            this.TextureTooltip.SetToolTip(this.TexturePreview, "Decal to place on every face.\r\nUnavailable for imported blueprints.");
             // 
-            // numericUpDown1
+            // DecalDistanceNumeric
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(64, 144);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(70, 23);
-            this.numericUpDown1.TabIndex = 2;
-            this.numericUpDown1.Value = new decimal(new int[] {
+            this.DecalDistanceNumeric.DecimalPlaces = 3;
+            this.DecalDistanceNumeric.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.DecalDistanceNumeric.Location = new System.Drawing.Point(64, 144);
+            this.DecalDistanceNumeric.Maximum = new decimal(new int[] {
             1,
             0,
             0,
             0});
+            this.DecalDistanceNumeric.Name = "DecalDistanceNumeric";
+            this.DecalDistanceNumeric.Size = new System.Drawing.Size(70, 23);
+            this.DecalDistanceNumeric.TabIndex = 2;
+            this.DecalDistanceNumeric.Value = new decimal(new int[] {
+            749,
+            0,
+            0,
+            196608});
+            this.DecalDistanceNumeric.ValueChanged += new System.EventHandler(this.DecalDistanceNumeric_ValueChanged);
             // 
-            // DistanceLabel
+            // DecalDistanceLabel
             // 
-            this.DistanceLabel.AutoSize = true;
-            this.DistanceLabel.Location = new System.Drawing.Point(6, 146);
-            this.DistanceLabel.Name = "DistanceLabel";
-            this.DistanceLabel.Size = new System.Drawing.Size(52, 15);
-            this.DistanceLabel.TabIndex = 3;
-            this.DistanceLabel.Text = "Distance";
-            this.DistanceLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.DecalDistanceLabel.AutoSize = true;
+            this.DecalDistanceLabel.Location = new System.Drawing.Point(6, 146);
+            this.DecalDistanceLabel.Name = "DecalDistanceLabel";
+            this.DecalDistanceLabel.Size = new System.Drawing.Size(52, 15);
+            this.DecalDistanceLabel.TabIndex = 3;
+            this.DecalDistanceLabel.Text = "Distance";
+            this.DecalDistanceLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // ImportButton
             // 
-            this.ImportButton.Location = new System.Drawing.Point(520, 479);
+            this.ImportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ImportButton.Location = new System.Drawing.Point(524, 475);
             this.ImportButton.Name = "ImportButton";
             this.ImportButton.Size = new System.Drawing.Size(85, 23);
             this.ImportButton.TabIndex = 4;
@@ -144,7 +161,7 @@ namespace SPETS.forms
             this.LoadMeshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LoadMeshButton.Location = new System.Drawing.Point(12, 471);
             this.LoadMeshButton.Name = "LoadMeshButton";
-            this.LoadMeshButton.Size = new System.Drawing.Size(108, 31);
+            this.LoadMeshButton.Size = new System.Drawing.Size(97, 31);
             this.LoadMeshButton.TabIndex = 5;
             this.LoadMeshButton.Text = "Load Mesh";
             this.LoadMeshButton.UseVisualStyleBackColor = true;
@@ -152,7 +169,7 @@ namespace SPETS.forms
             // 
             // DeleteItemButton
             // 
-            this.DeleteItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.DeleteItemButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.DeleteItemButton.Location = new System.Drawing.Point(357, 471);
             this.DeleteItemButton.Name = "DeleteItemButton";
             this.DeleteItemButton.Size = new System.Drawing.Size(51, 31);
@@ -164,16 +181,20 @@ namespace SPETS.forms
             // MeshPreview
             // 
             this.MeshPreview.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.MeshPreview.Cursor = System.Windows.Forms.Cursors.SizeAll;
             this.MeshPreview.Location = new System.Drawing.Point(147, 12);
             this.MeshPreview.Name = "MeshPreview";
             this.MeshPreview.Size = new System.Drawing.Size(256, 256);
             this.MeshPreview.TabIndex = 8;
             this.MeshPreview.TabStop = false;
             this.MeshPreview.Paint += new System.Windows.Forms.PaintEventHandler(this.MeshPreview_Paint);
+            this.MeshPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MeshPreview_MouseDown);
+            this.MeshPreview.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshPreview_MouseUp);
             // 
             // LoadTextureButton
             // 
             this.LoadTextureButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.LoadTextureButton.Cursor = System.Windows.Forms.Cursors.Default;
             this.LoadTextureButton.Location = new System.Drawing.Point(140, 10);
             this.LoadTextureButton.Name = "LoadTextureButton";
             this.LoadTextureButton.Size = new System.Drawing.Size(46, 31);
@@ -193,48 +214,6 @@ namespace SPETS.forms
             this.ClearTextureButton.UseVisualStyleBackColor = true;
             this.ClearTextureButton.Click += new System.EventHandler(this.ClearTextureButton_Click);
             // 
-            // LeftButton
-            // 
-            this.LeftButton.Image = ((System.Drawing.Image)(resources.GetObject("LeftButton.Image")));
-            this.LeftButton.Location = new System.Drawing.Point(12, 194);
-            this.LeftButton.Name = "LeftButton";
-            this.LeftButton.Size = new System.Drawing.Size(32, 48);
-            this.LeftButton.TabIndex = 13;
-            this.LeftButton.UseVisualStyleBackColor = true;
-            this.LeftButton.Click += new System.EventHandler(this.LeftButton_Click);
-            // 
-            // UpButton
-            // 
-            this.UpButton.Image = ((System.Drawing.Image)(resources.GetObject("UpButton.Image")));
-            this.UpButton.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.UpButton.Location = new System.Drawing.Point(46, 194);
-            this.UpButton.Name = "UpButton";
-            this.UpButton.Size = new System.Drawing.Size(56, 23);
-            this.UpButton.TabIndex = 14;
-            this.UpButton.UseVisualStyleBackColor = true;
-            this.UpButton.Click += new System.EventHandler(this.UpButton_Click);
-            // 
-            // DownButton
-            // 
-            this.DownButton.Image = ((System.Drawing.Image)(resources.GetObject("DownButton.Image")));
-            this.DownButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.DownButton.Location = new System.Drawing.Point(46, 219);
-            this.DownButton.Name = "DownButton";
-            this.DownButton.Size = new System.Drawing.Size(56, 23);
-            this.DownButton.TabIndex = 15;
-            this.DownButton.UseVisualStyleBackColor = true;
-            this.DownButton.Click += new System.EventHandler(this.DownButton_Click);
-            // 
-            // RightButton
-            // 
-            this.RightButton.Image = ((System.Drawing.Image)(resources.GetObject("RightButton.Image")));
-            this.RightButton.Location = new System.Drawing.Point(104, 194);
-            this.RightButton.Name = "RightButton";
-            this.RightButton.Size = new System.Drawing.Size(32, 48);
-            this.RightButton.TabIndex = 16;
-            this.RightButton.UseVisualStyleBackColor = true;
-            this.RightButton.Click += new System.EventHandler(this.RightButton_Click);
-            // 
             // ZoomInButton
             // 
             this.ZoomInButton.Image = ((System.Drawing.Image)(resources.GetObject("ZoomInButton.Image")));
@@ -243,7 +222,8 @@ namespace SPETS.forms
             this.ZoomInButton.Size = new System.Drawing.Size(62, 24);
             this.ZoomInButton.TabIndex = 17;
             this.ZoomInButton.UseVisualStyleBackColor = true;
-            this.ZoomInButton.Click += new System.EventHandler(this.ZoomInButton_Click);
+            this.ZoomInButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ZoomInButton_MouseDown);
+            this.ZoomInButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ZoomInButton_MouseUp);
             // 
             // ZoomOutButton
             // 
@@ -253,25 +233,25 @@ namespace SPETS.forms
             this.ZoomOutButton.Size = new System.Drawing.Size(62, 24);
             this.ZoomOutButton.TabIndex = 18;
             this.ZoomOutButton.UseVisualStyleBackColor = true;
-            this.ZoomOutButton.Click += new System.EventHandler(this.ZoomOutButton_Click);
+            this.ZoomOutButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ZoomOutButton_MouseDown);
+            this.ZoomOutButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ZoomOutButton_MouseUp);
             // 
-            // FactionDropdown
+            // FactionsCombobox
             // 
-            this.FactionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.FactionDropdown.FormattingEnabled = true;
-            this.FactionDropdown.Items.AddRange(new object[] {
-            "Import from OBJ",
-            "Export to OBJ",
-            "Advanced Import"});
-            this.FactionDropdown.Location = new System.Drawing.Point(414, 479);
-            this.FactionDropdown.Name = "FactionDropdown";
-            this.FactionDropdown.Size = new System.Drawing.Size(100, 23);
-            this.FactionDropdown.TabIndex = 19;
+            this.FactionsCombobox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.FactionsCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FactionsCombobox.FormattingEnabled = true;
+            this.FactionsCombobox.Location = new System.Drawing.Point(418, 475);
+            this.FactionsCombobox.Name = "FactionsCombobox";
+            this.FactionsCombobox.Size = new System.Drawing.Size(100, 23);
+            this.FactionsCombobox.TabIndex = 19;
             // 
             // ShowWireframeCheckbox
             // 
             this.ShowWireframeCheckbox.AutoSize = true;
-            this.ShowWireframeCheckbox.Location = new System.Drawing.Point(12, 144);
+            this.ShowWireframeCheckbox.Checked = true;
+            this.ShowWireframeCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ShowWireframeCheckbox.Location = new System.Drawing.Point(12, 169);
             this.ShowWireframeCheckbox.Name = "ShowWireframeCheckbox";
             this.ShowWireframeCheckbox.Size = new System.Drawing.Size(113, 19);
             this.ShowWireframeCheckbox.TabIndex = 20;
@@ -282,53 +262,91 @@ namespace SPETS.forms
             // LoadBlueprintButton
             // 
             this.LoadBlueprintButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.LoadBlueprintButton.Location = new System.Drawing.Point(126, 471);
+            this.LoadBlueprintButton.Location = new System.Drawing.Point(115, 471);
             this.LoadBlueprintButton.Name = "LoadBlueprintButton";
-            this.LoadBlueprintButton.Size = new System.Drawing.Size(108, 31);
+            this.LoadBlueprintButton.Size = new System.Drawing.Size(97, 31);
             this.LoadBlueprintButton.TabIndex = 21;
             this.LoadBlueprintButton.Text = "Load Blueprint";
             this.LoadBlueprintButton.UseVisualStyleBackColor = true;
             this.LoadBlueprintButton.Click += new System.EventHandler(this.LoadBlueprintButton_Click);
             // 
-            // tabControl1
+            // PropertiesTabControl
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(409, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(200, 453);
-            this.tabControl1.TabIndex = 22;
+            this.PropertiesTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PropertiesTabControl.Controls.Add(this.PropertiesPage);
+            this.PropertiesTabControl.Controls.Add(this.DecalPage);
+            this.PropertiesTabControl.Location = new System.Drawing.Point(409, 12);
+            this.PropertiesTabControl.Name = "PropertiesTabControl";
+            this.PropertiesTabControl.SelectedIndex = 0;
+            this.PropertiesTabControl.Size = new System.Drawing.Size(200, 453);
+            this.PropertiesTabControl.TabIndex = 22;
             // 
-            // tabPage1
+            // PropertiesPage
             // 
-            this.tabPage1.Location = new System.Drawing.Point(4, 24);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(192, 425);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Properties";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.PropertiesPage.Location = new System.Drawing.Point(4, 24);
+            this.PropertiesPage.Name = "PropertiesPage";
+            this.PropertiesPage.Padding = new System.Windows.Forms.Padding(3);
+            this.PropertiesPage.Size = new System.Drawing.Size(192, 425);
+            this.PropertiesPage.TabIndex = 0;
+            this.PropertiesPage.Text = "Properties";
+            this.PropertiesPage.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // DecalPage
             // 
-            this.tabPage2.Controls.Add(this.TexturePreview);
-            this.tabPage2.Controls.Add(this.LoadTextureButton);
-            this.tabPage2.Controls.Add(this.ClearTextureButton);
-            this.tabPage2.Controls.Add(this.DistanceLabel);
-            this.tabPage2.Controls.Add(this.numericUpDown1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 24);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(192, 425);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Decal";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.DecalPage.Controls.Add(this.DecalSizeNumeric);
+            this.DecalPage.Controls.Add(this.DecalSizeLabel);
+            this.DecalPage.Controls.Add(this.TexturePreview);
+            this.DecalPage.Controls.Add(this.LoadTextureButton);
+            this.DecalPage.Controls.Add(this.ClearTextureButton);
+            this.DecalPage.Controls.Add(this.DecalDistanceLabel);
+            this.DecalPage.Controls.Add(this.DecalDistanceNumeric);
+            this.DecalPage.Location = new System.Drawing.Point(4, 24);
+            this.DecalPage.Name = "DecalPage";
+            this.DecalPage.Padding = new System.Windows.Forms.Padding(3);
+            this.DecalPage.Size = new System.Drawing.Size(192, 425);
+            this.DecalPage.TabIndex = 1;
+            this.DecalPage.Text = "Decal";
+            this.DecalPage.UseVisualStyleBackColor = true;
+            // 
+            // DecalSizeNumeric
+            // 
+            this.DecalSizeNumeric.DecimalPlaces = 3;
+            this.DecalSizeNumeric.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.DecalSizeNumeric.Location = new System.Drawing.Point(64, 173);
+            this.DecalSizeNumeric.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.DecalSizeNumeric.Name = "DecalSizeNumeric";
+            this.DecalSizeNumeric.Size = new System.Drawing.Size(70, 23);
+            this.DecalSizeNumeric.TabIndex = 13;
+            this.DecalSizeNumeric.Value = new decimal(new int[] {
+            999,
+            0,
+            0,
+            196608});
+            this.DecalSizeNumeric.ValueChanged += new System.EventHandler(this.DecalSizeNumeric_ValueChanged);
+            // 
+            // DecalSizeLabel
+            // 
+            this.DecalSizeLabel.AutoSize = true;
+            this.DecalSizeLabel.Location = new System.Drawing.Point(6, 175);
+            this.DecalSizeLabel.Name = "DecalSizeLabel";
+            this.DecalSizeLabel.Size = new System.Drawing.Size(27, 15);
+            this.DecalSizeLabel.TabIndex = 12;
+            this.DecalSizeLabel.Text = "Size";
+            this.DecalSizeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // ShowVerticesCheckbox
             // 
             this.ShowVerticesCheckbox.AutoSize = true;
-            this.ShowVerticesCheckbox.Location = new System.Drawing.Point(12, 119);
+            this.ShowVerticesCheckbox.Location = new System.Drawing.Point(12, 194);
             this.ShowVerticesCheckbox.Name = "ShowVerticesCheckbox";
             this.ShowVerticesCheckbox.Size = new System.Drawing.Size(98, 19);
             this.ShowVerticesCheckbox.TabIndex = 23;
@@ -341,7 +359,7 @@ namespace SPETS.forms
             this.ShowFacesCheckbox.AutoSize = true;
             this.ShowFacesCheckbox.Checked = true;
             this.ShowFacesCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowFacesCheckbox.Location = new System.Drawing.Point(12, 94);
+            this.ShowFacesCheckbox.Location = new System.Drawing.Point(12, 144);
             this.ShowFacesCheckbox.Name = "ShowFacesCheckbox";
             this.ShowFacesCheckbox.Size = new System.Drawing.Size(87, 19);
             this.ShowFacesCheckbox.TabIndex = 24;
@@ -352,7 +370,7 @@ namespace SPETS.forms
             // BFCullingCheckbox
             // 
             this.BFCullingCheckbox.AutoSize = true;
-            this.BFCullingCheckbox.Location = new System.Drawing.Point(12, 169);
+            this.BFCullingCheckbox.Location = new System.Drawing.Point(12, 219);
             this.BFCullingCheckbox.Name = "BFCullingCheckbox";
             this.BFCullingCheckbox.Size = new System.Drawing.Size(114, 19);
             this.BFCullingCheckbox.TabIndex = 25;
@@ -360,24 +378,59 @@ namespace SPETS.forms
             this.BFCullingCheckbox.UseVisualStyleBackColor = true;
             this.BFCullingCheckbox.CheckedChanged += new System.EventHandler(this.BFCullingCheckbox_CheckedChanged);
             // 
+            // MeshPreviewTimer
+            // 
+            this.MeshPreviewTimer.Interval = 1;
+            this.MeshPreviewTimer.Tick += new System.EventHandler(this.MeshPreviewTimer_Tick);
+            // 
+            // ZoomInTimer
+            // 
+            this.ZoomInTimer.Interval = 5;
+            this.ZoomInTimer.Tick += new System.EventHandler(this.ZoomInTimer_Tick);
+            // 
+            // ZoomOutTimer
+            // 
+            this.ZoomOutTimer.Interval = 5;
+            this.ZoomOutTimer.Tick += new System.EventHandler(this.ZoomOutTimer_Tick);
+            // 
+            // LoadPresetButton
+            // 
+            this.LoadPresetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.LoadPresetButton.Location = new System.Drawing.Point(12, 12);
+            this.LoadPresetButton.Name = "LoadPresetButton";
+            this.LoadPresetButton.Size = new System.Drawing.Size(129, 31);
+            this.LoadPresetButton.TabIndex = 26;
+            this.LoadPresetButton.Text = "Load Preset";
+            this.LoadPresetButton.UseVisualStyleBackColor = true;
+            this.LoadPresetButton.Click += new System.EventHandler(this.LoadPresetButton_Click);
+            // 
+            // SavePresetButton
+            // 
+            this.SavePresetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SavePresetButton.Location = new System.Drawing.Point(12, 49);
+            this.SavePresetButton.Name = "SavePresetButton";
+            this.SavePresetButton.Size = new System.Drawing.Size(129, 31);
+            this.SavePresetButton.TabIndex = 27;
+            this.SavePresetButton.Text = "Save Preset";
+            this.SavePresetButton.UseVisualStyleBackColor = true;
+            this.SavePresetButton.Click += new System.EventHandler(this.SavePresetButton_Click);
+            // 
             // AdvancedEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(621, 514);
+            this.Controls.Add(this.SavePresetButton);
+            this.Controls.Add(this.LoadPresetButton);
             this.Controls.Add(this.BFCullingCheckbox);
             this.Controls.Add(this.ShowFacesCheckbox);
             this.Controls.Add(this.ShowVerticesCheckbox);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.PropertiesTabControl);
             this.Controls.Add(this.LoadBlueprintButton);
             this.Controls.Add(this.ShowWireframeCheckbox);
-            this.Controls.Add(this.FactionDropdown);
+            this.Controls.Add(this.FactionsCombobox);
             this.Controls.Add(this.ZoomOutButton);
             this.Controls.Add(this.ZoomInButton);
-            this.Controls.Add(this.RightButton);
-            this.Controls.Add(this.DownButton);
-            this.Controls.Add(this.UpButton);
-            this.Controls.Add(this.LeftButton);
             this.Controls.Add(this.MeshPreview);
             this.Controls.Add(this.DeleteItemButton);
             this.Controls.Add(this.LoadMeshButton);
@@ -389,12 +442,14 @@ namespace SPETS.forms
             this.Name = "AdvancedEditorForm";
             this.Text = "Advanced Editor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AdvancedImportForm_FormClosing);
+            this.Load += new System.EventHandler(this.AdvancedEditorForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).EndInit();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.PropertiesTabControl.ResumeLayout(false);
+            this.DecalPage.ResumeLayout(false);
+            this.DecalPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -404,8 +459,8 @@ namespace SPETS.forms
 
         private System.Windows.Forms.ListView ImportListView;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.Label DistanceLabel;
+        private System.Windows.Forms.NumericUpDown DecalDistanceNumeric;
+        private System.Windows.Forms.Label DecalDistanceLabel;
         private System.Windows.Forms.PictureBox TexturePreview;
         private System.Windows.Forms.Button ImportButton;
         private System.Windows.Forms.Button LoadMeshButton;
@@ -416,21 +471,24 @@ namespace SPETS.forms
         private System.Windows.Forms.ColumnHeader MeshColumbHeader;
         private System.Windows.Forms.ToolTip TextureTooltip;
         private System.Windows.Forms.Button ClearTextureButton;
-        private System.Windows.Forms.Button LeftButton;
-        private System.Windows.Forms.Button UpButton;
-        private System.Windows.Forms.Button DownButton;
-        private System.Windows.Forms.Button RightButton;
         private System.Windows.Forms.Button ZoomInButton;
         private System.Windows.Forms.Button ZoomOutButton;
-        private System.Windows.Forms.ComboBox FactionDropdown;
+        private System.Windows.Forms.ComboBox FactionsCombobox;
         private System.Windows.Forms.CheckBox ShowWireframeCheckbox;
         private System.Windows.Forms.Button LoadBlueprintButton;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabControl PropertiesTabControl;
+        private System.Windows.Forms.TabPage PropertiesPage;
+        private System.Windows.Forms.TabPage DecalPage;
         private System.Windows.Forms.ColumnHeader ItemTypeColumnHeader;
         private System.Windows.Forms.CheckBox ShowVerticesCheckbox;
         private System.Windows.Forms.CheckBox ShowFacesCheckbox;
         private System.Windows.Forms.CheckBox BFCullingCheckbox;
+        private System.Windows.Forms.Timer MeshPreviewTimer;
+        private System.Windows.Forms.Timer ZoomInTimer;
+        private System.Windows.Forms.Timer ZoomOutTimer;
+        private System.Windows.Forms.Label DecalSizeLabel;
+        private System.Windows.Forms.NumericUpDown DecalSizeNumeric;
+        private System.Windows.Forms.Button LoadPresetButton;
+        private System.Windows.Forms.Button SavePresetButton;
     }
 }

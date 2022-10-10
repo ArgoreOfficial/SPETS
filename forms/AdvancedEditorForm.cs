@@ -10,388 +10,56 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
 namespace SPETS.forms
 {
-    public struct VirtualFace
-    {
-        public List<Vector3> Vertices;
-        public Vector3 Position;
-        public Vector3 Normal;
-        public Vector3 TrueNormal;
-
-        public bool FrontFacing;
-        public VirtualFace(List<Vector3> vertices, Matrix4x4 rotationMatrix)
-        {
-            Position = new Vector3();
-            Vertices = new List<Vector3>();
-            TrueNormal = Math3D.GetNormal(vertices);
-
-            for (int i = 0; i < vertices.Count; i++)
-            {
-                Vector3 vert = Vector3.Transform(vertices[i], rotationMatrix);
-                Vertices.Add(vert);
-
-                Position.X += vert.X;
-                Position.Y += vert.Y;
-                Position.Z += vert.Z;
-            }
-            Position /= vertices.Count;
-
-            Normal = Math3D.GetNormal(Vertices);
-            FrontFacing = (Normal.X < 0);
-        }
-    }
-    struct ImportObject
-    {
-        public string TexturePath;
-        public string ModelPath;
-        public Image Texture;
-        public Mesh Model;
-        public List<VirtualFace> PreviewZBuffer; 
-
-        public ImportObject(Image image, Mesh mesh, string texturePath, string modelPath)
-        {
-            Texture = image;
-            Model = mesh;
-            TexturePath = texturePath;
-            ModelPath = modelPath;
-            PreviewZBuffer = new List<VirtualFace>();
-
-            for (int f = 0; f < Model.Faces.Count; f++)
-            {
-                List<Vector3> points = new List<Vector3>();
-                for (int p = 0; p < Model.Faces[f].Count; p++)
-                {
-                    points.Add(Model.Vertices[Model.Faces[f][p] - 1]);
-                }
-                VirtualFace vFace = new VirtualFace(
-                    points, 
-                    Matrix4x4.CreateRotationY(-0.7853982f) * Matrix4x4.CreateRotationZ(0.7853982f));
-
-                
-                PreviewZBuffer.Add(vFace);
-                
-            }
-            PreviewZBuffer = PreviewZBuffer.OrderBy(v => v.Position.X).Reverse().ToList();
-        }
-    }
 
     public partial class AdvancedEditorForm : Form
     {
         ActionSelectForm asf;
         List<ImportObject> ImportObjects = new List<ImportObject>();
+
         Pen pen;
         SolidBrush brush;
         int lastSelected;
 
+        Vector2 RenderOffset = new Vector2(0, 0);
+        float RenderSize = 10;
+        Vector2 LastRenderOffset = new Vector2(-1, -1);
+        Vector2 PreviewMouseOrigin = new Vector2(-1, -1);
 
-        Point renderOffset = new Point(125, 125);
-        float renderSize = 64;
+        string[] Factions;
 
-        Matrix4x4 rotateYMatrix;
-        Matrix4x4 rotateZMatrix;
-        Matrix4x4 rotationMatrix;
+
         public AdvancedEditorForm(ActionSelectForm asf)
         {
             InitializeComponent();
+
             this.asf = asf;
             pen = new Pen(Color.Black, 1);
             brush = new SolidBrush(Color.Gray);
+        }
+        private void AdvancedEditorForm_Load(object sender, EventArgs e)
+        {
+            // load factions
+            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string factionsFolder = $"{documents}/My Games/Sprocket/Factions/";
+            Factions = Directory.GetDirectories(factionsFolder);
 
-            rotateYMatrix = Matrix4x4.CreateRotationY(-0.7853982f);
-            rotateZMatrix = Matrix4x4.CreateRotationZ(0.7853982f);
-            rotationMatrix = rotateYMatrix * rotateZMatrix;
-
-
+            for (int i = 0; i < Factions.Length; i++)
+            {
+                FactionsCombobox.Items.Add(Factions[i].Split('/').Last());
+            }
+            FactionsCombobox.SelectedIndex = 0;
         }
         private void AdvancedImportForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             asf.EnableButton();
         }
-
-        #region FILE_LOADING
-
-        private void LoadTextureButton_Click(object sender, EventArgs e)
-        {
-            if (ImportListView.SelectedIndices.Count > 0)
-            {
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Filter = "Image Files|*.BMP;*.GIF;*.JPG;*.JPEG;*.PNG;*.TIFF";
-
-                DialogResult dr = ofd.ShowDialog();
-                if (dr == DialogResult.OK)
-                {
-                    ImportObjects[lastSelected] = new ImportObject(
-                        Image.FromFile(ofd.FileName),
-                        ImportObjects[lastSelected].Model,
-                        ofd.FileName.Split("\\").Last(),
-                        ImportObjects[lastSelected].ModelPath
-                        );
-                    RefreshObjectList();
-                }
-            }
-        }
-
-        private void ClearTextureButton_Click(object sender, EventArgs e)
-        {
-            if (ImportListView.SelectedIndices.Count > 0)
-            {
-                ImportObjects[lastSelected] = new ImportObject(
-                        null,
-                        ImportObjects[lastSelected].Model,
-                        "",
-                        ImportObjects[lastSelected].ModelPath
-                        );
-            }
-        }
-
-        private void LoadMeshButton_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Wavefront Model (*.OBJ)|*.OBJ";
-
-            DialogResult dr = ofd.ShowDialog();
-            if (dr == DialogResult.OK)
-            {
-                Mesh loadMesh = MeshLoader.FromOBJ(ofd.FileName);
-
-                if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
-                {
-                    if (ImportListView.SelectedIndices.Count > 0)
-                    {
-                        ImportObjects[lastSelected] = new ImportObject(
-                            ImportObjects[lastSelected].Texture,
-                            loadMesh,
-                            ImportObjects[lastSelected].TexturePath,
-                            ofd.FileName.Split("\\").Last()
-                            );
-                    }
-                    else
-                    {
-                        ImportObjects.Add(new ImportObject(
-                                null,
-                                loadMesh,
-                                "",
-                                ofd.FileName.Split("\\").Last()
-                            ));
-                    }
-
-                    RefreshObjectList();
-                }
-            }
-            
-        }
-
-
-
-        private void LoadBlueprintButton_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Sprocket Blueprint (*.BLUEPRINT)|*.BLUEPRINT";
-
-            DialogResult dr = ofd.ShowDialog();
-            if (dr == DialogResult.OK)
-            {
-                List<Mesh> loadedMeshes = LoadBlueprintToMesh(ofd.FileName);
-                
-                for (int i = 0; i < loadedMeshes.Count; i++)
-                {
-                    if(loadedMeshes[i].Faces.Count != 0 && loadedMeshes[i].Vertices.Count != 0)
-                    {
-                        ImportObjects.Add(new ImportObject(
-                                    null,
-                                    loadedMeshes[i],
-                                    "",
-                                    ofd.FileName.Split("\\").Last()
-                                ));
-                    }
-                }
-
-                RefreshObjectList();
-            }
-        }
-        #endregion
-
-        #region MESH_RENDERER
-
-        private void MeshPreview_Paint(object sender, PaintEventArgs e)
-        {
-            if (ImportObjects.Count > 0)
-            {
-                RenderMeshPreview(e.Graphics, ImportObjects[lastSelected].Model, ImportObjects[lastSelected].PreviewZBuffer);
-            }
-        }
-
-        public void RenderMeshPreview(Graphics g, Mesh model, List<VirtualFace> faces)
-        {
-            for (int f = 0; f < faces.Count; f++)
-            {
-                //int zColor = (int)((float)f / (float)faces.Count * 255f);
-                int zColor = (int)((-faces[f].TrueNormal.X + 1f) / 2f * 255f);
-
-                if(zColor > 255) { zColor = 255; }
-                else if(zColor < 0) { zColor = 0; }
-
-                Color faceColor = Color.FromArgb(zColor, zColor, zColor);
-                DrawTriangle(g, faces[f].Vertices, renderSize, renderOffset, faceColor, faces[f].FrontFacing);
-            }
-        }
-
-        void DrawTriangle(Graphics g, List<Vector3> triangle, float size, Point offset, Color faceColor, bool frontFacing)
-        {
-            
-            PointF[] tri = new PointF[triangle.Count + 1];
-            for (int i = 0; i < triangle.Count; i++)
-            {
-                tri[i].X = triangle[i].Z * size + offset.X;
-                tri[i].Y = -triangle[i].Y * size + offset.Y;
-            }
-            tri[tri.Length - 1] = tri[0];
-
-            if (ShowFacesCheckbox.Checked && (frontFacing || !BFCullingCheckbox.Checked))
-            {
-                brush.Color = faceColor;
-                g.FillPolygon(brush, tri);
-            }
-
-            if (ShowWireframeCheckbox.Checked)
-            {
-                if (frontFacing || !BFCullingCheckbox.Checked)
-                {
-                    g.DrawPolygon(pen, tri);
-                }
-            }
-
-            if(ShowVerticesCheckbox.Checked)
-            {
-                if(frontFacing || !BFCullingCheckbox.Checked)
-                {
-                    pen.Color = Color.Red;
-                    for (int i = 0; i < tri.Length; i++)
-                    {
-                        g.DrawRectangle(pen, new Rectangle((int)tri[i].X, (int)tri[i].Y, 1, 1));
-                    }
-                    pen.Color = Color.Black;
-                }
-            }
-        }
-
-        #endregion
-
-        #region PREVIEW_CONTROLS
-
-
-        private void ShowFacesCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            BFCullingCheckbox.Checked = ShowFacesCheckbox.Checked;
-            MeshPreview.Invalidate();
-        }
-
-        private void ShowVerticesCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            MeshPreview.Invalidate();
-        }
-
-        private void ShowWireframeCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            MeshPreview.Invalidate();
-        }
-
-        private void BFCullingCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            MeshPreview.Invalidate();
-        }
-
-        private void LeftButton_Click(object sender, EventArgs e)
-        {
-            renderOffset.X += 5;
-            MeshPreview.Invalidate();
-        }
-
-        private void RightButton_Click(object sender, EventArgs e)
-        {
-            renderOffset.X -= 5;
-            MeshPreview.Invalidate();
-        }
-
-        private void UpButton_Click(object sender, EventArgs e)
-        {
-            renderOffset.Y += 5;
-            MeshPreview.Invalidate();
-        }
-
-        private void DownButton_Click(object sender, EventArgs e)
-        {
-            renderOffset.Y -= 5;
-            MeshPreview.Invalidate();
-        }
-
-        private void ZoomInButton_Click(object sender, EventArgs e)
-        {
-            renderSize *= 1.2f;
-            MeshPreview.Invalidate();
-        }
-
-        private void ZoomOutButton_Click(object sender, EventArgs e)
-        {
-            renderSize /= 1.2f;
-            MeshPreview.Invalidate();
-        }
-
-        #endregion
-
-        #region ITEM_LIST
-
-        private void AddItemButton_Click(object sender, EventArgs e)
-        {
-            ImportObjects.Add(new ImportObject(null, null, "", ""));
-            RefreshObjectList();
-        }
-
-        private void DeleteItemButton_Click(object sender, EventArgs e)
-        {
-            
-            for (int i = ImportListView.SelectedIndices.Count - 1; i >= 0; i--)
-            {
-                ImportObjects.RemoveAt(ImportListView.SelectedIndices[i]);
-            }
-            RefreshObjectList();
-            
-        }
-
-        void RefreshObjectList()
-        {
-            ImportListView.Items.Clear();
-            for (int i = 0; i < ImportObjects.Count; i++)
-            {
-                string model = ImportObjects[i].ModelPath;
-                string texture = ImportObjects[i].TexturePath;
-                
-                if(model == "") { model = "none"; }
-                if (texture == "") { texture = "none"; }
-
-                ImportListView.Items.Add(new ListViewItem(new string[] { texture, model }));
-            }
-        }
-
-        private void ImportListView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if(ImportListView.SelectedIndices.Count > 0) 
-            { 
-                lastSelected = ImportListView.SelectedIndices[0];
-            }
-
-            MeshPreview.Invalidate();
-            TexturePreview.Image = ImportObjects[lastSelected].Texture;
-        }
-
-
-        #endregion
-
 
         List<Mesh> LoadBlueprintToMesh(string filePath)
         {
@@ -451,58 +119,527 @@ namespace SPETS.forms
             return meshes;
         }
 
-        private void ImportButton_Click(object sender, EventArgs e)
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            string decal = "";
-            for (int i = 0; i < ImportObjects.Count; i++)
-            {
-                for (int f = 0; f < ImportObjects[i].Model.Faces.Count; f++)
-                {
-                    List<Vector3> points = new List<Vector3>();
-                    Vector3 faceCenter = new Vector3();
-                    for (int p = 0; p < ImportObjects[i].Model.Faces[f].Count; p++)
-                    {
-                        points.Add(ImportObjects[i].Model.Vertices[ImportObjects[i].Model.Faces[f][p] - 1]);
-                        faceCenter += ImportObjects[i].Model.Vertices[ImportObjects[i].Model.Faces[f][p] - 1];
-                    }
-                    faceCenter /= ImportObjects[i].Model.Faces[f].Count;
-                    Vector3 normal = Vector3.Normalize(Math3D.GetNormal(points));
-                    Vector3 position = faceCenter + normal * 0.74f;
-                    Vector3 angle = Math3D.DirectionToAngle(normal) * 57.29578f;
+        #region FILE_LOADING
 
-                    decal += "    {" + Environment.NewLine;
-                    decal += "      \"REF\": \"356f883c9f9bc9344aa34cd4f646d36e\"," + Environment.NewLine;
-                    decal += "      \"CID\": 0," + Environment.NewLine;
-                    decal += "      \"T\": [" + Environment.NewLine;
-                    decal += $"        {-position.X}," + Environment.NewLine;
-                    decal += $"        {position.Y}," + Environment.NewLine;
-                    decal += $"        {position.Z}," + Environment.NewLine;
-                    decal += $"        {angle.X}," + Environment.NewLine;
-                    decal += $"        {angle.Y}," + Environment.NewLine;
-                    decal += $"        {angle.Z}," + Environment.NewLine;
-                    decal += "        0.999," + Environment.NewLine;
-                    decal += "        0.999," + Environment.NewLine;
-                    decal += "        0.999," + Environment.NewLine;
-                    decal += "        0.0" + Environment.NewLine;
-                    decal += "      ]," + Environment.NewLine;
-                    decal += "      \"DAT\": [" + Environment.NewLine;
-                    decal += "        {" + Environment.NewLine;
-                    decal += "          \"id\": \"decal\"," + Environment.NewLine;
-                    decal += "          \"data\": \"{\\\"ID\\\":{" + f + "}}\"," + Environment.NewLine;
-                    decal += "          \"metaData\": \"\"" + Environment.NewLine;
-                    decal += "        }," + Environment.NewLine;
-                    decal += "        {" + Environment.NewLine;
-                    decal += "          \"id\": \"asset\"," + Environment.NewLine;
-                    decal += "          \"data\": \"{\\\"data\\\":\\\"" + ImportObjects[i].TexturePath + "\\\",\\\"type\\\":1}\"," + Environment.NewLine;
-                    decal += "          \"metaData\": \"\"" + Environment.NewLine;
-                    decal += "        }" + Environment.NewLine;
-                    decal += "      ]" + Environment.NewLine;
-                    decal += "    },";
+        private void LoadTextureButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Image Files|*.BMP;*.GIF;*.JPG;*.JPEG;*.PNG;*.TIFF";
+
+            DialogResult dr = ofd.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                ImportObjects[lastSelected].SetTexture(Image.FromFile(ofd.FileName), ofd.FileName);
+
+                RefreshTexturePreview();
+                RefreshObjectList();
+            }
+        }
+
+        private void ClearTextureButton_Click(object sender, EventArgs e)
+        {
+            if (ImportListView.SelectedIndices.Count > 0)
+            {
+                ImportObjects[lastSelected].ClearTexture();
+                RefreshTexturePreview();
+                RefreshObjectList();
+            }
+        }
+
+        private void LoadMeshButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Wavefront Model (*.OBJ)|*.OBJ";
+
+            DialogResult dr = ofd.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                Mesh loadMesh = MeshLoader.FromOBJ(ofd.FileName);
+
+                if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
+                {
+                    if (ImportListView.SelectedIndices.Count > 0)
+                    {
+                        ImportObjects[lastSelected] = new ImportObject(
+                            loadMesh,
+                            ofd.FileName,
+                            "mesh"
+                            );
+                    }
+                    else
+                    {
+                        ImportObjects.Add(new ImportObject(
+                                loadMesh,
+                                ofd.FileName,
+                                "mesh"
+                            ));
+                    }
+
+                    RefreshObjectList();
+                }
+            }
+            
+        }
+
+
+
+        private void LoadBlueprintButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Sprocket Blueprint (*.BLUEPRINT)|*.BLUEPRINT";
+
+            DialogResult dr = ofd.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                List<Mesh> loadedMeshes = LoadBlueprintToMesh(ofd.FileName);
+                
+                for (int i = 0; i < loadedMeshes.Count; i++)
+                {
+                    if(loadedMeshes[i].Faces.Count != 0 && loadedMeshes[i].Vertices.Count != 0)
+                    {
+                        ImportObjects.Add(new ImportObject(
+                                    loadedMeshes[i],
+                                    ofd.FileName,
+                                    "blueprint"
+                                ));
+                    }
+                }
+
+                RefreshObjectList();
+            }
+        }
+        #endregion
+
+        #region MESH_RENDERER
+
+        private void MeshPreview_Paint(object sender, PaintEventArgs e)
+        {
+            if (ImportObjects.Count > 0)
+            {
+                RenderMeshPreview(e.Graphics, ImportObjects[lastSelected].PreviewZBuffer);
+            }
+        }
+
+        public void RenderMeshPreview(Graphics g, List<VirtualFace> faces)
+        {
+            for (int f = 0; f < faces.Count; f++)
+            {
+                //int zColor = (int)((float)f / (float)faces.Count * 255f);
+                int zColor = (int)((-faces[f].TrueNormal.X + 1f) / 2f * 255f);
+
+                if(zColor > 255) { zColor = 255; }
+                else if(zColor < 0) { zColor = 0; }
+
+                Color faceColor = Color.FromArgb(zColor, zColor, zColor);
+                DrawTriangle(g, faces[f].Vertices, RenderSize, RenderOffset + new Vector2(128,128), faceColor, faces[f].FrontFacing);
+            }
+        }
+
+        void DrawTriangle(Graphics g, List<Vector3> triangle, float size, Vector2 offset, Color faceColor, bool frontFacing)
+        {
+            
+            PointF[] tri = new PointF[triangle.Count + 1];
+            for (int i = 0; i < triangle.Count; i++)
+            {
+                tri[i].X = triangle[i].Z * size + offset.X;
+                tri[i].Y = -triangle[i].Y * size + offset.Y;
+            }
+            tri[tri.Length - 1] = tri[0];
+
+            if (ShowFacesCheckbox.Checked && (frontFacing || !BFCullingCheckbox.Checked))
+            {
+                brush.Color = faceColor;
+                g.FillPolygon(brush, tri);
+            }
+
+            if (ShowWireframeCheckbox.Checked)
+            {
+                if (frontFacing || !BFCullingCheckbox.Checked)
+                {
+                    g.DrawPolygon(pen, tri);
                 }
             }
 
-            File.WriteAllText("decals.txt", decal);
+            if(ShowVerticesCheckbox.Checked)
+            {
+                if(frontFacing || !BFCullingCheckbox.Checked)
+                {
+                    pen.Color = Color.Red;
+                    for (int i = 0; i < tri.Length; i++)
+                    {
+                        g.DrawRectangle(pen, new Rectangle((int)tri[i].X, (int)tri[i].Y, 1, 1));
+                    }
+                    pen.Color = Color.Black;
+                }
+            }
         }
+
+        #endregion
+
+        private void ImportButton_Click(object sender, EventArgs e)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+
+            ImportButton.Enabled = false;
+            Cursor.Current = Cursors.WaitCursor;
+            
+            AdvancedImport(Factions[FactionsCombobox.SelectedIndex], "advanced_import");
+            
+            ImportButton.Enabled = true;
+            Cursor.Current = Cursors.Default;
+            
+            MessageBox.Show("Importing finished", "Importing finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        #region PREVIEW_CONTROLS
+
+        private void ShowFacesCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            MeshPreview.Invalidate();
+        }
+
+        private void ShowVerticesCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            MeshPreview.Invalidate();
+        }
+
+        private void ShowWireframeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            MeshPreview.Invalidate();
+        }
+
+        private void BFCullingCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            MeshPreview.Invalidate();
+        }
+
+        // mouse pan
+        private void MeshPreview_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(PreviewMouseOrigin.X < 0 && PreviewMouseOrigin.Y < 0)
+            {
+                LastRenderOffset = RenderOffset;
+                PreviewMouseOrigin = new Vector2(MousePosition.X, MousePosition.Y);
+
+                MeshPreviewTimer.Start();
+            }
+        }
+
+        private void MeshPreview_MouseUp(object sender, MouseEventArgs e)
+        {
+            PreviewMouseOrigin.X = -1;
+            PreviewMouseOrigin.Y = -1;
+            MeshPreviewTimer.Stop();
+            MeshPreview.Invalidate();
+        }
+
+        private void MeshPreviewTimer_Tick(object sender, EventArgs e)
+        {
+            RenderOffset.X = LastRenderOffset.X + MousePosition.X - PreviewMouseOrigin.X;
+            RenderOffset.Y = LastRenderOffset.Y + MousePosition.Y - PreviewMouseOrigin.Y;
+            MeshPreview.Invalidate();
+        }
+
+        // zoom
+
+        private void ZoomInButton_MouseDown(object sender, MouseEventArgs e)
+        {
+            ZoomInTimer.Start();
+        }
+
+        private void ZoomInButton_MouseUp(object sender, MouseEventArgs e)
+        {
+            ZoomInTimer.Stop();
+        }
+
+        private void ZoomOutButton_MouseDown(object sender, MouseEventArgs e)
+        {
+            ZoomOutTimer.Start();
+        }
+
+        private void ZoomOutButton_MouseUp(object sender, MouseEventArgs e)
+        {
+            ZoomOutTimer.Stop();
+        }
+
+        private void ZoomInTimer_Tick(object sender, EventArgs e)
+        {
+            RenderSize *= 1.01f;
+            RenderOffset *= 1.01f;
+            MeshPreview.Invalidate();
+        }
+
+        private void ZoomOutTimer_Tick(object sender, EventArgs e)
+        {
+            RenderSize /= 1.01f;
+            RenderOffset /= 1.01f;
+            MeshPreview.Invalidate();
+        }
+
+        #endregion
+
+        #region ITEM_LIST_AND_PROPERTIES
+
+        private void DeleteItemButton_Click(object sender, EventArgs e)
+        {
+            
+            for (int i = ImportListView.SelectedIndices.Count - 1; i >= 0; i--)
+            {
+                ImportObjects.RemoveAt(ImportListView.SelectedIndices[i]);
+            }
+            RefreshObjectList();
+            
+        }
+
+        void RefreshObjectList()
+        {
+            ImportListView.Items.Clear();
+            for (int i = 0; i < ImportObjects.Count; i++)
+            {
+                string model = ImportObjects[i].ModelName;
+                string type = ImportObjects[i].Type;
+                
+                if(model == "") { model = "none"; }
+
+                ImportListView.Items.Add(new ListViewItem(new string[] { type, model }));
+            }
+        }
+
+        void RefreshTexturePreview()
+        {
+            if(ImportListView.SelectedIndices.Count > 0)
+            {
+                TexturePreview.Image = ImportObjects[lastSelected].Texture;
+                DecalSizeNumeric.Value = (decimal)ImportObjects[lastSelected].TextureSize;
+                DecalDistanceNumeric.Value = (decimal)ImportObjects[lastSelected].TextureDistance;
+            }
+        }
+
+        private void ImportListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(ImportListView.SelectedIndices.Count > 0) 
+            { 
+                lastSelected = ImportListView.SelectedIndices[0];
+            }
+
+            if(ImportObjects[lastSelected].Type == "blueprint")
+            {
+                LoadTextureButton.Enabled = false;
+            }
+            else
+            {
+                LoadTextureButton.Enabled = true;
+            }
+
+            MeshPreview.Invalidate();
+            RefreshTexturePreview();
+        }
+
+        private void DecalDistanceNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            ImportObjects[lastSelected].TextureDistance = (float)DecalDistanceNumeric.Value;
+        }
+
+        private void DecalSizeNumeric_ValueChanged(object sender, EventArgs e)
+        {
+            ImportObjects[lastSelected].TextureSize = (float)DecalSizeNumeric.Value;
+        }
+
+        #endregion
+
+
+        void AdvancedImport(string savePath, string saveName)
+        {
+            List<CompartmentBaseRoot> blueprintFile = new List<CompartmentBaseRoot>();
+
+            // compartment
+            
+            string name = ImportObjects[0].ModelName.Split('.')[0];
+
+            Mesh loaded = ImportObjects[0].Model;
+            CompartmentRoot compRoot = new CompartmentRoot(name);
+            List<Vector3> vectorPoints = new List<Vector3>(); // used for checking vertices with x y and z
+
+            /// null check
+            if (loaded.Faces.Count == 0 || loaded.Vertices.Count == 0) return;
+
+            for (int f = 0; f < loaded.Faces.Count; f++)
+            {
+                // null face check
+                if (loaded.Faces[f].Count < 3 || loaded.Faces[f].Count > ResourceHandler.NGonLookup.Count) continue;
+
+                // faces
+                compRoot.compartment.faceMap.Add(CreateNGon(loaded.Faces[f].Count, compRoot.compartment.points.Count / 3));
+
+                // vertices
+                for (int fP = 0; fP < loaded.Faces[f].Count; fP++)
+                {
+                    compRoot.compartment.points.Add(-loaded.Vertices[loaded.Faces[f][fP] - 1].X);
+                    compRoot.compartment.points.Add(loaded.Vertices[loaded.Faces[f][fP] - 1].Y);
+                    compRoot.compartment.points.Add(loaded.Vertices[loaded.Faces[f][fP] - 1].Z);
+
+                    vectorPoints.Add(loaded.Vertices[loaded.Faces[f][fP] - 1] * new Vector3(-1, 1, 1));
+                }
+            }
+
+            // sharedpoints(temp) and thicknessmap
+            for (int i = 0; i < compRoot.compartment.points.Count; i++)
+            {
+                compRoot.compartment.thicknessMap.Add(1);
+            }
+
+
+            // sharedpoints
+            List<int> foundIndexes = new List<int>();
+            for (int p1 = 0; p1 < vectorPoints.Count; p1++)
+            {
+                if (foundIndexes.Contains(p1)) continue;
+
+                List<int> shared = new List<int>();
+
+                shared.Add(p1);
+
+                for (int p2 = p1 + 1; p2 < vectorPoints.Count; p2++)
+                {
+                    if (vectorPoints[p1] == vectorPoints[p2])
+                    {
+                        shared.Add(p2);
+                        foundIndexes.Add(p2);
+                    }
+                }
+
+                compRoot.compartment.sharedPoints.Add(shared);
+            }
+
+            blueprintFile.Add(new CompartmentBaseRoot("Compartment", JsonConvert.SerializeObject(compRoot), ""));
+
+
+            List<Attachment> Attachments = new List<Attachment>();
+            for (int i = 0; i < ImportObjects.Count; i++)
+            {
+                if(ImportObjects[i].Texture != null)
+                {
+                    Debug.WriteLine("doing textures");
+                    for (int f = 0; f < ImportObjects[i].Model.Faces.Count; f++)
+                    {
+                        Debug.WriteLine("face");
+
+                        Attachment decalAttachment = new Attachment();
+                        decalAttachment.REF = "356f883c9f9bc9344aa34cd4f646d36e";
+                        decalAttachment.CID = 0;
+
+                        // decal positions, a lot of maths
+                        List<Vector3> points = new List<Vector3>();
+                        Vector3 faceCenter = new Vector3();
+                        for (int p = 0; p < ImportObjects[i].Model.Faces[f].Count; p++)
+                        {
+                            points.Add(ImportObjects[i].Model.Vertices[ImportObjects[i].Model.Faces[f][p] - 1]);
+                            faceCenter += ImportObjects[i].Model.Vertices[ImportObjects[i].Model.Faces[f][p] - 1];
+                        }
+                        faceCenter /= ImportObjects[i].Model.Faces[f].Count;
+                        Vector3 normal = Vector3.Normalize(Math3D.GetNormal(points));
+                        Vector3 position = faceCenter + normal * ImportObjects[i].TextureDistance;
+                        Vector3 angle = Math3D.DirectionToAngle(normal) * 57.29578f;
+
+                        decalAttachment.T = new List<double> {
+                            -position.X,
+                            position.Y,
+                            position.Z,
+                            angle.X,
+                            angle.Y,
+                            angle.Z,
+                            ImportObjects[i].TextureSize,
+                            ImportObjects[i].TextureSize,
+                            ImportObjects[i].TextureSize,
+                            0.0
+                        };
+                        decalAttachment.DAT = new List<CompartmentBaseRoot>
+                        {
+                            //new CompartmentBaseRoot("decal", "\"data\": \"{\\\"ID\\\":{" + 0 + "}}\",", ""),
+                            new CompartmentBaseRoot("asset", JsonConvert.SerializeObject(new AttatchmentAsset(ImportObjects[i].TextureName, 1)), "")
+                        };
+
+                        // add to list
+                        Attachments.Add(decalAttachment);
+                    }
+                }
+            }
+            Debug.WriteLine(Attachments.Count);
+            if(Attachments.Count > 0)
+            {
+                blueprintFile.Add(new CompartmentBaseRoot("Attachments", JsonConvert.SerializeObject(new AttachmentRoot(Attachments)), ""));
+            }
+
+
+            // saving
+            if (!Directory.Exists($"{savePath}/Blueprints/Compartments"))
+            {
+                Directory.CreateDirectory($"{savePath}/Blueprints/Compartments");
+            }
+
+
+            string file = JsonConvert.SerializeObject(blueprintFile.ToArray(), Formatting.Indented);
+            File.WriteAllText($"{savePath}/Blueprints/Compartments/{saveName}.blueprint", file);
+        }
+        List<int> CreateNGon(int length, int offset)
+        {
+            // use lookup table
+            // replace indexOrder with count
+            int[] indexOrder = ResourceHandler.NGonLookup[length - 1].ToArray();
+            List<int> face = new List<int>();
+
+            for (int i = 0; i < indexOrder.Length; i++)
+            {
+                face.Add(indexOrder[i] + offset);
+            }
+
+            return face;
+        }
+
+
+        #region PRESET
+
+        private void LoadPresetButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Preset File (*.PRESET)|*.PRESET";
+            
+            DialogResult dr = ofd.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                List<ImportObjectSave> loadedPreset = JsonConvert.DeserializeObject<List<ImportObjectSave>>(File.ReadAllText(ofd.FileName));    
+                foreach(ImportObjectSave iObjSave in loadedPreset)
+                {
+                    ImportObjects.Add(iObjSave.LoadImportObjects());
+                }
+            }
+
+            RefreshObjectList();
+        }
+
+        private void SavePresetButton_Click(object sender, EventArgs e)
+        {
+            if (ImportObjects.Count > 0)
+            {
+                SaveFileDialog dialog = new SaveFileDialog();
+
+                dialog.Filter = "Preset File (*.PRESET)|*.PRESET|All files (*.*)|*.*";
+                dialog.FilterIndex = 0;
+                dialog.RestoreDirectory = true;
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    List<ImportObjectSave> iObjSave = new List<ImportObjectSave>();
+                    foreach(ImportObject iObj in ImportObjects)
+                    {
+                        iObjSave.Add(new ImportObjectSave().LoadFromIObj(iObj));
+                    }
+                    
+                    File.WriteAllText(dialog.FileName, JsonConvert.SerializeObject(iObjSave, Formatting.Indented));
+                }
+            }
+        }
+
+        #endregion
     }
 }

@@ -21,12 +21,10 @@ namespace SPETS.Classes
         public string metaData { get; set; }
     }
 
-
     #endregion
 
     #region BLUEPRINT ROOT CLASSES
 
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
     public class Compartment
     {
         public Version version { get; set; }
@@ -96,4 +94,42 @@ namespace SPETS.Classes
     }
 
     #endregion
+
+    public class Attachment
+    {
+        public string REF { get; set; }
+        public int CID { get; set; }
+        public List<double> T { get; set; }
+        public List<CompartmentBaseRoot> DAT { get; set; }
+    }
+
+    public class AttachmentRoot
+    {
+        public List<Attachment> attachments { get; set; }
+        public AttachmentRoot(List<Attachment> attachments)
+        {
+            this.attachments = attachments;
+        }
+    }
+    public class AttatchmentAsset
+    {
+        public string data { get; set; }
+        public int type { get; set; }
+        public AttatchmentAsset(string data, int type)
+        {
+            this.data = data;
+            this.type = type;
+        }
+    }
+
+    public class AttatchmentDecal
+    {
+        public string data { get; set; }
+        public int type { get; set; }
+        public AttatchmentDecal(string data, int type)
+        {
+            this.data = data;
+            this.type = type;
+        }
+    }
 }

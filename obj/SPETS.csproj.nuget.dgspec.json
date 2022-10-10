@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jonatan.ostberg\\Desktop\\Github\\SPETS\\SPETS.csproj": {}
+    "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jonatan.ostberg\\Desktop\\Github\\SPETS\\SPETS.csproj": {
+    "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jonatan.ostberg\\Desktop\\Github\\SPETS\\SPETS.csproj",
+        "projectUniqueName": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj",
         "projectName": "SPETS",
-        "projectPath": "C:\\Users\\jonatan.ostberg\\Desktop\\Github\\SPETS\\SPETS.csproj",
-        "packagesPath": "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jonatan.ostberg\\Desktop\\Github\\SPETS\\obj\\",
+        "projectPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj",
+        "packagesPath": "C:\\Users\\argor\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\jonatan.ostberg\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\argor\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -67,7 +67,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.405\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.410\\RuntimeIdentifierGraph.json"
         }
       }
     }
