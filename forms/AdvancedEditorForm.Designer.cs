@@ -31,6 +31,9 @@ namespace SPETS.forms
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdvancedEditorForm));
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+            "thing",
+            "value"}, -1);
             this.ImportListView = new System.Windows.Forms.ListView();
             this.ItemTypeColumnHeader = new System.Windows.Forms.ColumnHeader();
             this.MeshColumbHeader = new System.Windows.Forms.ColumnHeader();
@@ -62,10 +65,14 @@ namespace SPETS.forms
             this.ZoomOutTimer = new System.Windows.Forms.Timer(this.components);
             this.LoadPresetButton = new System.Windows.Forms.Button();
             this.SavePresetButton = new System.Windows.Forms.Button();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.TypeHeader = new System.Windows.Forms.ColumnHeader();
+            this.ValueHeader = new System.Windows.Forms.ColumnHeader();
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).BeginInit();
             this.PropertiesTabControl.SuspendLayout();
+            this.PropertiesPage.SuspendLayout();
             this.DecalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).BeginInit();
             this.SuspendLayout();
@@ -284,6 +291,7 @@ namespace SPETS.forms
             // 
             // PropertiesPage
             // 
+            this.PropertiesPage.Controls.Add(this.listView1);
             this.PropertiesPage.Location = new System.Drawing.Point(4, 24);
             this.PropertiesPage.Name = "PropertiesPage";
             this.PropertiesPage.Padding = new System.Windows.Forms.Padding(3);
@@ -415,6 +423,31 @@ namespace SPETS.forms
             this.SavePresetButton.UseVisualStyleBackColor = true;
             this.SavePresetButton.Click += new System.EventHandler(this.SavePresetButton_Click);
             // 
+            // listView1
+            // 
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.TypeHeader,
+            this.ValueHeader});
+            this.listView1.HideSelection = false;
+            this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1});
+            this.listView1.Location = new System.Drawing.Point(7, 6);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(179, 413);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            // 
+            // TypeHeader
+            // 
+            this.TypeHeader.Text = "Type";
+            this.TypeHeader.Width = 80;
+            // 
+            // ValueHeader
+            // 
+            this.ValueHeader.Text = "Value";
+            this.ValueHeader.Width = 90;
+            // 
             // AdvancedEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -447,6 +480,7 @@ namespace SPETS.forms
             ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).EndInit();
             this.PropertiesTabControl.ResumeLayout(false);
+            this.PropertiesPage.ResumeLayout(false);
             this.DecalPage.ResumeLayout(false);
             this.DecalPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).EndInit();
@@ -490,5 +524,8 @@ namespace SPETS.forms
         private System.Windows.Forms.NumericUpDown DecalSizeNumeric;
         private System.Windows.Forms.Button LoadPresetButton;
         private System.Windows.Forms.Button SavePresetButton;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader TypeHeader;
+        private System.Windows.Forms.ColumnHeader ValueHeader;
     }
 }
