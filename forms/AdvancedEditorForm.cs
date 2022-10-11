@@ -485,10 +485,8 @@ namespace SPETS.forms
             {
                 if(ImportObjects[i].Texture != null)
                 {
-                    Debug.WriteLine("doing textures");
                     for (int f = 0; f < ImportObjects[i].Model.Faces.Count; f++)
                     {
-                        Debug.WriteLine("face");
 
                         Attachment decalAttachment = new Attachment();
                         decalAttachment.REF = "356f883c9f9bc9344aa34cd4f646d36e";
@@ -524,13 +522,12 @@ namespace SPETS.forms
                             //new CompartmentBaseRoot("decal", "\"data\": \"{\\\"ID\\\":{" + 0 + "}}\",", ""),
                             new CompartmentBaseRoot("asset", JsonConvert.SerializeObject(new AttatchmentAsset(ImportObjects[i].TextureName, 1)), "")
                         };
-
+                        
                         // add to list
                         Attachments.Add(decalAttachment);
                     }
                 }
             }
-            Debug.WriteLine(Attachments.Count);
             if(Attachments.Count > 0)
             {
                 blueprintFile.Add(new CompartmentBaseRoot("Attachments", JsonConvert.SerializeObject(new AttachmentRoot(Attachments)), ""));

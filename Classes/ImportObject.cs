@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -118,6 +119,32 @@ namespace SPETS.Classes
             TextureDistance = 0.749f;
             TextureSize = 0.999f;
 
+
+            string[] imageTypes = new string[]
+            {
+                ".bmp",
+                ".gif",
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".tiff"
+            };
+            for (int i = 0; i < imageTypes.Length; i++)
+            {
+                string file = modelName.Replace(new FileInfo(modelName).Extension, imageTypes[i]);
+                if (File.Exists(file))
+                {
+                    // copy files to root folders
+                    string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    FileInfo info = new FileInfo(file);
+
+                    File.Copy(info.FullName, exePath + "\\Images\\" + info.FullName.Split("\\").Last(), true);
+
+                    SetTexture(Image.FromFile(file), file);
+                    break;
+                }
+            }
+
             // create virtualface
             for (int f = 0; f < Model.Faces.Count; f++)
             {
@@ -141,6 +168,15 @@ namespace SPETS.Classes
         {
             Texture = image;
             TextureName = name.Split('\\').Last();
+
+            string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string decalsFolder = $"{documents}\\My Games\\Sprocket\\Decals";
+            if(!Directory.Exists(decalsFolder))
+            {
+                Directory.CreateDirectory(decalsFolder);
+            }
+
+            File.Copy(name, decalsFolder + "\\" + TextureName, true);
         }
         public void SetTextureDist(float distance)
         {
