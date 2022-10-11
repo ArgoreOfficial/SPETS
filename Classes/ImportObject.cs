@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Text;
 
 namespace SPETS.Classes
@@ -10,31 +12,51 @@ namespace SPETS.Classes
     public class ImportObjectSave
     {
         public string Type;
-        public string ModelPath;
-        public string TexturePath;
+        public string ModelName;
+        public string TextureName;
         public float TextureDistance;
         public float TextureSize;
         
         public ImportObject LoadImportObjects()
         {
-            Mesh mesh = MeshLoader.FromOBJ(ModelPath);
-            ImportObject iObj = new ImportObject(mesh, ModelPath, Type);
-
-            if(TexturePath != "")
+            string exeRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            Mesh mesh = null;
+            if (Type == "mesh")
             {
-                iObj.SetTexture(Image.FromFile(TexturePath), TexturePath);
-                iObj.SetTextureDist(TextureDistance);
-                iObj.SetTextureSize(TextureSize);
+                mesh = MeshLoader.FromOBJ(exeRoot + "\\Meshes\\" + ModelName);
+            }
+            else if (Type == "blueprint")
+            {
+                List<Mesh> blueprintMeshes = MeshLoader.FromBlueprint(exeRoot + "\\Blueprints\\" + ModelName.Split("/")[0]);
+
+                int i;
+                if(int.TryParse(ModelName.Split("/")[1], out i))
+                {
+                    mesh = blueprintMeshes[i];
+                }
             }
 
-            return iObj;
+            if (mesh != null)
+            {
+                ImportObject iObj = new ImportObject(mesh, ModelName, Type);
+
+                if(TextureName != "")
+                {
+                    iObj.SetTexture(Image.FromFile(exeRoot + "\\Images\\" + TextureName), TextureName);
+                    iObj.SetTextureDist(TextureDistance);
+                    iObj.SetTextureSize(TextureSize);
+                }
+                return iObj;
+            }
+
+            return null;
         }
 
         public ImportObjectSave LoadFromIObj(ImportObject iObj)
         {
             Type = iObj.Type;
-            ModelPath = iObj.ModelPath;
-            TexturePath = iObj.TexturePath;
+            TextureName = iObj.TextureName; 
+            ModelName = iObj.ModelName;
             TextureDistance = iObj.TextureDistance;
             TextureSize = iObj.TextureSize;
             return this;
@@ -75,30 +97,26 @@ namespace SPETS.Classes
     {
         public string Type;
 
-        public string ModelPath;
         public string ModelName;
         public Mesh Model;
         public List<VirtualFace> PreviewZBuffer;
 
         public Image Texture;
         public string TextureName;
-        public string TexturePath;
         public float TextureDistance;
         public float TextureSize;
 
-        public ImportObject(Mesh mesh, string modelPath, string modelType)
+        public ImportObject(Mesh mesh, string modelName, string modelType)
         {
             Model = mesh;
-            ModelPath = modelPath;
-            ModelName = modelPath.Split('\\').Last();
+            ModelName = modelName.Split("\\").Last();
             PreviewZBuffer = new List<VirtualFace>();
             Type = modelType;
 
             Texture = null;
-            TexturePath = "";
             TextureName = "";
-            TextureDistance = 0.0f;
-            TextureSize = 0.0f;
+            TextureDistance = 0.749f;
+            TextureSize = 0.999f;
 
             // create virtualface
             for (int f = 0; f < Model.Faces.Count; f++)
@@ -119,11 +137,10 @@ namespace SPETS.Classes
             PreviewZBuffer = PreviewZBuffer.OrderBy(v => v.Position.X).Reverse().ToList();
         }
 
-        public void SetTexture(Image image, string path)
+        public void SetTexture(Image image, string name)
         {
             Texture = image;
-            TexturePath = path;
-            TextureName = path.Split('\\').Last();
+            TextureName = name.Split('\\').Last();
         }
         public void SetTextureDist(float distance)
         {

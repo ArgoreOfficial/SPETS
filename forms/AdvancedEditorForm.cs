@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -28,7 +29,7 @@ namespace SPETS.forms
         int lastSelected;
 
         Vector2 RenderOffset = new Vector2(0, 0);
-        float RenderSize = 10;
+        float RenderSize = 20;
         Vector2 LastRenderOffset = new Vector2(-1, -1);
         Vector2 PreviewMouseOrigin = new Vector2(-1, -1);
 
@@ -47,12 +48,12 @@ namespace SPETS.forms
         {
             // load factions
             string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string factionsFolder = $"{documents}/My Games/Sprocket/Factions/";
+            string factionsFolder = $"{documents}\\My Games\\Sprocket\\Factions\\";
             Factions = Directory.GetDirectories(factionsFolder);
 
             for (int i = 0; i < Factions.Length; i++)
             {
-                FactionsCombobox.Items.Add(Factions[i].Split('/').Last());
+                FactionsCombobox.Items.Add(Factions[i].Split('\\').Last());
             }
             FactionsCombobox.SelectedIndex = 0;
         }
@@ -61,63 +62,6 @@ namespace SPETS.forms
             asf.EnableButton();
         }
 
-        List<Mesh> LoadBlueprintToMesh(string filePath)
-        {
-            // get file
-            string[] blueprintFile = File.ReadAllLines(filePath);
-            List<Mesh> meshes = new List<Mesh>();
-
-            // go through lines
-            for (int i = 0; i < blueprintFile.Length; i++)
-            {
-                if (blueprintFile[i].Trim() == "\"id\": \"Compartment\",")
-                {
-                    // create mesh
-                    Mesh mesh = new Mesh();
-                    
-                    // isolate compartment
-                    string[] compartment = blueprintFile.Skip(i - 1).Take(5).ToArray();
-                    compartment[4] = compartment[4].Trim(',');
-
-                    // deserialize
-                    var BaseRoot = JsonConvert.DeserializeObject<CompartmentBaseRoot>(string.Join("", compartment));
-                    var DataRoot = JsonConvert.DeserializeObject<CompartmentRoot>(BaseRoot.data);
-
-                    if (DataRoot.compartment != null)
-                    {
-                        // vertices
-                        for (int p = 0; p < DataRoot.compartment.points.Count; p += 3)
-                        {
-                            // add vertex
-                            mesh.Vertices.Add(
-                                new Vector3((float)-DataRoot.compartment.points[p],
-                                            (float)DataRoot.compartment.points[p + 1],
-                                            (float)DataRoot.compartment.points[p + 2]));
-                        }
-                        
-
-                        //faces
-                        for (int f = 0; f < DataRoot.compartment.faceMap.Count; f++)
-                        {
-                            List<int> face = new List<int>();
-
-                            for (int n = 0; n < DataRoot.compartment.faceMap[f].Count; n += 3)
-                            {
-                                face.Add(DataRoot.compartment.faceMap[f][n] + 1);
-                                face.Add(DataRoot.compartment.faceMap[f][n + 1] + 1);
-                                face.Add(DataRoot.compartment.faceMap[f][n + 2] + 1);
-                            }
-                            mesh.Faces.Add(face);
-
-                        }
-                    }
-
-                    meshes.Add(mesh);
-                }
-            }
-
-            return meshes;
-        }
 
         #region FILE_LOADING
 
@@ -133,6 +77,13 @@ namespace SPETS.forms
 
                 RefreshTexturePreview();
                 RefreshObjectList();
+
+                // copy files to root folders
+                string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                FileInfo info = new FileInfo(ofd.FileName);
+                
+                File.Copy(info.FullName, exePath + "\\Images\\" + info.FullName.Split("\\").Last(), true);
+                
             }
         }
 
@@ -175,6 +126,13 @@ namespace SPETS.forms
                             ));
                     }
 
+                    // copy files to root folders
+                    string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    FileInfo info = new FileInfo(ofd.FileName);
+                    
+                    File.Copy(info.FullName, exePath + "\\Meshes\\" + info.FullName.Split("\\").Last(), true);
+                    
+
                     RefreshObjectList();
                 }
             }
@@ -191,7 +149,7 @@ namespace SPETS.forms
             DialogResult dr = ofd.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                List<Mesh> loadedMeshes = LoadBlueprintToMesh(ofd.FileName);
+                List<Mesh> loadedMeshes = MeshLoader.FromBlueprint(ofd.FileName);
                 
                 for (int i = 0; i < loadedMeshes.Count; i++)
                 {
@@ -199,11 +157,19 @@ namespace SPETS.forms
                     {
                         ImportObjects.Add(new ImportObject(
                                     loadedMeshes[i],
-                                    ofd.FileName,
+                                    ofd.FileName + "/" + i,
                                     "blueprint"
                                 ));
                     }
                 }
+
+
+                // copy files to root folders
+                string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                FileInfo info = new FileInfo(ofd.FileName);
+                
+                File.Copy(info.FullName, exePath + "\\Blueprints\\" + info.FullName.Split("\\").Last(), true);
+                
 
                 RefreshObjectList();
             }
@@ -613,7 +579,7 @@ namespace SPETS.forms
                     ImportObjects.Add(iObjSave.LoadImportObjects());
                 }
             }
-
+            
             RefreshObjectList();
         }
 

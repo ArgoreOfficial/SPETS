@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Reflection;
 
 namespace SPETS
 {
@@ -23,6 +24,24 @@ namespace SPETS
         public ActionSelectForm()
         {
             InitializeComponent();
+
+
+            // Folder Check
+            string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string[] folders = new string[]
+            {
+                "Images",
+                "Meshes",
+                "Blueprints",
+                "Backups"
+            };
+            foreach(string folder in folders)
+            {
+                if (!Directory.Exists(exePath + "\\" + folder))
+                {
+                    Directory.CreateDirectory(exePath + "\\" + folder);
+                }
+            }
         }
         private void ActionSelectForm_Load(object sender, EventArgs e)
         {

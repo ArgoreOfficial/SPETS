@@ -1,0 +1,23 @@
+[
+  {
+    "Type": "blueprint",
+    "ModelName": "8cyl.blueprint/0",
+    "TextureName": "",
+    "TextureDistance": 0.0,
+    "TextureSize": 0.0
+  },
+  {
+    "Type": "mesh",
+    "ModelName": "FullMap.obj",
+    "TextureName": "grass_side.png",
+    "TextureDistance": 0.0,
+    "TextureSize": 0.0
+  },
+  {
+    "Type": "mesh",
+    "ModelName": "Orb.obj",
+    "TextureName": "",
+    "TextureDistance": 0.0,
+    "TextureSize": 0.0
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "Type": "blueprint",
+    "ModelName": "Carro_M35_Prototipo.blueprint/0",
+    "TextureName": "",
+    "TextureDistance": 0.0,
+    "TextureSize": 0.0
+  },
+  {
+    "Type": "blueprint",
+    "ModelName": "Carro_M35_Prototipo.blueprint/1",
+    "TextureName": "",
+    "TextureDistance": 0.0,
+    "TextureSize": 0.0
+  },
+  {
+    "Type": "mesh",
+    "ModelName": "Orb.obj",
+    "TextureName": "Plus.png",
+    "TextureDistance": 0.0,
+    "TextureSize": 0.0
+  },
+  {
+    "Type": "blueprint",
+    "ModelName": "Carro_M35_Prototipo.blueprint/3",
+    "TextureName": "",
+    "TextureDistance": 0.0,
+    "TextureSize": 0.0
+  },
+  {
+    "Type": "blueprint",
+    "ModelName": "Carro_M35_Prototipo.blueprint/4",
+    "TextureName": "",
+    "TextureDistance": 0.0,
+    "TextureSize": 0.0
+  }
+]

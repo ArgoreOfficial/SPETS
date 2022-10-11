@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading;
@@ -83,9 +85,62 @@ namespace SPETS.Classes
             return objMesh;
         }
 
-        public static Mesh FromBlueprint(string filePath)
+        public static List<Mesh> FromBlueprint(string filePath)
         {
-            return null;
+            // get file
+            string[] blueprintFile = File.ReadAllLines(filePath);
+            List<Mesh> meshes = new List<Mesh>();
+
+            // go through lines
+            for (int i = 0; i < blueprintFile.Length; i++)
+            {
+                if (blueprintFile[i].Trim() == "\"id\": \"Compartment\",")
+                {
+                    // create mesh
+                    Mesh mesh = new Mesh();
+
+                    // isolate compartment
+                    string[] compartment = blueprintFile.Skip(i - 1).Take(5).ToArray();
+                    compartment[4] = compartment[4].Trim(',');
+
+                    // deserialize
+                    var BaseRoot = JsonConvert.DeserializeObject<CompartmentBaseRoot>(string.Join("", compartment));
+                    var DataRoot = JsonConvert.DeserializeObject<CompartmentRoot>(BaseRoot.data);
+
+                    if (DataRoot.compartment != null)
+                    {
+                        // vertices
+                        for (int p = 0; p < DataRoot.compartment.points.Count; p += 3)
+                        {
+                            // add vertex
+                            mesh.Vertices.Add(
+                                new Vector3((float)-DataRoot.compartment.points[p],
+                                            (float)DataRoot.compartment.points[p + 1],
+                                            (float)DataRoot.compartment.points[p + 2]));
+                        }
+
+
+                        //faces
+                        for (int f = 0; f < DataRoot.compartment.faceMap.Count; f++)
+                        {
+                            List<int> face = new List<int>();
+
+                            for (int n = 0; n < DataRoot.compartment.faceMap[f].Count; n += 3)
+                            {
+                                face.Add(DataRoot.compartment.faceMap[f][n] + 1);
+                                face.Add(DataRoot.compartment.faceMap[f][n + 1] + 1);
+                                face.Add(DataRoot.compartment.faceMap[f][n + 2] + 1);
+                            }
+                            mesh.Faces.Add(face);
+
+                        }
+                    }
+
+                    meshes.Add(mesh);
+                }
+            }
+
+            return meshes;
         }
     }
 }

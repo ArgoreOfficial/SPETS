@@ -173,7 +173,14 @@ namespace SPETS.forms
 
         private void ImportWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            ImportingProgress.Value = e.ProgressPercentage;
+            if(e.ProgressPercentage <= 100)
+            {
+                ImportingProgress.Value = e.ProgressPercentage;
+            }
+            else
+            {
+                ImportingProgress.Value = 100;
+            }
         }
 
         private void ImportForm_FormClosing(object sender, FormClosingEventArgs e)
