@@ -43,7 +43,7 @@ namespace SPETS.Classes
 
                 if(TextureName != "")
                 {
-                    iObj.SetTexture(Image.FromFile(exeRoot + "\\Images\\" + TextureName), TextureName);
+                    iObj.SetTexture(Image.FromFile(exeRoot + "\\Images\\" + TextureName), exeRoot + "\\Images\\" + TextureName);
                     iObj.SetTextureDist(TextureDistance);
                     iObj.SetTextureSize(TextureSize);
                 }
@@ -164,10 +164,10 @@ namespace SPETS.Classes
             PreviewZBuffer = PreviewZBuffer.OrderBy(v => v.Position.X).Reverse().ToList();
         }
 
-        public void SetTexture(Image image, string name)
+        public void SetTexture(Image image, string path)
         {
             Texture = image;
-            TextureName = name.Split('\\').Last();
+            TextureName = path.Split('\\').Last();
 
             string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string decalsFolder = $"{documents}\\My Games\\Sprocket\\Decals";
@@ -176,7 +176,7 @@ namespace SPETS.Classes
                 Directory.CreateDirectory(decalsFolder);
             }
 
-            File.Copy(name, decalsFolder + "\\" + TextureName, true);
+            File.Copy(path, decalsFolder + "\\" + TextureName, true);
         }
         public void SetTextureDist(float distance)
         {

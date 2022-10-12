@@ -319,7 +319,7 @@ namespace SPETS.forms
             65536});
             this.DecalSizeNumeric.Location = new System.Drawing.Point(64, 173);
             this.DecalSizeNumeric.Maximum = new decimal(new int[] {
-            1,
+            4,
             0,
             0,
             0});
