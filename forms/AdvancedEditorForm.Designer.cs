@@ -62,10 +62,12 @@ namespace SPETS.forms
             this.ZoomOutTimer = new System.Windows.Forms.Timer(this.components);
             this.LoadPresetButton = new System.Windows.Forms.Button();
             this.SavePresetButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).BeginInit();
             this.PropertiesTabControl.SuspendLayout();
+            this.PropertiesPage.SuspendLayout();
             this.DecalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).BeginInit();
             this.SuspendLayout();
@@ -129,10 +131,10 @@ namespace SPETS.forms
             this.DecalDistanceNumeric.Size = new System.Drawing.Size(70, 23);
             this.DecalDistanceNumeric.TabIndex = 2;
             this.DecalDistanceNumeric.Value = new decimal(new int[] {
-            749,
+            75,
             0,
             0,
-            196608});
+            131072});
             this.DecalDistanceNumeric.ValueChanged += new System.EventHandler(this.DecalDistanceNumeric_ValueChanged);
             // 
             // DecalDistanceLabel
@@ -274,8 +276,8 @@ namespace SPETS.forms
             // 
             this.PropertiesTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.PropertiesTabControl.Controls.Add(this.PropertiesPage);
             this.PropertiesTabControl.Controls.Add(this.DecalPage);
+            this.PropertiesTabControl.Controls.Add(this.PropertiesPage);
             this.PropertiesTabControl.Location = new System.Drawing.Point(409, 12);
             this.PropertiesTabControl.Name = "PropertiesTabControl";
             this.PropertiesTabControl.SelectedIndex = 0;
@@ -284,6 +286,7 @@ namespace SPETS.forms
             // 
             // PropertiesPage
             // 
+            this.PropertiesPage.Controls.Add(this.label1);
             this.PropertiesPage.Location = new System.Drawing.Point(4, 24);
             this.PropertiesPage.Name = "PropertiesPage";
             this.PropertiesPage.Padding = new System.Windows.Forms.Padding(3);
@@ -327,10 +330,10 @@ namespace SPETS.forms
             this.DecalSizeNumeric.Size = new System.Drawing.Size(70, 23);
             this.DecalSizeNumeric.TabIndex = 13;
             this.DecalSizeNumeric.Value = new decimal(new int[] {
-            999,
+            1,
             0,
             0,
-            196608});
+            0});
             this.DecalSizeNumeric.ValueChanged += new System.EventHandler(this.DecalSizeNumeric_ValueChanged);
             // 
             // DecalSizeLabel
@@ -415,6 +418,15 @@ namespace SPETS.forms
             this.SavePresetButton.UseVisualStyleBackColor = true;
             this.SavePresetButton.Click += new System.EventHandler(this.SavePresetButton_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(62, 78);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(73, 15);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "To Be Added";
+            // 
             // AdvancedEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -440,13 +452,15 @@ namespace SPETS.forms
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "AdvancedEditorForm";
-            this.Text = "Advanced Editor";
+            this.Text = "Advanced Editor (Experimental)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AdvancedImportForm_FormClosing);
             this.Load += new System.EventHandler(this.AdvancedEditorForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).EndInit();
             this.PropertiesTabControl.ResumeLayout(false);
+            this.PropertiesPage.ResumeLayout(false);
+            this.PropertiesPage.PerformLayout();
             this.DecalPage.ResumeLayout(false);
             this.DecalPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).EndInit();
@@ -490,5 +504,6 @@ namespace SPETS.forms
         private System.Windows.Forms.NumericUpDown DecalSizeNumeric;
         private System.Windows.Forms.Button LoadPresetButton;
         private System.Windows.Forms.Button SavePresetButton;
+        private System.Windows.Forms.Label label1;
     }
 }

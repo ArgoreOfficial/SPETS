@@ -69,10 +69,11 @@ namespace SPETS.forms
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Image Files|*.BMP;*.GIF;*.JPG;*.JPEG;*.PNG;*.TIFF";
-
+            
             DialogResult dr = ofd.ShowDialog();
             if (dr == DialogResult.OK)
             {
+                
                 ImportObjects[lastSelected].SetTexture(Image.FromFile(ofd.FileName), ofd.FileName);
 
                 RefreshTexturePreview();
@@ -101,39 +102,41 @@ namespace SPETS.forms
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Wavefront Model (*.OBJ)|*.OBJ";
+            ofd.Multiselect = true;
 
             DialogResult dr = ofd.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                Mesh loadMesh = MeshLoader.FromOBJ(ofd.FileName);
-
-                if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
+                foreach (string fileName in ofd.FileNames)
                 {
-                    if (ImportListView.SelectedIndices.Count > 0)
+                    Mesh loadMesh = MeshLoader.FromOBJ(fileName);
+
+                    if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
                     {
-                        ImportObjects[lastSelected] = new ImportObject(
-                            loadMesh,
-                            ofd.FileName,
-                            "mesh"
-                            );
-                    }
-                    else
-                    {
-                        ImportObjects.Add(new ImportObject(
+                        if (ImportListView.SelectedIndices.Count > 0)
+                        {
+                            ImportObjects[lastSelected] = new ImportObject(
                                 loadMesh,
-                                ofd.FileName,
+                                fileName,
                                 "mesh"
-                            ));
+                                );
+                        }
+                        else
+                        {
+                            ImportObjects.Add(new ImportObject(
+                                    loadMesh,
+                                    fileName,
+                                    "mesh"
+                                ));
+                        }
+
+                        // copy files to root folders
+                        string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                        FileInfo info = new FileInfo(fileName);
+                        File.Copy(info.FullName, exePath + "\\Meshes\\" + info.FullName.Split("\\").Last(), true);
+
+                        RefreshObjectList();
                     }
-
-                    // copy files to root folders
-                    string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    FileInfo info = new FileInfo(ofd.FileName);
-                    
-                    File.Copy(info.FullName, exePath + "\\Meshes\\" + info.FullName.Split("\\").Last(), true);
-                    
-
-                    RefreshObjectList();
                 }
             }
             
@@ -145,33 +148,34 @@ namespace SPETS.forms
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "Sprocket Blueprint (*.BLUEPRINT)|*.BLUEPRINT";
-
+            ofd.Multiselect = true;
+            
             DialogResult dr = ofd.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                List<Mesh> loadedMeshes = MeshLoader.FromBlueprint(ofd.FileName);
-                
-                for (int i = 0; i < loadedMeshes.Count; i++)
+                foreach (string fileName in ofd.FileNames)
                 {
-                    if(loadedMeshes[i].Faces.Count != 0 && loadedMeshes[i].Vertices.Count != 0)
+                    List<Mesh> loadedMeshes = MeshLoader.FromBlueprint(fileName);
+
+                    for (int i = 0; i < loadedMeshes.Count; i++)
                     {
-                        ImportObjects.Add(new ImportObject(
-                                    loadedMeshes[i],
-                                    ofd.FileName + "/" + i,
-                                    "blueprint"
-                                ));
+                        if (loadedMeshes[i].Faces.Count != 0 && loadedMeshes[i].Vertices.Count != 0)
+                        {
+                            ImportObjects.Add(new ImportObject(
+                                        loadedMeshes[i],
+                                        fileName + "/" + i,
+                                        "blueprint"
+                                    ));
+                        }
                     }
+
+                    // copy files to root folders
+                    string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    FileInfo info = new FileInfo(fileName);
+                    File.Copy(info.FullName, exePath + "\\Blueprints\\" + info.FullName.Split("\\").Last(), true);
+
+                    RefreshObjectList();
                 }
-
-
-                // copy files to root folders
-                string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                FileInfo info = new FileInfo(ofd.FileName);
-                
-                File.Copy(info.FullName, exePath + "\\Blueprints\\" + info.FullName.Split("\\").Last(), true);
-                
-
-                RefreshObjectList();
             }
         }
         #endregion
@@ -241,21 +245,6 @@ namespace SPETS.forms
         }
 
         #endregion
-
-        private void ImportButton_Click(object sender, EventArgs e)
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-
-            ImportButton.Enabled = false;
-            Cursor.Current = Cursors.WaitCursor;
-            
-            AdvancedImport(Factions[FactionsCombobox.SelectedIndex], "advanced_import");
-            
-            ImportButton.Enabled = true;
-            Cursor.Current = Cursors.Default;
-            
-            MessageBox.Show("Importing finished", "Importing finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
 
         #region PREVIEW_CONTROLS
 
@@ -412,8 +401,50 @@ namespace SPETS.forms
         }
 
         #endregion
+        
+        #region IMPORT
+        private void ImportButton_Click(object sender, EventArgs e)
+        {
+            bool hasTexture = false;
 
+            for (int i = 0; i < ImportObjects.Count; i++) {
+                if(ImportObjects[i].Texture != null) {
+                    hasTexture = true;
+                    break;
+                }
+            }
 
+            if(hasTexture)
+            {
+                DialogResult dialogResult = MessageBox.Show(
+                    "One or more loaded meshes have a texture, this will place a decal on every face of that model. Proceed?", 
+                    "Mesh includes textures", 
+                    MessageBoxButtons.YesNo, 
+                    MessageBoxIcon.Warning);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    DoImport();
+                }
+            }
+            else
+            {
+                DoImport();
+            }
+        }
+        void DoImport()
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+
+            ImportButton.Enabled = false;
+            Cursor.Current = Cursors.WaitCursor;
+
+            AdvancedImport(Factions[FactionsCombobox.SelectedIndex], "advanced_import");
+
+            ImportButton.Enabled = true;
+            Cursor.Current = Cursors.Default;
+
+            MessageBox.Show("Importing finished", "Importing finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
         void AdvancedImport(string savePath, string saveName)
         {
             List<CompartmentBaseRoot> blueprintFile = new List<CompartmentBaseRoot>();
@@ -544,6 +575,7 @@ namespace SPETS.forms
             string file = JsonConvert.SerializeObject(blueprintFile.ToArray(), Formatting.Indented);
             File.WriteAllText($"{savePath}/Blueprints/Compartments/{saveName}.blueprint", file);
         }
+
         List<int> CreateNGon(int length, int offset)
         {
             // use lookup table
@@ -559,6 +591,7 @@ namespace SPETS.forms
             return face;
         }
 
+        #endregion
 
         #region PRESET
 
