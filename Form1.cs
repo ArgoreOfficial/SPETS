@@ -32,8 +32,7 @@ namespace SPETS
             {
                 "Images",
                 "Meshes",
-                "Blueprints",
-                "Backups"
+                "Blueprints"
             };
             foreach(string folder in folders)
             {
