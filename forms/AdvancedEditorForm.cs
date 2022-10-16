@@ -533,7 +533,7 @@ namespace SPETS.forms
                         }
                         faceCenter /= ImportObjects[i].Model.Faces[f].Count;
                         Vector3 normal = Vector3.Normalize(Math3D.GetNormal(points));
-                        Vector3 position = faceCenter + normal * ImportObjects[i].TextureDistance;
+                        Vector3 position = faceCenter + normal * (ImportObjects[i].TextureDistance - 0.001f);
                         Vector3 angle = Math3D.DirectionToAngle(normal) * 57.29578f;
 
                         decalAttachment.T = new List<double> {
@@ -543,9 +543,9 @@ namespace SPETS.forms
                             angle.X,
                             angle.Y,
                             angle.Z,
-                            ImportObjects[i].TextureSize,
-                            ImportObjects[i].TextureSize,
-                            ImportObjects[i].TextureSize,
+                            ImportObjects[i].TextureSize - 0.001f,
+                            ImportObjects[i].TextureSize - 0.001f,
+                            ImportObjects[i].TextureSize - 0.001f,
                             0.0
                         };
                         decalAttachment.DAT = new List<CompartmentBaseRoot>
