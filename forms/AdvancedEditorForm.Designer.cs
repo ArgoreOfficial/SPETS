@@ -50,10 +50,11 @@ namespace SPETS.forms
             this.ShowWireframeCheckbox = new System.Windows.Forms.CheckBox();
             this.LoadBlueprintButton = new System.Windows.Forms.Button();
             this.PropertiesTabControl = new System.Windows.Forms.TabControl();
-            this.PropertiesPage = new System.Windows.Forms.TabPage();
             this.DecalPage = new System.Windows.Forms.TabPage();
             this.DecalSizeNumeric = new System.Windows.Forms.NumericUpDown();
             this.DecalSizeLabel = new System.Windows.Forms.Label();
+            this.PropertiesPage = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
             this.ShowVerticesCheckbox = new System.Windows.Forms.CheckBox();
             this.ShowFacesCheckbox = new System.Windows.Forms.CheckBox();
             this.BFCullingCheckbox = new System.Windows.Forms.CheckBox();
@@ -62,14 +63,13 @@ namespace SPETS.forms
             this.ZoomOutTimer = new System.Windows.Forms.Timer(this.components);
             this.LoadPresetButton = new System.Windows.Forms.Button();
             this.SavePresetButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).BeginInit();
             this.PropertiesTabControl.SuspendLayout();
-            this.PropertiesPage.SuspendLayout();
             this.DecalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).BeginInit();
+            this.PropertiesPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // ImportListView
@@ -284,17 +284,6 @@ namespace SPETS.forms
             this.PropertiesTabControl.Size = new System.Drawing.Size(200, 453);
             this.PropertiesTabControl.TabIndex = 22;
             // 
-            // PropertiesPage
-            // 
-            this.PropertiesPage.Controls.Add(this.label1);
-            this.PropertiesPage.Location = new System.Drawing.Point(4, 24);
-            this.PropertiesPage.Name = "PropertiesPage";
-            this.PropertiesPage.Padding = new System.Windows.Forms.Padding(3);
-            this.PropertiesPage.Size = new System.Drawing.Size(192, 425);
-            this.PropertiesPage.TabIndex = 0;
-            this.PropertiesPage.Text = "Properties";
-            this.PropertiesPage.UseVisualStyleBackColor = true;
-            // 
             // DecalPage
             // 
             this.DecalPage.Controls.Add(this.DecalSizeNumeric);
@@ -345,6 +334,26 @@ namespace SPETS.forms
             this.DecalSizeLabel.TabIndex = 12;
             this.DecalSizeLabel.Text = "Size";
             this.DecalSizeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // PropertiesPage
+            // 
+            this.PropertiesPage.Controls.Add(this.label1);
+            this.PropertiesPage.Location = new System.Drawing.Point(4, 24);
+            this.PropertiesPage.Name = "PropertiesPage";
+            this.PropertiesPage.Padding = new System.Windows.Forms.Padding(3);
+            this.PropertiesPage.Size = new System.Drawing.Size(192, 425);
+            this.PropertiesPage.TabIndex = 0;
+            this.PropertiesPage.Text = "Properties";
+            this.PropertiesPage.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(62, 78);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(73, 15);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "To Be Added";
             // 
             // ShowVerticesCheckbox
             // 
@@ -418,15 +427,6 @@ namespace SPETS.forms
             this.SavePresetButton.UseVisualStyleBackColor = true;
             this.SavePresetButton.Click += new System.EventHandler(this.SavePresetButton_Click);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(62, 78);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(73, 15);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "To Be Added";
-            // 
             // AdvancedEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -459,11 +459,11 @@ namespace SPETS.forms
             ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).EndInit();
             this.PropertiesTabControl.ResumeLayout(false);
-            this.PropertiesPage.ResumeLayout(false);
-            this.PropertiesPage.PerformLayout();
             this.DecalPage.ResumeLayout(false);
             this.DecalPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).EndInit();
+            this.PropertiesPage.ResumeLayout(false);
+            this.PropertiesPage.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

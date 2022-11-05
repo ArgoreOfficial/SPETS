@@ -167,8 +167,8 @@ namespace SPETS.forms
             CompartmentBaseRoot cbRoot = new CompartmentBaseRoot("Compartment", compJson, "");
             File.WriteAllText($"{savePath}/Blueprints/Compartments/{saveName}.blueprint", $"[\n{JsonConvert.SerializeObject(cbRoot, Formatting.Indented)},\n]");
 
-            Debug.WriteLine("done");
             ImportWorker.ReportProgress(100);
+            MessageBox.Show("Import finished", "Import finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ImportWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)

@@ -137,6 +137,7 @@ namespace SPETS.forms
             File.WriteAllText($"{sprocketFolder}\\Exports\\{fileName}\\{fileName}.obj", saveFileSB.ToString());
 
             ExportWorker.ReportProgress(100);
+            MessageBox.Show("Export finished", "Export finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", $"{sprocketFolder}\\Exports\\{fileName}");
         }
