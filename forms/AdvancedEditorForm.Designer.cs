@@ -40,7 +40,6 @@ namespace SPETS.forms
             this.ImportButton = new System.Windows.Forms.Button();
             this.LoadMeshButton = new System.Windows.Forms.Button();
             this.DeleteItemButton = new System.Windows.Forms.Button();
-            this.MeshPreview = new System.Windows.Forms.PictureBox();
             this.LoadTextureButton = new System.Windows.Forms.Button();
             this.TextureTooltip = new System.Windows.Forms.ToolTip(this.components);
             this.ClearTextureButton = new System.Windows.Forms.Button();
@@ -63,13 +62,14 @@ namespace SPETS.forms
             this.ZoomOutTimer = new System.Windows.Forms.Timer(this.components);
             this.LoadPresetButton = new System.Windows.Forms.Button();
             this.SavePresetButton = new System.Windows.Forms.Button();
+            this.MeshPreview = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).BeginInit();
             this.PropertiesTabControl.SuspendLayout();
             this.DecalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).BeginInit();
             this.PropertiesPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).BeginInit();
             this.SuspendLayout();
             // 
             // ImportListView
@@ -179,19 +179,6 @@ namespace SPETS.forms
             this.DeleteItemButton.Text = "Delete";
             this.DeleteItemButton.UseVisualStyleBackColor = true;
             this.DeleteItemButton.Click += new System.EventHandler(this.DeleteItemButton_Click);
-            // 
-            // MeshPreview
-            // 
-            this.MeshPreview.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.MeshPreview.Cursor = System.Windows.Forms.Cursors.SizeAll;
-            this.MeshPreview.Location = new System.Drawing.Point(147, 12);
-            this.MeshPreview.Name = "MeshPreview";
-            this.MeshPreview.Size = new System.Drawing.Size(256, 256);
-            this.MeshPreview.TabIndex = 8;
-            this.MeshPreview.TabStop = false;
-            this.MeshPreview.Paint += new System.Windows.Forms.PaintEventHandler(this.MeshPreview_Paint);
-            this.MeshPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MeshPreview_MouseDown);
-            this.MeshPreview.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshPreview_MouseUp);
             // 
             // LoadTextureButton
             // 
@@ -427,6 +414,19 @@ namespace SPETS.forms
             this.SavePresetButton.UseVisualStyleBackColor = true;
             this.SavePresetButton.Click += new System.EventHandler(this.SavePresetButton_Click);
             // 
+            // MeshPreview
+            // 
+            this.MeshPreview.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.MeshPreview.Cursor = System.Windows.Forms.Cursors.SizeAll;
+            this.MeshPreview.Location = new System.Drawing.Point(147, 12);
+            this.MeshPreview.Name = "MeshPreview";
+            this.MeshPreview.Size = new System.Drawing.Size(256, 256);
+            this.MeshPreview.TabIndex = 8;
+            this.MeshPreview.TabStop = false;
+            this.MeshPreview.Paint += new System.Windows.Forms.PaintEventHandler(this.MeshPreview_Paint);
+            this.MeshPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MeshPreview_MouseDown);
+            this.MeshPreview.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshPreview_MouseUp);
+            // 
             // AdvancedEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -457,13 +457,13 @@ namespace SPETS.forms
             this.Load += new System.EventHandler(this.AdvancedEditorForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DecalDistanceNumeric)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).EndInit();
             this.PropertiesTabControl.ResumeLayout(false);
             this.DecalPage.ResumeLayout(false);
             this.DecalPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).EndInit();
             this.PropertiesPage.ResumeLayout(false);
             this.PropertiesPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -480,7 +480,6 @@ namespace SPETS.forms
         private System.Windows.Forms.Button LoadMeshButton;
         private System.Windows.Forms.Button AddItemButton;
         private System.Windows.Forms.Button DeleteItemButton;
-        private System.Windows.Forms.PictureBox MeshPreview;
         private System.Windows.Forms.Button LoadTextureButton;
         private System.Windows.Forms.ColumnHeader MeshColumbHeader;
         private System.Windows.Forms.ToolTip TextureTooltip;
@@ -505,5 +504,6 @@ namespace SPETS.forms
         private System.Windows.Forms.Button LoadPresetButton;
         private System.Windows.Forms.Button SavePresetButton;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.PictureBox MeshPreview;
     }
 }
