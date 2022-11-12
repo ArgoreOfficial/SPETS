@@ -20,6 +20,7 @@ namespace SPETS
         ImportForm importForm;
         ExportForm exportForm;
         AdvancedEditorForm advImporterForm;
+        TerrainEditorForm terrainForm;
 
         public ActionSelectForm()
         {
@@ -97,6 +98,20 @@ namespace SPETS
                 advImporterForm = new AdvancedEditorForm(this);
                 advImporterForm.Show();
                 StartButton.Enabled = false;
+            }
+            else if (ToolDropdown.SelectedIndex == 3)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "Terrain Dump (*.TXT)|*.TXT";
+
+                DialogResult dr = ofd.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    terrainForm = new TerrainEditorForm(this);
+                    terrainForm.LoadTerrainData(ofd.FileName);
+                    terrainForm.Show();
+                    StartButton.Enabled = false;
+                }
             }
         }
 

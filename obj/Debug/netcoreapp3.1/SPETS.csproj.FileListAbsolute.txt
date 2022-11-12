@@ -44,3 +44,4 @@ C:\Users\argor\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.Properties.Res
 C:\Users\jonatan.ostberg\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.forms.AdvancedEditorForm.resources
 C:\Users\jonatan.ostberg\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.Properties.Resources.resources
 C:\Users\argor\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.forms.AdvancedEditorForm.resources
+C:\Users\argor\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.forms.TerrainEditorForm.resources

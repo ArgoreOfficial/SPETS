@@ -2,17 +2,12 @@
 using SPETS.Classes;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -186,7 +181,10 @@ namespace SPETS.forms
         {
             if (ImportObjects.Count > 0)
             {
-                RenderMeshPreview(e.Graphics, ImportObjects[lastSelected].PreviewZBuffer);
+                //RenderMeshPreview(e.Graphics, ImportObjects[lastSelected].PreviewZBuffer);
+
+                Form3DRenderer.RenderMesh(e.Graphics, brush, pen, ImportObjects[lastSelected].PreviewZBuffer, RenderSize, RenderOffset);
+
             }
         }
 
