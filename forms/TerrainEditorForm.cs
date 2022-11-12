@@ -15,70 +15,103 @@ namespace SPETS.forms
     public partial class TerrainEditorForm : Form
     {
         ActionSelectForm asf;
-        List<int> heightmap = new List<int>();
-        StringBuilder newFile;
-        string FilePath;
+        List<int> Heightmap = new List<int>();
+        int[,] Heightmap2D;
+        int MapSize = 0;
+
+        StringBuilder NewFile;
         string[] file;
 
         public TerrainEditorForm(ActionSelectForm asf)
         {
             InitializeComponent();
-            newFile = new StringBuilder();
+            NewFile = new StringBuilder();
             this.asf = asf;
         }
 
         public void LoadTerrainData(string filepath)
         {
+            string currentAttribute = "";
             file = File.ReadAllLines(filepath);
-            FilePath = filepath;
 
-            Debug.WriteLine(file.Length);
-            
-            string location = "";
+            // loop through file
             for (int i = 0; i < file.Length; i++)
             {
+                // split lines so individual data can be fetched
                 string currentline = file[i];
                 string[] splitline = file[i].Trim().Split(" ");
-                
-                int spaceCount = currentline.TakeWhile(Char.IsWhiteSpace).Count();
-                if(spaceCount <= 2)
-                {
-                    if (!currentline.Contains("m_")) continue;
+                //int spaceCount = currentline.TakeWhile(Char.IsWhiteSpace).Count(); // indentation count
 
+                // get current attribute
+                if (currentline.Contains("m_"))
+                {
                     foreach(string line in splitline)
                     {
-                        if(line.Contains("m_"))
-                        {
-                            location = line;
-                            break;
-                        }
+                        if (!line.Contains("m_")) continue;
+                        
+                        currentAttribute = line;
+                        break;                        
                     }
                 }
-                
-                if(location == "m_Heights")
+
+                // get heightmap data
+                if(currentAttribute == "m_Heights")
                 {
                     if (!currentline.Contains("data")) continue;
                     
                     int h;
                     if(int.TryParse(splitline.Last(), out h))
                     {
-                        heightmap.Add(h);
+                        Heightmap.Add(h);
                     }
                 }
             }
 
-            Debug.WriteLine(heightmap.Count);
-            Debug.WriteLine(Math.Sqrt(heightmap.Count));
+            // make 2d heightmap array
+            MapSize = (int)Math.Sqrt(Heightmap.Count);
+            Heightmap2D = SMath.Make2DArray<int>(Heightmap.ToArray(), MapSize, MapSize);
         }
 
         private void TerrainEditorForm_Load(object sender, EventArgs e)
         {
-            int mapsize = (int)Math.Sqrt(heightmap.Count);
+            HeightmapBox.Width = MapSize;
+            HeightmapBox.Height = MapSize;
+            UpdateHeightmapImage();
+        }
+
+        #region MAP_DRAWING
+
+        public void UpdateHeightmapImage()
+        {
+            HeightmapBox.Image = new Bitmap(HeightmapBox.Width, HeightmapBox.Height);
+            int max = Heightmap.Max();
+
+            //int t = 0;
+            for (int y = 0; y < HeightmapBox.Width; y++)
+            {
+                for (int x = 0; x < HeightmapBox.Width; x++)
+                {
+                    int color = (int)Math.Min(255f * Heightmap2D[x,y] / max, 255f);
+                    ((Bitmap)HeightmapBox.Image).SetPixel(x, y, Color.FromArgb(color, color, color));
+                    //t++;
+                }
+
+            }
+            HeightmapBox.Invalidate();
+        }
+
+
+
+        #endregion
+
+        public void SaveMap()
+        {
+            int mapsize = (int)Math.Sqrt(Heightmap.Count);
             //List<int> newHeight = new List<int>();
             StringBuilder heightmapSB = new StringBuilder();
             heightmapSB.AppendLine("  0 vector m_Heights");
-            heightmapSB.AppendLine($"   1 Array Array ({heightmap.Count} items)");
-            heightmapSB.AppendLine($"    0 int size = {heightmap.Count}");
+            heightmapSB.AppendLine($"   1 Array Array ({Heightmap.Count} items)");
+            heightmapSB.AppendLine($"    0 int size = {Heightmap.Count}");
             Debug.WriteLine("Saving...");
 
             string location = "";
@@ -93,11 +126,11 @@ namespace SPETS.forms
                     foreach (string line in splitline)
                     {
                         if (!line.Contains("m_")) continue;
-                        
+
                         location = line;
                         if (location == "m_Heights")
                         {
-                            newFile.AppendLine(heightmapSB.ToString());
+                            NewFile.AppendLine(heightmapSB.ToString());
 
 
                             Debug.WriteLine("   Flipping");
@@ -107,9 +140,9 @@ namespace SPETS.forms
                             {
                                 for (int x = 0; x < mapsize; x++)
                                 {
-                                    int newint = heightmap[x * mapsize + y];
-                                    newFile.AppendLine($"    [{n}]");
-                                    newFile.AppendLine($"     0 SInt16 data = {newint}");
+                                    int newint = Heightmap[x * mapsize + y];
+                                    NewFile.AppendLine($"    [{n}]");
+                                    NewFile.AppendLine($"     0 SInt16 data = {newint}");
                                     n++;
                                 }
                             }
@@ -122,35 +155,46 @@ namespace SPETS.forms
 
                 if (location == "m_Heights") continue;
 
-                newFile.AppendLine(currentline);
+                NewFile.AppendLine(currentline);
 
             }
             Debug.WriteLine("Done");
-            File.WriteAllText("NewFile.txt", newFile.ToString());
-            
-            
-            HeightmapBox.Width = (int)Math.Sqrt(heightmap.Count);
-            HeightmapBox.Height = (int)Math.Sqrt(heightmap.Count);
-            UpdateHeightmapImage();
+            File.WriteAllText("NewFile.txt", NewFile.ToString());
+
         }
 
-        public void UpdateHeightmapImage()
+        private void RotateClockwiseButton_Click(object sender, EventArgs e)
         {
-            HeightmapBox.Image = new Bitmap(HeightmapBox.Width, HeightmapBox.Height);
-            int max = heightmap.Max();
-
-            int t = 0;
-            for (int y = 0; y < HeightmapBox.Width; y++)
+            /*
+            int[,] test = new int[,]
             {
-                for (int x = 0; x < HeightmapBox.Width; x++)
-                {
-                    int color = (int)Math.Min(255f * heightmap[t] / max, 255f);
-                    ((Bitmap)HeightmapBox.Image).SetPixel(x, y, Color.FromArgb(color, color, color));
-                    t++;
-                }
+                { 1, 2, 3 },
+                { 4, 5, 6},
+                { 7, 8, 9}
+            };
 
+            for (int i = 0; i < test.GetLength(0); i++)
+            {
+                for (int j = 0; j < test.GetLength(1); j++)
+                {
+                    Debug.Write(test[i, j] + ", ");
+                }
+                Debug.WriteLine("");
             }
-            HeightmapBox.Invalidate();
+
+            test = SMath.RotateClockwise<int>(test);
+
+            for (int i = 0; i < test.GetLength(0); i++)
+            {
+                for (int j = 0; j < test.GetLength(1); j++)
+                {
+                    Debug.Write(test[i, j] + ", ");
+                }
+                Debug.WriteLine("");
+            }
+            */
+            Heightmap2D = SMath.RotateClockwise<int>(Heightmap2D);
+            UpdateHeightmapImage();
         }
     }
 }

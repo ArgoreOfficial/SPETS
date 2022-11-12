@@ -45,3 +45,7 @@ C:\Users\jonatan.ostberg\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.form
 C:\Users\jonatan.ostberg\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.Properties.Resources.resources
 C:\Users\argor\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.forms.AdvancedEditorForm.resources
 C:\Users\argor\Desktop\Github\SPETS\obj\Debug\netcoreapp3.1\SPETS.forms.TerrainEditorForm.resources
+C:\Users\argor\Desktop\Github\SPETS\bin\Debug\netcoreapp3.1\SharpGL.dll
+C:\Users\argor\Desktop\Github\SPETS\bin\Debug\netcoreapp3.1\SharpGL.SceneGraph.dll
+C:\Users\argor\Desktop\Github\SPETS\bin\Debug\netcoreapp3.1\SharpGL.WinForms.dll
+C:\Users\argor\Desktop\Github\SPETS\bin\Debug\netcoreapp3.1\SharpGL.Serialization.dll

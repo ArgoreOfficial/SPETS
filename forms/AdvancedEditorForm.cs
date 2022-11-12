@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SharpGL.SceneGraph.Primitives;
 using SPETS.Classes;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,12 @@ using System.Numerics;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
+using SharpGL.Serialization.Wavefront;
+using SharpGL.SceneGraph.Effects;
+using SharpGL.SceneGraph;
+using SharpGL.SceneGraph.Assets;
+using SharpGL;
+using System.Diagnostics;
 
 namespace SPETS.forms
 {
@@ -34,6 +41,7 @@ namespace SPETS.forms
         public AdvancedEditorForm(ActionSelectForm asf)
         {
             InitializeComponent();
+            InitializeScene();
 
             this.asf = asf;
             pen = new Pen(Color.Black, 1);
@@ -57,6 +65,64 @@ namespace SPETS.forms
             asf.EnableButton();
         }
 
+
+        #region GL
+
+        private void InitializeScene()
+        {
+            //  Add some design-time primitives.
+            GLMeshPreview.Scene.SceneContainer.AddChild(new Grid());
+            GLMeshPreview.Scene.SceneContainer.AddChild(new Axies());
+            GLMeshPreview.Scene.RenderBoundingVolumes = false;
+        }
+
+        void LoadGLFromFile(string file)
+        {
+            // load mesh data (only for obj atm)
+            var obj = new ObjFileFormat();
+            var objScene = obj.LoadData(file);
+            
+            // Get the polygons
+            var polygons = objScene.SceneContainer.Traverse<Polygon>().ToList();
+            
+            // add polygons
+            foreach (var polygon in polygons)
+            {
+                polygon.Name = new FileInfo(file).Name.Split(".").First();
+                polygon.Transformation.RotateX = 90f; // So that Ducky appears in the right orientation
+
+
+                polygon.Parent.RemoveChild(polygon);
+                polygon.Freeze(GLMeshPreview.OpenGL);
+                GLMeshPreview.Scene.SceneContainer.AddChild(polygon);
+
+                // Add effects.
+                polygon.AddEffect(new OpenGLAttributesEffect());
+            }
+        }
+
+        void LoadGLFromMesh(Mesh mesh)
+        {
+            // Get the polygons
+            //var polygons = objScene.SceneContainer.Traverse<Polygon>().ToList();
+            var polygons = mesh.GetPolygons();
+            
+            // Add each polygon (There is only one in ducky.obj)
+            foreach (var polygon in polygons)
+            {
+                polygon.Name = "Mesh";
+                polygon.Transformation.RotateX = 90f; // So that Ducky appears in the right orientation
+
+
+                polygon.Freeze(GLMeshPreview.OpenGL);
+                GLMeshPreview.Scene.SceneContainer.AddChild(polygon);
+
+                // Add effects.
+                //polygon.AddEffect(new OpenGLAttributesEffect());
+            }
+        }
+
+        #endregion
 
         #region FILE_LOADING
 
@@ -93,10 +159,65 @@ namespace SPETS.forms
             }
         }
 
-        private void LoadMeshButton_Click(object sender, EventArgs e)
+        void LoadMesh(string fileName)
+        {
+            Mesh loadMesh = MeshLoader.FromOBJ(fileName);
+
+            if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
+            {
+                if (ImportListView.SelectedIndices.Count > 0)
+                {
+                    ImportObjects[lastSelected] = new ImportObject(
+                        loadMesh,
+                        fileName,
+                        "mesh"
+                        );
+                }
+                else
+                {
+                    ImportObjects.Add(new ImportObject(
+                            loadMesh,
+                            fileName,
+                            "mesh"
+                        ));
+                }
+
+                // copy files to root folders
+                string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                FileInfo info = new FileInfo(fileName);
+                File.Copy(info.FullName, exePath + "\\Meshes\\" + info.FullName.Split("\\").Last(), true);
+            }
+
+            //LoadGLFromFile(fileName);
+            LoadGLFromMesh(loadMesh);
+        }
+
+        void LoadBlueprint(string fileName)
+        {
+            List<Mesh> loadedMeshes = MeshLoader.FromBlueprint(fileName);
+
+            for (int i = 0; i < loadedMeshes.Count; i++)
+            {
+                if (loadedMeshes[i].Faces.Count != 0 && loadedMeshes[i].Vertices.Count != 0)
+                {
+                    ImportObjects.Add(new ImportObject(
+                                loadedMeshes[i],
+                                fileName + "/" + i,
+                                "blueprint"
+                            ));
+                }
+            }
+
+            // copy files to root folders
+            string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            FileInfo info = new FileInfo(fileName);
+            File.Copy(info.FullName, exePath + "\\Blueprints\\" + info.FullName.Split("\\").Last(), true);
+        }
+
+        private void LoadFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Wavefront Model (*.OBJ)|*.OBJ";
+            ofd.Filter = "Tank File|*.OBJ;*.BLUEPRINT";
             ofd.Multiselect = true;
 
             DialogResult dr = ofd.ShowDialog();
@@ -104,75 +225,23 @@ namespace SPETS.forms
             {
                 foreach (string fileName in ofd.FileNames)
                 {
-                    Mesh loadMesh = MeshLoader.FromOBJ(fileName);
-
-                    if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
+                    string extension = new FileInfo(fileName).Extension;
+                    
+                    if (extension == ".obj")
                     {
-                        if (ImportListView.SelectedIndices.Count > 0)
-                        {
-                            ImportObjects[lastSelected] = new ImportObject(
-                                loadMesh,
-                                fileName,
-                                "mesh"
-                                );
-                        }
-                        else
-                        {
-                            ImportObjects.Add(new ImportObject(
-                                    loadMesh,
-                                    fileName,
-                                    "mesh"
-                                ));
-                        }
-
-                        // copy files to root folders
-                        string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                        FileInfo info = new FileInfo(fileName);
-                        File.Copy(info.FullName, exePath + "\\Meshes\\" + info.FullName.Split("\\").Last(), true);
-
-                        RefreshObjectList();
+                        LoadMesh(fileName);
+                    }
+                    else if(extension == ".blueprint")
+                    {
+                        LoadBlueprint(fileName);
                     }
                 }
             }
             
+            RefreshObjectList();
+
         }
 
-
-
-        private void LoadBlueprintButton_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Sprocket Blueprint (*.BLUEPRINT)|*.BLUEPRINT";
-            ofd.Multiselect = true;
-            
-            DialogResult dr = ofd.ShowDialog();
-            if (dr == DialogResult.OK)
-            {
-                foreach (string fileName in ofd.FileNames)
-                {
-                    List<Mesh> loadedMeshes = MeshLoader.FromBlueprint(fileName);
-
-                    for (int i = 0; i < loadedMeshes.Count; i++)
-                    {
-                        if (loadedMeshes[i].Faces.Count != 0 && loadedMeshes[i].Vertices.Count != 0)
-                        {
-                            ImportObjects.Add(new ImportObject(
-                                        loadedMeshes[i],
-                                        fileName + "/" + i,
-                                        "blueprint"
-                                    ));
-                        }
-                    }
-
-                    // copy files to root folders
-                    string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    FileInfo info = new FileInfo(fileName);
-                    File.Copy(info.FullName, exePath + "\\Blueprints\\" + info.FullName.Split("\\").Last(), true);
-
-                    RefreshObjectList();
-                }
-            }
-        }
         #endregion
 
         #region MESH_RENDERER
@@ -530,9 +599,9 @@ namespace SPETS.forms
                             faceCenter += ImportObjects[i].Model.Vertices[ImportObjects[i].Model.Faces[f][p] - 1];
                         }
                         faceCenter /= ImportObjects[i].Model.Faces[f].Count;
-                        Vector3 normal = Vector3.Normalize(Math3D.GetNormal(points));
+                        Vector3 normal = Vector3.Normalize(SMath.GetNormal(points));
                         Vector3 position = faceCenter + normal * (ImportObjects[i].TextureDistance - 0.001f);
-                        Vector3 angle = Math3D.DirectionToAngle(normal) * 57.29578f;
+                        Vector3 angle = SMath.DirectionToAngle(normal) * 57.29578f;
 
                         decalAttachment.T = new List<double> {
                             -position.X,
@@ -635,5 +704,7 @@ namespace SPETS.forms
         }
 
         #endregion
+
+        
     }
 }

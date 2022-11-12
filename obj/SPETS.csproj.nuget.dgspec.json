@@ -47,6 +47,14 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.1, )"
+            },
+            "SharpGL.Serialization": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "SharpGL.WinForms": {
+              "target": "Package",
+              "version": "[3.1.1, )"
             }
           },
           "imports": [

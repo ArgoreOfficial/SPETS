@@ -1,6 +1,10 @@
 ﻿using Newtonsoft.Json;
+using SharpGL.SceneGraph;
+using SharpGL.SceneGraph.Assets;
+using SharpGL.SceneGraph.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -21,6 +25,38 @@ namespace SPETS.Classes
             Vertices = new List<Vector3>();
             Faces = new List<List<int>>();
             Normals = new List<Vector3>();
+        }
+
+        /// <summary>
+        /// returns a SharpGL formatted list of polygons
+        /// </summary>
+        /// <returns></returns>
+        public List<Polygon> GetPolygons()
+        {
+            // create list of polygons
+            List<Polygon> polygons = new List<Polygon>();
+
+            // loop through faces
+            foreach (List<int> face in Faces)
+            {
+                // create current polygon and faces
+                Polygon p = new Polygon();
+                List<Vertex> faceVertices = new List<Vertex>();
+                
+                // loop through each vertex index
+                foreach(int i in face)
+                {
+                    Vector3 vertex = Vertices[i - 1];
+                    faceVertices.Add(new Vertex(vertex.X, vertex.Y, vertex.Z));
+                }
+
+                p.Validate(true);
+                // add to polyon
+                p.AddFaceFromVertexData(faceVertices.ToArray());
+                polygons.Add(p);
+            }
+
+            return polygons;
         }
     }
 

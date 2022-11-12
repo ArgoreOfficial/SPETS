@@ -16,4 +16,22 @@
   <PropertyGroup>
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
   </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Content Include="$(NuGetPackageRoot)sharpgl.winforms\3.1.1\contentFiles\any\netcoreapp3.1\SharpGL.ico" Condition="Exists('$(NuGetPackageRoot)sharpgl.winforms\3.1.1\contentFiles\any\netcoreapp3.1\SharpGL.ico')">
+      <NuGetPackageId>SharpGL.WinForms</NuGetPackageId>
+      <NuGetPackageVersion>3.1.1</NuGetPackageVersion>
+      <NuGetItemType>Content</NuGetItemType>
+      <Pack>false</Pack>
+      <Private>False</Private>
+      <Link>SharpGL.ico</Link>
+    </Content>
+    <Content Include="$(NuGetPackageRoot)sharpgl.winforms\3.1.1\contentFiles\any\netcoreapp3.1\SharpGL.png" Condition="Exists('$(NuGetPackageRoot)sharpgl.winforms\3.1.1\contentFiles\any\netcoreapp3.1\SharpGL.png')">
+      <NuGetPackageId>SharpGL.WinForms</NuGetPackageId>
+      <NuGetPackageVersion>3.1.1</NuGetPackageVersion>
+      <NuGetItemType>Content</NuGetItemType>
+      <Pack>false</Pack>
+      <Private>False</Private>
+      <Link>SharpGL.png</Link>
+    </Content>
+  </ItemGroup>
 </Project>

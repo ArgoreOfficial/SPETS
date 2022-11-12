@@ -77,7 +77,7 @@ namespace SPETS.Classes
         {
             Position = new Vector3();
             Vertices = new List<Vector3>();
-            TrueNormal = Math3D.GetNormal(vertices);
+            TrueNormal = SMath.GetNormal(vertices);
 
             for (int i = 0; i < vertices.Count; i++)
             {
@@ -90,7 +90,7 @@ namespace SPETS.Classes
             }
             Position /= vertices.Count;
 
-            Normal = Math3D.GetNormal(Vertices);
+            Normal = SMath.GetNormal(Vertices);
             FrontFacing = (Normal.X < 0);
         }
     }
