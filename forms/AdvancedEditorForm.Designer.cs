@@ -61,7 +61,6 @@ namespace SPETS.forms
             this.ZoomOutTimer = new System.Windows.Forms.Timer(this.components);
             this.LoadPresetButton = new System.Windows.Forms.Button();
             this.SavePresetButton = new System.Windows.Forms.Button();
-            this.MeshPreview = new System.Windows.Forms.PictureBox();
             this.LoadFileButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.GLMeshPreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
@@ -70,7 +69,6 @@ namespace SPETS.forms
             this.DecalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).BeginInit();
             this.PropertiesPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).BeginInit();
             this.SuspendLayout();
             // 
             // GLMeshPreview
@@ -387,7 +385,7 @@ namespace SPETS.forms
             // 
             this.LoadPresetButton.Location = new System.Drawing.Point(12, 12);
             this.LoadPresetButton.Name = "LoadPresetButton";
-            this.LoadPresetButton.Size = new System.Drawing.Size(129, 31);
+            this.LoadPresetButton.Size = new System.Drawing.Size(123, 31);
             this.LoadPresetButton.TabIndex = 26;
             this.LoadPresetButton.Text = "Load Preset";
             this.LoadPresetButton.UseVisualStyleBackColor = true;
@@ -397,26 +395,11 @@ namespace SPETS.forms
             // 
             this.SavePresetButton.Location = new System.Drawing.Point(12, 49);
             this.SavePresetButton.Name = "SavePresetButton";
-            this.SavePresetButton.Size = new System.Drawing.Size(129, 31);
+            this.SavePresetButton.Size = new System.Drawing.Size(123, 31);
             this.SavePresetButton.TabIndex = 27;
             this.SavePresetButton.Text = "Save Preset";
             this.SavePresetButton.UseVisualStyleBackColor = true;
             this.SavePresetButton.Click += new System.EventHandler(this.SavePresetButton_Click);
-            // 
-            // MeshPreview
-            // 
-            this.MeshPreview.BackgroundImage = global::SPETS.Properties.Resources.grid;
-            this.MeshPreview.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.MeshPreview.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.MeshPreview.Cursor = System.Windows.Forms.Cursors.SizeAll;
-            this.MeshPreview.Location = new System.Drawing.Point(25, 209);
-            this.MeshPreview.Name = "MeshPreview";
-            this.MeshPreview.Size = new System.Drawing.Size(85, 85);
-            this.MeshPreview.TabIndex = 8;
-            this.MeshPreview.TabStop = false;
-            this.MeshPreview.Paint += new System.Windows.Forms.PaintEventHandler(this.MeshPreview_Paint);
-            this.MeshPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.MeshPreview_MouseDown);
-            this.MeshPreview.MouseUp += new System.Windows.Forms.MouseEventHandler(this.MeshPreview_MouseUp);
             // 
             // LoadFileButton
             // 
@@ -446,7 +429,6 @@ namespace SPETS.forms
             this.Controls.Add(this.FactionsCombobox);
             this.Controls.Add(this.ZoomOutButton);
             this.Controls.Add(this.ZoomInButton);
-            this.Controls.Add(this.MeshPreview);
             this.Controls.Add(this.DeleteItemButton);
             this.Controls.Add(this.ImportButton);
             this.Controls.Add(this.ImportListView);
@@ -466,7 +448,6 @@ namespace SPETS.forms
             ((System.ComponentModel.ISupportInitialize)(this.DecalSizeNumeric)).EndInit();
             this.PropertiesPage.ResumeLayout(false);
             this.PropertiesPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.MeshPreview)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -505,7 +486,6 @@ namespace SPETS.forms
         private System.Windows.Forms.Button LoadPresetButton;
         private System.Windows.Forms.Button SavePresetButton;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.PictureBox MeshPreview;
         private System.Windows.Forms.Button LoadFileButton;
         private SharpGL.SceneControl GLMeshPreview;
     }

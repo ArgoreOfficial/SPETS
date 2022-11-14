@@ -46,7 +46,7 @@ namespace SPETS.Classes
                 // loop through each vertex index
                 foreach(int i in face)
                 {
-                    Vector3 vertex = Vertices[i - 1];
+                    Vector3 vertex = Vertices[i];
                     faceVertices.Add(new Vertex(vertex.X, vertex.Y, vertex.Z));
                 }
 
@@ -58,6 +58,7 @@ namespace SPETS.Classes
 
             return polygons;
         }
+
     }
 
     static class MeshLoader

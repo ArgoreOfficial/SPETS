@@ -244,95 +244,26 @@ namespace SPETS.forms
 
         #endregion
 
-        #region MESH_RENDERER
-
-        private void MeshPreview_Paint(object sender, PaintEventArgs e)
-        {
-            if (ImportObjects.Count > 0)
-            {
-                //RenderMeshPreview(e.Graphics, ImportObjects[lastSelected].PreviewZBuffer);
-
-                Form3DRenderer.RenderMesh(e.Graphics, brush, pen, ImportObjects[lastSelected].PreviewZBuffer, RenderSize, RenderOffset);
-
-            }
-        }
-
-        public void RenderMeshPreview(Graphics g, List<VirtualFace> faces)
-        {
-            for (int f = 0; f < faces.Count; f++)
-            {
-                //int zColor = (int)((float)f / (float)faces.Count * 255f);
-                int zColor = (int)((-faces[f].TrueNormal.X + 1f) / 2f * 255f);
-
-                if(zColor > 255) { zColor = 255; }
-                else if(zColor < 0) { zColor = 0; }
-
-                Color faceColor = Color.FromArgb(zColor, zColor, zColor);
-                DrawTriangle(g, faces[f].Vertices, RenderSize, RenderOffset + new Vector2(128,128), faceColor, faces[f].FrontFacing);
-            }
-        }
-
-        void DrawTriangle(Graphics g, List<Vector3> triangle, float size, Vector2 offset, Color faceColor, bool frontFacing)
-        {
-            
-            PointF[] tri = new PointF[triangle.Count + 1];
-            for (int i = 0; i < triangle.Count; i++)
-            {
-                tri[i].X = triangle[i].Z * size + offset.X;
-                tri[i].Y = -triangle[i].Y * size + offset.Y;
-            }
-            tri[tri.Length - 1] = tri[0];
-
-            if (ShowFacesCheckbox.Checked && (frontFacing || !BFCullingCheckbox.Checked))
-            {
-                brush.Color = faceColor;
-                g.FillPolygon(brush, tri);
-            }
-
-            if (ShowWireframeCheckbox.Checked)
-            {
-                if (frontFacing || !BFCullingCheckbox.Checked)
-                {
-                    g.DrawPolygon(pen, tri);
-                }
-            }
-
-            if(ShowVerticesCheckbox.Checked)
-            {
-                if(frontFacing || !BFCullingCheckbox.Checked)
-                {
-                    pen.Color = Color.Red;
-                    for (int i = 0; i < tri.Length; i++)
-                    {
-                        g.DrawRectangle(pen, new Rectangle((int)tri[i].X, (int)tri[i].Y, 1, 1));
-                    }
-                    pen.Color = Color.Black;
-                }
-            }
-        }
-
-        #endregion
-
         #region PREVIEW_CONTROLS
 
         private void ShowFacesCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            MeshPreview.Invalidate();
+            
         }
 
         private void ShowVerticesCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            MeshPreview.Invalidate();
+            
         }
 
         private void ShowWireframeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            MeshPreview.Invalidate();
+            
         }
 
         private void BFCullingCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            MeshPreview.Invalidate();
+            
         }
 
         // mouse pan
@@ -352,14 +283,14 @@ namespace SPETS.forms
             PreviewMouseOrigin.X = -1;
             PreviewMouseOrigin.Y = -1;
             MeshPreviewTimer.Stop();
-            MeshPreview.Invalidate();
+            
         }
 
         private void MeshPreviewTimer_Tick(object sender, EventArgs e)
         {
             RenderOffset.X = LastRenderOffset.X + MousePosition.X - PreviewMouseOrigin.X;
             RenderOffset.Y = LastRenderOffset.Y + MousePosition.Y - PreviewMouseOrigin.Y;
-            MeshPreview.Invalidate();
+            
         }
 
         // zoom
@@ -388,14 +319,14 @@ namespace SPETS.forms
         {
             RenderSize *= 1.01f;
             RenderOffset *= 1.01f;
-            MeshPreview.Invalidate();
+            
         }
 
         private void ZoomOutTimer_Tick(object sender, EventArgs e)
         {
             RenderSize /= 1.01f;
             RenderOffset /= 1.01f;
-            MeshPreview.Invalidate();
+            
         }
 
         #endregion
@@ -453,7 +384,7 @@ namespace SPETS.forms
                 LoadTextureButton.Enabled = true;
             }
 
-            MeshPreview.Invalidate();
+            
             RefreshTexturePreview();
         }
 

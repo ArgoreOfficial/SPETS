@@ -8,6 +8,12 @@ using System.Text;
 using System.Windows.Forms;
 using System.Linq;
 using System.Diagnostics;
+using SPETS.Classes;
+using System.Drawing.Imaging;
+using SharpGL.SceneGraph.Primitives;
+using SharpGL.SceneGraph.Assets;
+using SharpGL.SceneGraph;
+using SharpGL;
 
 namespace SPETS.forms
 {
@@ -25,6 +31,8 @@ namespace SPETS.forms
         public TerrainEditorForm(ActionSelectForm asf)
         {
             InitializeComponent();
+            TerrainPreview.Scene.RenderBoundingVolumes = false;
+
             NewFile = new StringBuilder();
             this.asf = asf;
         }
@@ -76,13 +84,15 @@ namespace SPETS.forms
         {
             HeightmapBox.Width = MapSize;
             HeightmapBox.Height = MapSize;
-            UpdateHeightmapImage();
+            UpdatePreviews();
         }
 
         #region MAP_DRAWING
 
-        public void UpdateHeightmapImage()
+        public void UpdatePreviews()
         {
+            
+            // 2d image
             HeightmapBox.Image = new Bitmap(HeightmapBox.Width, HeightmapBox.Height);
             int max = Heightmap.Max();
 
@@ -98,8 +108,87 @@ namespace SPETS.forms
 
             }
             HeightmapBox.Invalidate();
+            HeightmapBox.Image.Save("heightmaptemp", ImageFormat.Bmp);
+
+            Refresh3D();
+
         }
 
+        void Refresh3D()
+        {
+            // texture
+
+            OpenGL gl = TerrainPreview.OpenGL;
+            Bitmap image = new Bitmap("heightmaptemp");
+            uint[] textures = new uint[1];
+
+            gl.Enable(OpenGL.GL_TEXTURE_2D);
+            gl.GenTextures(1, textures);
+
+            gl.TexImage2D(
+                OpenGL.GL_TEXTURE_2D,
+                0,
+                3,
+                HeightmapBox.Width,
+                HeightmapBox.Height,
+                0,
+                OpenGL.GL_BGR,
+                OpenGL.GL_UNSIGNED_BYTE,
+                image.LockBits(new Rectangle(0,0, HeightmapBox.Width, HeightmapBox.Height),
+                ImageLockMode.ReadOnly,
+                PixelFormat.Format24bppRgb).Scan0);
+
+            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_LINEAR);
+
+            
+
+
+            // 3d model
+            List<Polygon> polygons = new List<Polygon>();
+
+            Polygon mapPolygon = new Polygon();
+            mapPolygon.Material = new Material();
+
+            mapPolygon.Material.Texture.Create(TerrainPreview.OpenGL, "heightmaptemp");
+
+            mapPolygon.CreateFromMap("heightmaptemp", HeightmapBox.Width, HeightmapBox.Height);
+            mapPolygon.Transformation.RotateX = 90f;
+
+            int sizeX = 10;
+            int sizeY = 10;
+
+            mapPolygon.Transformation.ScaleX = sizeX;
+            mapPolygon.Transformation.ScaleZ = sizeY;
+
+            mapPolygon.Transformation.TranslateX = -(sizeX / 2);
+            mapPolygon.Transformation.TranslateY = sizeY / 2;
+
+            polygons.Add(mapPolygon);
+
+            foreach (var polygon in polygons)
+            {
+                polygon.Name = "Mesh";
+
+
+                polygon.Freeze(TerrainPreview.OpenGL);
+                TerrainPreview.Scene.SceneContainer.AddChild(polygon);
+
+                for (int i = 0; i < polygon.Vertices.Count; i++)
+                {
+                    polygon.UVs.Add(new UV(polygon.Vertices[i].X, polygon.Vertices[i].Y));
+                }
+            }
+        }
+
+
+        #endregion
+
+        #region GL_DRAWING 
+
+        private void TerrainPreview_OpenGLDraw(object sender, RenderEventArgs args)
+        {
+
+        }
 
 
         #endregion
@@ -194,7 +283,8 @@ namespace SPETS.forms
             }
             */
             Heightmap2D = SMath.RotateClockwise<int>(Heightmap2D);
-            UpdateHeightmapImage();
+            UpdatePreviews();
         }
+
     }
 }
