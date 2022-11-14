@@ -14,6 +14,9 @@ using SharpGL.SceneGraph.Primitives;
 using SharpGL.SceneGraph.Assets;
 using SharpGL.SceneGraph;
 using SharpGL;
+using SharpGL.SceneGraph.Lighting;
+using SharpGL.Serialization.Wavefront;
+using System.Numerics;
 
 namespace SPETS.forms
 {
@@ -21,9 +24,12 @@ namespace SPETS.forms
     public partial class TerrainEditorForm : Form
     {
         ActionSelectForm asf;
-        List<int> Heightmap = new List<int>();
+        List<int> m_Heightmap = new List<int>();
         int[,] Heightmap2D;
+        Vector3 MapScale;
         int MapSize = 0;
+
+        List<float> m_PrecomputedError = new List<float>();
 
         StringBuilder NewFile;
         string[] file;
@@ -31,10 +37,10 @@ namespace SPETS.forms
         public TerrainEditorForm(ActionSelectForm asf)
         {
             InitializeComponent();
+            this.asf = asf;
             TerrainPreview.Scene.RenderBoundingVolumes = false;
 
             NewFile = new StringBuilder();
-            this.asf = asf;
         }
 
         public void LoadTerrainData(string filepath)
@@ -70,14 +76,48 @@ namespace SPETS.forms
                     int h;
                     if(int.TryParse(splitline.Last(), out h))
                     {
-                        Heightmap.Add(h);
+                        m_Heightmap.Add(h);
+                    }
+                }
+                else if(currentAttribute == "m_PrecomputedError")
+                {
+                    if (!currentline.Contains("data")) continue;
+
+                    float h;
+                    if (float.TryParse(splitline.Last().Replace('.', ','), out h))
+                    {
+                        m_PrecomputedError.Add(h);
+                    }
+                }
+                else if(currentAttribute == "m_Scale")
+                {
+                    if (currentline.Contains("float"))
+                    {
+                        float h;
+                        if (float.TryParse(splitline.Last().Replace('.', ','), out h))
+                        {
+                            if(currentline.Contains("x"))
+                            {
+                                MapScale.X = h;
+                            }
+                            else if (currentline.Contains("y"))
+                            {
+                                MapScale.Y = h;
+                            }
+                            else if (currentline.Contains("z"))
+                            {
+                                MapScale.Z = h;
+                            }
+
+                        }
                     }
                 }
             }
 
             // make 2d heightmap array
-            MapSize = (int)Math.Sqrt(Heightmap.Count);
-            Heightmap2D = SMath.Make2DArray<int>(Heightmap.ToArray(), MapSize, MapSize);
+            MapSize = (int)Math.Sqrt(m_Heightmap.Count);
+            Heightmap2D = SMath.Make2DArray<int>(m_Heightmap.ToArray(), MapSize, MapSize);
+            //Heightmap2D = SMath.Offset<int>(Heightmap2D, new Point(90,0));
         }
 
         private void TerrainEditorForm_Load(object sender, EventArgs e)
@@ -91,10 +131,9 @@ namespace SPETS.forms
 
         public void UpdatePreviews()
         {
-            
             // 2d image
             HeightmapBox.Image = new Bitmap(HeightmapBox.Width, HeightmapBox.Height);
-            int max = Heightmap.Max();
+            int max = m_Heightmap.Max();
 
             //int t = 0;
             for (int y = 0; y < HeightmapBox.Width; y++)
@@ -105,78 +144,73 @@ namespace SPETS.forms
                     ((Bitmap)HeightmapBox.Image).SetPixel(x, y, Color.FromArgb(color, color, color));
                     //t++;
                 }
-
             }
+
             HeightmapBox.Invalidate();
-            HeightmapBox.Image.Save("heightmaptemp", ImageFormat.Bmp);
+            HeightmapBox.Image.Save("heightmaptemp.png");
 
             Refresh3D();
-
         }
 
         void Refresh3D()
         {
-            // texture
+            LoadGLFromFile("mapsquare.obj");
 
-            OpenGL gl = TerrainPreview.OpenGL;
-            Bitmap image = new Bitmap("heightmaptemp");
-            uint[] textures = new uint[1];
+        }
 
-            gl.Enable(OpenGL.GL_TEXTURE_2D);
-            gl.GenTextures(1, textures);
+        void LoadGLFromFile(string file)
+        {
+            // load mesh data (only for obj atm)
+            var obj = new ObjFileFormat();
+            var objScene = obj.LoadData(file);
 
-            gl.TexImage2D(
-                OpenGL.GL_TEXTURE_2D,
-                0,
-                3,
-                HeightmapBox.Width,
-                HeightmapBox.Height,
-                0,
-                OpenGL.GL_BGR,
-                OpenGL.GL_UNSIGNED_BYTE,
-                image.LockBits(new Rectangle(0,0, HeightmapBox.Width, HeightmapBox.Height),
-                ImageLockMode.ReadOnly,
-                PixelFormat.Format24bppRgb).Scan0);
-
-            gl.TexParameter(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_LINEAR);
-
-            
+            // Get the polygons
+            var polygons = objScene.SceneContainer.Traverse<Polygon>().ToList();
 
 
-            // 3d model
-            List<Polygon> polygons = new List<Polygon>();
 
-            Polygon mapPolygon = new Polygon();
-            mapPolygon.Material = new Material();
+            // add polygons
 
-            mapPolygon.Material.Texture.Create(TerrainPreview.OpenGL, "heightmaptemp");
+            // texture stream
+            byte[] bytes = File.ReadAllBytes("heightmaptemp.png");
+            MemoryStream ms = new MemoryStream(bytes);
+            Bitmap bm = (Bitmap)Bitmap.FromStream(ms);
 
-            mapPolygon.CreateFromMap("heightmaptemp", HeightmapBox.Width, HeightmapBox.Height);
-            mapPolygon.Transformation.RotateX = 90f;
-
-            int sizeX = 10;
-            int sizeY = 10;
-
-            mapPolygon.Transformation.ScaleX = sizeX;
-            mapPolygon.Transformation.ScaleZ = sizeY;
-
-            mapPolygon.Transformation.TranslateX = -(sizeX / 2);
-            mapPolygon.Transformation.TranslateY = sizeY / 2;
-
-            polygons.Add(mapPolygon);
+            int MaxHeight = m_Heightmap.Max();
+            float size = 30f;
 
             foreach (var polygon in polygons)
             {
-                polygon.Name = "Mesh";
-
-
-                polygon.Freeze(TerrainPreview.OpenGL);
-                TerrainPreview.Scene.SceneContainer.AddChild(polygon);
-
                 for (int i = 0; i < polygon.Vertices.Count; i++)
                 {
-                    polygon.UVs.Add(new UV(polygon.Vertices[i].X, polygon.Vertices[i].Y));
+                    float x = polygon.Vertices[i].X;
+                    float z = polygon.Vertices[i].Z;
+
+                    int hX = (int)((x + 1) / 2 * (MapSize - 1));
+                    int hY = (int)((z + 1) / 2 * (MapSize - 1));
+                    float y = Heightmap2D[hX, hY] * MapScale.Y / MaxHeight / size;
+
+                    polygon.Vertices[i] = new Vertex(x, y, z);
                 }
+
+
+
+                polygon.Name = new FileInfo(file).Name.Split(".").First();
+                polygon.Transformation.RotateX = 90f;
+                polygon.Transformation.ScaleX = MapSize * MapScale.X / size / 2f;
+                polygon.Transformation.ScaleZ = MapSize * MapScale.Z / size / 2f;
+                //polygon.Transformation.TranslateZ = -MaxHeight / size / 2;
+                // textures
+                polygon.Material = new Material();
+                polygon.Material.Texture = new Texture();
+                polygon.Material.Texture.Create(TerrainPreview.OpenGL, bm);
+                polygon.Material.Texture.Bind(TerrainPreview.OpenGL);
+                polygon.Material.Bind(TerrainPreview.OpenGL);
+
+                polygon.Validate(false);
+                polygon.Parent.RemoveChild(polygon);
+                polygon.Freeze(TerrainPreview.OpenGL);
+                TerrainPreview.Scene.SceneContainer.AddChild(polygon);
             }
         }
 
@@ -195,15 +229,21 @@ namespace SPETS.forms
 
         public void SaveMap()
         {
-            int mapsize = (int)Math.Sqrt(Heightmap.Count);
-            //List<int> newHeight = new List<int>();
-            StringBuilder heightmapSB = new StringBuilder();
-            heightmapSB.AppendLine("  0 vector m_Heights");
-            heightmapSB.AppendLine($"   1 Array Array ({Heightmap.Count} items)");
-            heightmapSB.AppendLine($"    0 int size = {Heightmap.Count}");
+            // heightmap
+            StringBuilder m_HeightsSB = new StringBuilder();
+            m_HeightsSB.AppendLine("  0 vector m_Heights");
+            m_HeightsSB.AppendLine($"   1 Array Array ({m_Heightmap.Count} items)");
+            m_HeightsSB.Append($"    0 int size = {m_Heightmap.Count}");
+
+            // precompiled, idk what this does yet lol
+            StringBuilder m_PrecomputedErrorSB = new StringBuilder();
+            m_PrecomputedErrorSB.AppendLine("  0 vector m_PrecomputedError");
+            m_PrecomputedErrorSB.AppendLine($"   1 Array Array({m_PrecomputedError.Count} items)");
+            m_PrecomputedErrorSB.Append($"    0 int size = {m_PrecomputedError.Count}");
+
             Debug.WriteLine("Saving...");
 
-            string location = "";
+            string currentAttribute = "";
             for (int i = 0; i < file.Length; i++)
             {
                 string currentline = file[i];
@@ -216,33 +256,45 @@ namespace SPETS.forms
                     {
                         if (!line.Contains("m_")) continue;
 
-                        location = line;
-                        if (location == "m_Heights")
+                        currentAttribute = line;
+                        if (currentAttribute == "m_Heights")
                         {
-                            NewFile.AppendLine(heightmapSB.ToString());
+                            NewFile.AppendLine(m_HeightsSB.ToString());
 
-
-                            Debug.WriteLine("   Flipping");
                             int n = 0;
                             // create new heightmap points
-                            for (int y = 0; y < mapsize; y++)
+                            for (int y = 0; y < MapSize; y++)
                             {
-                                for (int x = 0; x < mapsize; x++)
+                                for (int x = 0; x < MapSize; x++)
                                 {
-                                    int newint = Heightmap[x * mapsize + y];
+                                    int newint = m_Heightmap[x * MapSize + y];
                                     NewFile.AppendLine($"    [{n}]");
                                     NewFile.AppendLine($"     0 SInt16 data = {newint}");
                                     n++;
                                 }
                             }
-                            Debug.WriteLine($"   Done. {n}");
+                        }
+                        else if (currentAttribute == "m_PrecomputedError")
+                        {
+                            NewFile.AppendLine(m_PrecomputedErrorSB.ToString());
+
+                            int n = 0;
+                            float highestF = m_PrecomputedError.Max();
+                            // create new precomputedError points
+                            foreach(float f in m_PrecomputedError)
+                            {
+                                NewFile.AppendLine($"    [{n}]");
+                                NewFile.AppendLine($"     0 float data = {highestF.ToString().Replace(',','.')}");
+                                n++;
+                            }
                         }
 
                         break;
                     }
                 }
 
-                if (location == "m_Heights") continue;
+                if (currentAttribute == "m_Heights") continue;
+                if (currentAttribute == "m_PrecomputedError") continue;
 
                 NewFile.AppendLine(currentline);
 
@@ -252,39 +304,17 @@ namespace SPETS.forms
 
         }
 
+
         private void RotateClockwiseButton_Click(object sender, EventArgs e)
         {
-            /*
-            int[,] test = new int[,]
-            {
-                { 1, 2, 3 },
-                { 4, 5, 6},
-                { 7, 8, 9}
-            };
-
-            for (int i = 0; i < test.GetLength(0); i++)
-            {
-                for (int j = 0; j < test.GetLength(1); j++)
-                {
-                    Debug.Write(test[i, j] + ", ");
-                }
-                Debug.WriteLine("");
-            }
-
-            test = SMath.RotateClockwise<int>(test);
-
-            for (int i = 0; i < test.GetLength(0); i++)
-            {
-                for (int j = 0; j < test.GetLength(1); j++)
-                {
-                    Debug.Write(test[i, j] + ", ");
-                }
-                Debug.WriteLine("");
-            }
-            */
             Heightmap2D = SMath.RotateClockwise<int>(Heightmap2D);
+            TerrainPreview.Scene.SceneContainer.Children.Remove(TerrainPreview.Scene.SceneContainer.Children.Last());
             UpdatePreviews();
         }
 
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            SaveMap();
+        }
     }
 }

@@ -32,6 +32,7 @@ namespace SPETS.forms
             this.TerrainPreview = new SharpGL.SceneControl();
             this.HeightmapBox = new System.Windows.Forms.PictureBox();
             this.RotateClockwiseButton = new System.Windows.Forms.Button();
+            this.SaveButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.TerrainPreview)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.HeightmapBox)).BeginInit();
             this.SuspendLayout();
@@ -68,11 +69,22 @@ namespace SPETS.forms
             this.RotateClockwiseButton.UseVisualStyleBackColor = true;
             this.RotateClockwiseButton.Click += new System.EventHandler(this.RotateClockwiseButton_Click);
             // 
+            // SaveButton
+            // 
+            this.SaveButton.Image = global::SPETS.Properties.Resources.icons8_save_32;
+            this.SaveButton.Location = new System.Drawing.Point(1002, 531);
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(42, 42);
+            this.SaveButton.TabIndex = 4;
+            this.SaveButton.UseVisualStyleBackColor = true;
+            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            // 
             // TerrainEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1056, 585);
+            this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.TerrainPreview);
             this.Controls.Add(this.RotateClockwiseButton);
             this.Controls.Add(this.HeightmapBox);
@@ -91,5 +103,6 @@ namespace SPETS.forms
         private System.Windows.Forms.PictureBox HeightmapBox;
         private System.Windows.Forms.Button RotateClockwiseButton;
         private SharpGL.SceneControl TerrainPreview;
+        private System.Windows.Forms.Button SaveButton;
     }
 }

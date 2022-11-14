@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -41,7 +42,12 @@ public static class SMath
         }
         return output;
     }
-
+    /// <summary>
+    /// rotates an array clockwise
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="input"></param>
+    /// <returns></returns>
     public static T[,] RotateClockwise<T>(T[,] input)
     {
         if (input.GetLength(0) != input.GetLength(1)) return input;
@@ -55,6 +61,24 @@ public static class SMath
             for (int j = 0; j < arraySize; ++j)
             {
                 newArray[j, (arraySize - 1) - i] = input[i, j];
+            }
+        }
+
+        return newArray;
+    }
+
+    public static T[,] Offset<T>(T[,] input, Point direction)
+    {
+        T[,] newArray = new T[input.GetLength(0), input.GetLength(1)];
+
+        for (int y = 0; y < input.GetLength(0); y++)
+        {
+            for (int x = 0; x < input.GetLength(1); x++)
+            {
+                int newX = (x + direction.X) % input.GetLength(1);
+                int newY = (y + direction.Y) % input.GetLength(1);
+
+                newArray[newX, newY] = input[x, y];
             }
         }
 

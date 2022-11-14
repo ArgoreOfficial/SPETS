@@ -1,19 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "Yo0RD+FMLSZpIzWYib4/JmqooO+1x4mk6YDwxtqsAsJbrIZkbtDcugNQ9KZ5HeFsNQ7jWl4uJZdLKoymRGhW0Q==",
+  "dgSpecHash": "OjpPyz4JkxL8Eg1L4ZKnJzaqaOwBv7zbTnoEnnMs1m7wBO4yP2eghjct4joes0p8fwC8K9XWnnXMzpmSADL1RQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\jonatan.ostberg\\Desktop\\Github\\SPETS\\SPETS.csproj",
+  "projectFilePath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\sharpgl\\3.1.1\\sharpgl.3.1.1.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\sharpgl.scenegraph\\3.1.1\\sharpgl.scenegraph.3.1.1.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\sharpgl.serialization\\3.1.1\\sharpgl.serialization.3.1.1.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\sharpgl.winforms\\3.1.1\\sharpgl.winforms.3.1.1.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\system.data.datasetextensions\\4.5.0\\system.data.datasetextensions.4.5.0.nupkg.sha512",
-    "C:\\Users\\jonatan.ostberg\\.nuget\\packages\\system.drawing.common\\4.7.0\\system.drawing.common.4.7.0.nupkg.sha512"
+    "C:\\Users\\argor\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\sharpgl\\3.1.1\\sharpgl.3.1.1.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\sharpgl.scenegraph\\3.1.1\\sharpgl.scenegraph.3.1.1.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\sharpgl.serialization\\3.1.1\\sharpgl.serialization.3.1.1.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\sharpgl.winforms\\3.1.1\\sharpgl.winforms.3.1.1.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\system.data.datasetextensions\\4.5.0\\system.data.datasetextensions.4.5.0.nupkg.sha512",
+    "C:\\Users\\argor\\.nuget\\packages\\system.drawing.common\\4.7.0\\system.drawing.common.4.7.0.nupkg.sha512"
   ],
   "logs": []
 }
