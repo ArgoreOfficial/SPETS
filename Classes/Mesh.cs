@@ -46,7 +46,7 @@ namespace SPETS.Classes
                 // loop through each vertex index
                 foreach(int i in face)
                 {
-                    Vector3 vertex = Vertices[i];
+                    Vector3 vertex = Vertices[i - 1];
                     faceVertices.Add(new Vertex(vertex.X, vertex.Y, vertex.Z));
                 }
 

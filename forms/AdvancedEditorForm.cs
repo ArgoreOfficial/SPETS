@@ -17,6 +17,7 @@ using SharpGL.SceneGraph;
 using SharpGL.SceneGraph.Assets;
 using SharpGL;
 using System.Diagnostics;
+using SharpGL.SceneGraph.Cameras;
 
 namespace SPETS.forms
 {
@@ -31,9 +32,9 @@ namespace SPETS.forms
         int lastSelected;
 
         Vector2 RenderOffset = new Vector2(0, 0);
-        float RenderSize = 20;
         Vector2 LastRenderOffset = new Vector2(-1, -1);
         Vector2 PreviewMouseOrigin = new Vector2(-1, -1);
+        float ZoomSpeed = 0.3f;
 
         string[] Factions;
 
@@ -70,10 +71,15 @@ namespace SPETS.forms
 
         private void InitializeScene()
         {
-            //  Add some design-time primitives.
+            //  grid and axis stuff
             GLMeshPreview.Scene.SceneContainer.AddChild(new Grid());
             GLMeshPreview.Scene.SceneContainer.AddChild(new Axies());
             GLMeshPreview.Scene.RenderBoundingVolumes = false;
+            
+            // set 
+            Camera cam = GLMeshPreview.Scene.CurrentCamera;
+            cam.AspectRatio = 1;
+            cam.Position = new Vertex(-5, -5, 5);
         }
 
         void LoadGLFromFile(string file)
@@ -95,7 +101,7 @@ namespace SPETS.forms
                 polygon.Parent.RemoveChild(polygon);
                 polygon.Freeze(GLMeshPreview.OpenGL);
                 GLMeshPreview.Scene.SceneContainer.AddChild(polygon);
-
+                
                 // Add effects.
                 polygon.AddEffect(new OpenGLAttributesEffect());
             }
@@ -317,16 +323,26 @@ namespace SPETS.forms
 
         private void ZoomInTimer_Tick(object sender, EventArgs e)
         {
-            RenderSize *= 1.01f;
-            RenderOffset *= 1.01f;
+            Vertex newPosition = GLMeshPreview.Scene.CurrentCamera.Position;
+            newPosition.X += ZoomSpeed;
+            newPosition.Y += ZoomSpeed;
+            newPosition.Z -= ZoomSpeed;
             
+            if (newPosition.Magnitude() < 1f) newPosition.Normalize();
+
+            GLMeshPreview.Scene.CurrentCamera.Position = newPosition;
         }
 
         private void ZoomOutTimer_Tick(object sender, EventArgs e)
         {
-            RenderSize /= 1.01f;
-            RenderOffset /= 1.01f;
-            
+            Vertex newPosition = GLMeshPreview.Scene.CurrentCamera.Position;
+            newPosition.X -= ZoomSpeed;
+            newPosition.Y -= ZoomSpeed;
+            newPosition.Z += ZoomSpeed;
+
+            if (newPosition.Magnitude() < 1f) newPosition.Normalize();
+
+            GLMeshPreview.Scene.CurrentCamera.Position = newPosition;
         }
 
         #endregion
