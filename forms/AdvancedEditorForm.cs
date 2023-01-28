@@ -436,38 +436,27 @@ namespace SPETS.forms
 
         private void DeleteItemButton_Click(object sender, EventArgs e)
         {
-            
+
+            // remove mesh from scene 
+            for (int i = 0; i < GLMeshPreview.Scene.SceneContainer.Children.Count; i++)
+            {
+                if (GLMeshPreview.Scene.SceneContainer.Children[i].Name == ImportObjects[lastSelected].ModelName)
+                {
+                    GLMeshPreview.Scene.SceneContainer.RemoveChild(GLMeshPreview.Scene.SceneContainer.Children[i]);
+                    break;
+                }
+            }
+
+            // remove from list
             for (int i = ImportListView.SelectedIndices.Count - 1; i >= 0; i--)
             {
                 ImportObjects.RemoveAt(ImportListView.SelectedIndices[i]);
             }
 
-            for (int i = 0; i < GLMeshPreview.Scene.SceneContainer.Children.Count; i++)
-            {
-                if (GLMeshPreview.Scene.SceneContainer.Children[i].Name == ImportObjects[lastSelected].ModelName)
-                {
-                    for (int p = 0; p < GLMeshPreview.Scene.SceneContainer.Children[i].Children.Count; p++)
-                    {
-                        // unfreeze
-                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Unfreeze(GLMeshPreview.OpenGL);
+            lastSelected = 0;
+            ImportListView.SelectedIndices.Clear();
 
-                        // create and set material
-                        Material m = new Material();
-                        m.Diffuse = Color.FromArgb(128, 255, 0, 0);
-                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Material = m;
-
-                        // freeze
-                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Freeze(GLMeshPreview.OpenGL);
-                    }
-
-                    // move to last in list, that way it'll be drawn on top of everything else
-                    var scenelement = GLMeshPreview.Scene.SceneContainer.Children[i];
-                    GLMeshPreview.Scene.SceneContainer.RemoveChild(GLMeshPreview.Scene.SceneContainer.Children[i]);
-                    GLMeshPreview.Scene.SceneContainer.AddChild(scenelement);
-                    break;
-                }
-            }
-
+            // refresh stuff
             RefreshObjectList();
             RefreshMeshPreview();
         }
@@ -514,6 +503,7 @@ namespace SPETS.forms
             }
 
             RefreshMeshPreview(ImportListView.SelectedIndices.Count == 0);
+            RefreshTexturePreview();
         }
 
         private void DecalDistanceNumeric_ValueChanged(object sender, EventArgs e)
