@@ -125,7 +125,7 @@ namespace SPETS.forms
             this.TexturePreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.TexturePreview.TabIndex = 1;
             this.TexturePreview.TabStop = false;
-            this.TextureTooltip.SetToolTip(this.TexturePreview, "Decal to place on every face.\r\nUnavailable for imported blueprints.");
+            this.TextureTooltip.SetToolTip(this.TexturePreview, "The decal to use");
             // 
             // DecalDistanceNumeric
             // 

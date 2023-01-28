@@ -18,17 +18,18 @@ using SharpGL.SceneGraph.Assets;
 using SharpGL;
 using System.Diagnostics;
 using SharpGL.SceneGraph.Cameras;
+using SharpGL.SceneGraph.Core;
 
 namespace SPETS.forms
 {
 
     public partial class AdvancedEditorForm : Form
     {
+
+
         ActionSelectForm asf;
         List<ImportObject> ImportObjects = new List<ImportObject>();
 
-        Pen pen;
-        SolidBrush brush;
         int lastSelected;
 
         Vector2 GLRotation = new Vector2(0.785f, 0.785f);
@@ -48,8 +49,7 @@ namespace SPETS.forms
             UpdateGLCamera();
 
             this.asf = asf;
-            pen = new Pen(Color.Black, 1);
-            brush = new SolidBrush(Color.Gray);
+
         }
         private void AdvancedEditorForm_Load(object sender, EventArgs e)
         {
@@ -74,6 +74,16 @@ namespace SPETS.forms
 
         private void InitializeScene()
         {
+            // GL Settings
+            OpenGL gl = GLMeshPreview.OpenGL;
+            gl.Enable(OpenGL.GL_CULL_FACE);
+            gl.Enable(OpenGL.GL_BLEND);
+
+            //gl.Disable(OpenGL.GL_DEPTH_TEST);
+
+            gl.CullFace(OpenGL.GL_BACK);
+            gl.BlendFunc(OpenGL.GL_SRC_ALPHA, OpenGL.GL_ONE_MINUS_SRC_ALPHA);
+
             //  grid and axis stuff
             GLMeshPreview.Scene.SceneContainer.AddChild(new Grid());
             GLMeshPreview.Scene.SceneContainer.AddChild(new Axies());
@@ -93,7 +103,8 @@ namespace SPETS.forms
             
             // Get the polygons
             var polygons = objScene.SceneContainer.Traverse<Polygon>().ToList();
-            
+
+
             // add polygons
             foreach (var polygon in polygons)
             {
@@ -115,22 +126,67 @@ namespace SPETS.forms
             // Get the polygons
             //var polygons = objScene.SceneContainer.Traverse<Polygon>().ToList();
             var polygons = mesh.GetPolygons();
-            
+            var meshroot = new SceneElement();
+            meshroot.Name = name;
+            GLMeshPreview.Scene.SceneContainer.AddChild(meshroot);
+
             // Add each polygon (There is only one in ducky.obj)
             foreach (var polygon in polygons)
             {
-                polygon.Name = "Mesh";
+                polygon.Name = "polygon";
                 polygon.Transformation.RotateX = 90f;
 
-
                 polygon.Freeze(GLMeshPreview.OpenGL);
-                GLMeshPreview.Scene.SceneContainer.AddChild(polygon);
-
+                GLMeshPreview.Scene.SceneContainer.Children.Last().AddChild(polygon);
                 // Add effects.
                 //polygon.AddEffect(new OpenGLAttributesEffect());
             }
 
-            Debug.WriteLine(GLMeshPreview.Scene.SceneContainer.Children[1].Name);
+        }
+
+        void RefreshMeshPreview(bool showall = false)
+        {
+            for (int i = 0; i < GLMeshPreview.Scene.SceneContainer.Children.Count; i++)
+            {
+                if (!showall &&
+                    GLMeshPreview.Scene.SceneContainer.Children[i].Name.Contains(".obj") &&
+                    GLMeshPreview.Scene.SceneContainer.Children[i].Name != ImportObjects[lastSelected].ModelName)
+                {
+                    GLMeshPreview.Scene.SceneContainer.Children[i].IsEnabled = false;
+                }
+                else
+                {
+                    GLMeshPreview.Scene.SceneContainer.Children[i].IsEnabled = true;
+                }
+            }
+        }
+
+        void ReplaceSelectedMaterial(Material mat)
+        {
+            // replace mesh material
+            for (int i = 0; i < GLMeshPreview.Scene.SceneContainer.Children.Count; i++)
+            {
+                if (GLMeshPreview.Scene.SceneContainer.Children[i].Name == ImportObjects[lastSelected].ModelName)
+                {
+                    for (int p = 0; p < GLMeshPreview.Scene.SceneContainer.Children[i].Children.Count; p++)
+                    {
+                        // unfreeze
+                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Unfreeze(GLMeshPreview.OpenGL);
+
+                        // set material
+                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Material = mat;
+
+                        // freeze
+                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Freeze(GLMeshPreview.OpenGL);
+                    }
+
+                    // move to last in list, that way it'll be drawn on top of everything else
+                    var scenelement = GLMeshPreview.Scene.SceneContainer.Children[i];
+                    GLMeshPreview.Scene.SceneContainer.RemoveChild(GLMeshPreview.Scene.SceneContainer.Children[i]);
+                    GLMeshPreview.Scene.SceneContainer.AddChild(scenelement);
+                    break;
+                }
+            }
         }
 
         #endregion
@@ -157,7 +213,12 @@ namespace SPETS.forms
                     ImportObjects[lastSelected].SetTexture(Image.FromFile(ofd.FileName), ofd.FileName);
                     ImportObjects[lastSelected].Type = "decalmask";
 
+                    Material m = new Material();
+                    m.Diffuse = Color.FromArgb(128, 255, 0, 0);
+                    ReplaceSelectedMaterial(m);
+
                     RefreshTexturePreview();
+                    RefreshMeshPreview();
                     RefreshObjectList();
 
                     // copy files to root folders
@@ -173,11 +234,17 @@ namespace SPETS.forms
         {
             if (ImportListView.SelectedIndices.Count > 0)
             {
+                Material m = new Material();
+                m.Diffuse = Color.FromArgb(255, 255, 255, 255);
+                ReplaceSelectedMaterial(m);
+
                 ImportObjects[lastSelected].ClearTexture();
                 RefreshTexturePreview();
                 RefreshObjectList();
             }
         }
+
+
 
         void LoadMesh(string fileName)
         {
@@ -200,6 +267,7 @@ namespace SPETS.forms
                             fileName,
                             "mesh"
                         ));
+                    lastSelected = ImportObjects.Count - 1;
                 }
 
                 // copy files to root folders
@@ -211,7 +279,8 @@ namespace SPETS.forms
             //LoadGLFromFile(fileName);
             FileInfo fileinfo = new FileInfo(fileName);
             
-            LoadGLFromMesh(loadMesh, fileinfo.Name.Replace(fileinfo.Extension, ""));
+            LoadGLFromMesh(loadMesh, fileinfo.Name);
+            RefreshTexturePreview();
         }
 
         void LoadBlueprint(string fileName)
@@ -392,8 +461,35 @@ namespace SPETS.forms
             {
                 ImportObjects.RemoveAt(ImportListView.SelectedIndices[i]);
             }
+
+            for (int i = 0; i < GLMeshPreview.Scene.SceneContainer.Children.Count; i++)
+            {
+                if (GLMeshPreview.Scene.SceneContainer.Children[i].Name == ImportObjects[lastSelected].ModelName)
+                {
+                    for (int p = 0; p < GLMeshPreview.Scene.SceneContainer.Children[i].Children.Count; p++)
+                    {
+                        // unfreeze
+                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Unfreeze(GLMeshPreview.OpenGL);
+
+                        // create and set material
+                        Material m = new Material();
+                        m.Diffuse = Color.FromArgb(128, 255, 0, 0);
+                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Material = m;
+
+                        // freeze
+                        ((Polygon)GLMeshPreview.Scene.SceneContainer.Children[i].Children[p]).Freeze(GLMeshPreview.OpenGL);
+                    }
+
+                    // move to last in list, that way it'll be drawn on top of everything else
+                    var scenelement = GLMeshPreview.Scene.SceneContainer.Children[i];
+                    GLMeshPreview.Scene.SceneContainer.RemoveChild(GLMeshPreview.Scene.SceneContainer.Children[i]);
+                    GLMeshPreview.Scene.SceneContainer.AddChild(scenelement);
+                    break;
+                }
+            }
+
             RefreshObjectList();
-            
+            RefreshMeshPreview();
         }
 
         void RefreshObjectList()
@@ -412,7 +508,7 @@ namespace SPETS.forms
 
         void RefreshTexturePreview()
         {
-            if(ImportListView.SelectedIndices.Count > 0)
+            if (ImportListView.SelectedIndices.Count > 0)
             {
                 TexturePreview.Image = ImportObjects[lastSelected].Texture;
                 DecalSizeNumeric.Value = (decimal)ImportObjects[lastSelected].TextureSize;
@@ -427,6 +523,7 @@ namespace SPETS.forms
                 lastSelected = ImportListView.SelectedIndices[0];
             }
 
+            // doesn't do anything atm since blueprints can't be imported (for now)
             if(ImportObjects[lastSelected].Type == "blueprint")
             {
                 LoadTextureButton.Enabled = false;
@@ -436,8 +533,7 @@ namespace SPETS.forms
                 LoadTextureButton.Enabled = true;
             }
 
-            
-            RefreshTexturePreview();
+            RefreshMeshPreview(ImportListView.SelectedIndices.Count == 0);
         }
 
         private void DecalDistanceNumeric_ValueChanged(object sender, EventArgs e)

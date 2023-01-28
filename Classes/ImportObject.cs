@@ -116,8 +116,8 @@ namespace SPETS.Classes
 
             Texture = null;
             TextureName = "";
-            TextureDistance = 0.749f;
-            TextureSize = 0.999f;
+            TextureDistance = 0.75f;
+            TextureSize = 1.0f;
 
 
             string[] imageTypes = new string[]
