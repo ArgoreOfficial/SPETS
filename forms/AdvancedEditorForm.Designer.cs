@@ -73,7 +73,8 @@ namespace SPETS.forms
             // 
             // GLMeshPreview
             // 
-            this.GLMeshPreview.DrawFPS = false;
+            this.GLMeshPreview.DrawFPS = true;
+            this.GLMeshPreview.FrameRate = 60;
             this.GLMeshPreview.Location = new System.Drawing.Point(142, 13);
             this.GLMeshPreview.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.GLMeshPreview.Name = "GLMeshPreview";
@@ -82,6 +83,8 @@ namespace SPETS.forms
             this.GLMeshPreview.RenderTrigger = SharpGL.RenderTrigger.TimerBased;
             this.GLMeshPreview.Size = new System.Drawing.Size(261, 255);
             this.GLMeshPreview.TabIndex = 29;
+            this.GLMeshPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.GLMeshPreview_MouseDown);
+            this.GLMeshPreview.MouseUp += new System.Windows.Forms.MouseEventHandler(this.GLMeshPreview_MouseUp);
             // 
             // ImportListView
             // 

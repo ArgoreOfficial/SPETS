@@ -31,9 +31,11 @@ namespace SPETS.forms
         SolidBrush brush;
         int lastSelected;
 
-        Vector2 RenderOffset = new Vector2(0, 0);
-        Vector2 LastRenderOffset = new Vector2(-1, -1);
-        Vector2 PreviewMouseOrigin = new Vector2(-1, -1);
+        Vector2 GLRotation = new Vector2(0.785f, 0.785f);
+        float GLDistance = 4f;
+
+        bool Panning = false;
+        Point LastMousePos;
         float ZoomSpeed = 0.3f;
 
         string[] Factions;
@@ -43,6 +45,7 @@ namespace SPETS.forms
         {
             InitializeComponent();
             InitializeScene();
+            UpdateGLCamera();
 
             this.asf = asf;
             pen = new Pen(Color.Black, 1);
@@ -107,7 +110,7 @@ namespace SPETS.forms
             }
         }
 
-        void LoadGLFromMesh(Mesh mesh)
+        void LoadGLFromMesh(Mesh mesh, string name)
         {
             // Get the polygons
             //var polygons = objScene.SceneContainer.Traverse<Polygon>().ToList();
@@ -117,7 +120,7 @@ namespace SPETS.forms
             foreach (var polygon in polygons)
             {
                 polygon.Name = "Mesh";
-                polygon.Transformation.RotateX = 90f; // So that Ducky appears in the right orientation
+                polygon.Transformation.RotateX = 90f;
 
 
                 polygon.Freeze(GLMeshPreview.OpenGL);
@@ -126,6 +129,8 @@ namespace SPETS.forms
                 // Add effects.
                 //polygon.AddEffect(new OpenGLAttributesEffect());
             }
+
+            Debug.WriteLine(GLMeshPreview.Scene.SceneContainer.Children[1].Name);
         }
 
         #endregion
@@ -140,18 +145,27 @@ namespace SPETS.forms
             DialogResult dr = ofd.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                
-                ImportObjects[lastSelected].SetTexture(Image.FromFile(ofd.FileName), ofd.FileName);
 
-                RefreshTexturePreview();
-                RefreshObjectList();
+                DialogResult dialogResult = MessageBox.Show(
+                    "You are about to turn a mesh into a decal mask. This means the mesh will be used as a decal placement template, and won't import any vertices or faces. Proceed?",
+                    "Turn mesh into decalmask?",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
 
-                // copy files to root folders
-                string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                FileInfo info = new FileInfo(ofd.FileName);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    ImportObjects[lastSelected].SetTexture(Image.FromFile(ofd.FileName), ofd.FileName);
+                    ImportObjects[lastSelected].Type = "decalmask";
+
+                    RefreshTexturePreview();
+                    RefreshObjectList();
+
+                    // copy files to root folders
+                    string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    FileInfo info = new FileInfo(ofd.FileName);
                 
-                File.Copy(info.FullName, exePath + "\\Images\\" + info.FullName.Split("\\").Last(), true);
-                
+                    File.Copy(info.FullName, exePath + "\\Images\\" + info.FullName.Split("\\").Last(), true);
+                }
             }
         }
 
@@ -195,7 +209,9 @@ namespace SPETS.forms
             }
 
             //LoadGLFromFile(fileName);
-            LoadGLFromMesh(loadMesh);
+            FileInfo fileinfo = new FileInfo(fileName);
+            
+            LoadGLFromMesh(loadMesh, fileinfo.Name.Replace(fileinfo.Extension, ""));
         }
 
         void LoadBlueprint(string fileName)
@@ -223,7 +239,7 @@ namespace SPETS.forms
         private void LoadFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "Tank File|*.OBJ;*.BLUEPRINT";
+            ofd.Filter = "Wavefront|*.OBJ";
             ofd.Multiselect = true;
 
             DialogResult dr = ofd.ShowDialog();
@@ -237,10 +253,10 @@ namespace SPETS.forms
                     {
                         LoadMesh(fileName);
                     }
-                    else if(extension == ".blueprint")
+                    /*else if(extension == ".blueprint") // might fix this at some point? we'll see
                     {
                         LoadBlueprint(fileName);
-                    }
+                    }*/
                 }
             }
             
@@ -273,30 +289,44 @@ namespace SPETS.forms
         }
 
         // mouse pan
-        private void MeshPreview_MouseDown(object sender, MouseEventArgs e)
+
+        private void GLMeshPreview_MouseDown(object sender, MouseEventArgs e)
         {
-            if(PreviewMouseOrigin.X < 0 && PreviewMouseOrigin.Y < 0)
+            if (!Panning)
             {
-                LastRenderOffset = RenderOffset;
-                PreviewMouseOrigin = new Vector2(MousePosition.X, MousePosition.Y);
+                LastMousePos = MousePosition;
+                Panning = true;
 
                 MeshPreviewTimer.Start();
+                Debug.WriteLine("MouseDown");
             }
         }
 
-        private void MeshPreview_MouseUp(object sender, MouseEventArgs e)
+        private void GLMeshPreview_MouseUp(object sender, MouseEventArgs e)
         {
-            PreviewMouseOrigin.X = -1;
-            PreviewMouseOrigin.Y = -1;
+            Panning = false;
             MeshPreviewTimer.Stop();
-            
+            Debug.WriteLine("MouseUp");
         }
 
         private void MeshPreviewTimer_Tick(object sender, EventArgs e)
         {
-            RenderOffset.X = LastRenderOffset.X + MousePosition.X - PreviewMouseOrigin.X;
-            RenderOffset.Y = LastRenderOffset.Y + MousePosition.Y - PreviewMouseOrigin.Y;
-            
+            Point mouseDelta = new Point(MousePosition.X - LastMousePos.X, MousePosition.Y - LastMousePos.Y);
+
+            GLRotation.X -= mouseDelta.X * 0.003f;
+            GLRotation.Y += mouseDelta.Y * 0.003f;
+
+            if (GLRotation.Y > 1.5f)
+            {
+                GLRotation.Y = 1.5f;
+            }
+            else if (GLRotation.Y < -1.5f)
+            {
+                GLRotation.Y = -1.5f;
+            }
+
+            LastMousePos = MousePosition;
+            UpdateGLCamera();
         }
 
         // zoom
@@ -323,26 +353,32 @@ namespace SPETS.forms
 
         private void ZoomInTimer_Tick(object sender, EventArgs e)
         {
-            Vertex newPosition = GLMeshPreview.Scene.CurrentCamera.Position;
-            newPosition.X += ZoomSpeed;
-            newPosition.Y += ZoomSpeed;
-            newPosition.Z -= ZoomSpeed;
-            
-            if (newPosition.Magnitude() < 1f) newPosition.Normalize();
-
-            GLMeshPreview.Scene.CurrentCamera.Position = newPosition;
+            GLDistance -= ZoomSpeed;
+            UpdateGLCamera();
         }
 
         private void ZoomOutTimer_Tick(object sender, EventArgs e)
         {
-            Vertex newPosition = GLMeshPreview.Scene.CurrentCamera.Position;
-            newPosition.X -= ZoomSpeed;
-            newPosition.Y -= ZoomSpeed;
-            newPosition.Z += ZoomSpeed;
+            GLDistance += ZoomSpeed;
+            UpdateGLCamera();
+        }
 
-            if (newPosition.Magnitude() < 1f) newPosition.Normalize();
+        /// <summary>
+        /// updates sharpgl camera position
+        /// </summary>
+        private void UpdateGLCamera()
+        {
+            /*
+             * x = cos(yaw)*cos(pitch)
+               y = sin(yaw)*cos(pitch)
+               z = sin(pitch)
+             */
+            Vertex position = new Vertex(
+                MathF.Cos(GLRotation.X) * MathF.Cos(GLRotation.Y) * GLDistance,
+                MathF.Sin(GLRotation.X) * MathF.Cos(GLRotation.Y) * GLDistance,
+                MathF.Sin(GLRotation.Y) * GLDistance);
 
-            GLMeshPreview.Scene.CurrentCamera.Position = newPosition;
+            GLMeshPreview.Scene.CurrentCamera.Position = position;
         }
 
         #endregion
@@ -649,6 +685,7 @@ namespace SPETS.forms
                 }
             }
         }
+
 
         #endregion
 
