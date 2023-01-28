@@ -31,9 +31,9 @@ namespace SPETS
             string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string[] folders = new string[]
             {
-                "Images",
-                "Meshes",
-                "Blueprints"
+                "cache\\images",
+                "cache\\meshes",
+                "cache\\blueprints"
             };
             foreach(string folder in folders)
             {

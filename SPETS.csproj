@@ -38,7 +38,7 @@
     <None Update="mapsquare.obj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\NGonLookup.txt">
+    <None Update="resources\NGonLookup.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="uv.png">

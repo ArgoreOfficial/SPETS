@@ -46,16 +46,12 @@ namespace SPETS.forms
             this.ZoomInButton = new System.Windows.Forms.Button();
             this.ZoomOutButton = new System.Windows.Forms.Button();
             this.FactionsCombobox = new System.Windows.Forms.ComboBox();
-            this.ShowWireframeCheckbox = new System.Windows.Forms.CheckBox();
             this.PropertiesTabControl = new System.Windows.Forms.TabControl();
             this.DecalPage = new System.Windows.Forms.TabPage();
             this.DecalSizeNumeric = new System.Windows.Forms.NumericUpDown();
             this.DecalSizeLabel = new System.Windows.Forms.Label();
             this.PropertiesPage = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
-            this.ShowVerticesCheckbox = new System.Windows.Forms.CheckBox();
-            this.ShowFacesCheckbox = new System.Windows.Forms.CheckBox();
-            this.BFCullingCheckbox = new System.Windows.Forms.CheckBox();
             this.MeshPreviewTimer = new System.Windows.Forms.Timer(this.components);
             this.ZoomInTimer = new System.Windows.Forms.Timer(this.components);
             this.ZoomOutTimer = new System.Windows.Forms.Timer(this.components);
@@ -238,19 +234,6 @@ namespace SPETS.forms
             this.FactionsCombobox.Size = new System.Drawing.Size(148, 23);
             this.FactionsCombobox.TabIndex = 19;
             // 
-            // ShowWireframeCheckbox
-            // 
-            this.ShowWireframeCheckbox.AutoSize = true;
-            this.ShowWireframeCheckbox.Checked = true;
-            this.ShowWireframeCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowWireframeCheckbox.Location = new System.Drawing.Point(12, 120);
-            this.ShowWireframeCheckbox.Name = "ShowWireframeCheckbox";
-            this.ShowWireframeCheckbox.Size = new System.Drawing.Size(113, 19);
-            this.ShowWireframeCheckbox.TabIndex = 20;
-            this.ShowWireframeCheckbox.Text = "Show Wireframe";
-            this.ShowWireframeCheckbox.UseVisualStyleBackColor = true;
-            this.ShowWireframeCheckbox.CheckedChanged += new System.EventHandler(this.ShowWireframeCheckbox_CheckedChanged);
-            // 
             // PropertiesTabControl
             // 
             this.PropertiesTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -334,41 +317,6 @@ namespace SPETS.forms
             this.label1.TabIndex = 0;
             this.label1.Text = "To Be Added";
             // 
-            // ShowVerticesCheckbox
-            // 
-            this.ShowVerticesCheckbox.AutoSize = true;
-            this.ShowVerticesCheckbox.Location = new System.Drawing.Point(12, 145);
-            this.ShowVerticesCheckbox.Name = "ShowVerticesCheckbox";
-            this.ShowVerticesCheckbox.Size = new System.Drawing.Size(98, 19);
-            this.ShowVerticesCheckbox.TabIndex = 23;
-            this.ShowVerticesCheckbox.Text = "Show Vertices";
-            this.ShowVerticesCheckbox.UseVisualStyleBackColor = true;
-            this.ShowVerticesCheckbox.CheckedChanged += new System.EventHandler(this.ShowVerticesCheckbox_CheckedChanged);
-            // 
-            // ShowFacesCheckbox
-            // 
-            this.ShowFacesCheckbox.AutoSize = true;
-            this.ShowFacesCheckbox.Checked = true;
-            this.ShowFacesCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ShowFacesCheckbox.Location = new System.Drawing.Point(12, 95);
-            this.ShowFacesCheckbox.Name = "ShowFacesCheckbox";
-            this.ShowFacesCheckbox.Size = new System.Drawing.Size(87, 19);
-            this.ShowFacesCheckbox.TabIndex = 24;
-            this.ShowFacesCheckbox.Text = "Show Faces";
-            this.ShowFacesCheckbox.UseVisualStyleBackColor = true;
-            this.ShowFacesCheckbox.CheckedChanged += new System.EventHandler(this.ShowFacesCheckbox_CheckedChanged);
-            // 
-            // BFCullingCheckbox
-            // 
-            this.BFCullingCheckbox.AutoSize = true;
-            this.BFCullingCheckbox.Location = new System.Drawing.Point(12, 170);
-            this.BFCullingCheckbox.Name = "BFCullingCheckbox";
-            this.BFCullingCheckbox.Size = new System.Drawing.Size(114, 19);
-            this.BFCullingCheckbox.TabIndex = 25;
-            this.BFCullingCheckbox.Text = "Backface Culling";
-            this.BFCullingCheckbox.UseVisualStyleBackColor = true;
-            this.BFCullingCheckbox.CheckedChanged += new System.EventHandler(this.BFCullingCheckbox_CheckedChanged);
-            // 
             // MeshPreviewTimer
             // 
             this.MeshPreviewTimer.Interval = 1;
@@ -424,11 +372,7 @@ namespace SPETS.forms
             this.Controls.Add(this.LoadFileButton);
             this.Controls.Add(this.SavePresetButton);
             this.Controls.Add(this.LoadPresetButton);
-            this.Controls.Add(this.BFCullingCheckbox);
-            this.Controls.Add(this.ShowFacesCheckbox);
-            this.Controls.Add(this.ShowVerticesCheckbox);
             this.Controls.Add(this.PropertiesTabControl);
-            this.Controls.Add(this.ShowWireframeCheckbox);
             this.Controls.Add(this.FactionsCombobox);
             this.Controls.Add(this.ZoomOutButton);
             this.Controls.Add(this.ZoomInButton);
@@ -452,7 +396,6 @@ namespace SPETS.forms
             this.PropertiesPage.ResumeLayout(false);
             this.PropertiesPage.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -473,14 +416,10 @@ namespace SPETS.forms
         private System.Windows.Forms.Button ZoomInButton;
         private System.Windows.Forms.Button ZoomOutButton;
         private System.Windows.Forms.ComboBox FactionsCombobox;
-        private System.Windows.Forms.CheckBox ShowWireframeCheckbox;
         private System.Windows.Forms.TabControl PropertiesTabControl;
         private System.Windows.Forms.TabPage PropertiesPage;
         private System.Windows.Forms.TabPage DecalPage;
         private System.Windows.Forms.ColumnHeader ItemTypeColumnHeader;
-        private System.Windows.Forms.CheckBox ShowVerticesCheckbox;
-        private System.Windows.Forms.CheckBox ShowFacesCheckbox;
-        private System.Windows.Forms.CheckBox BFCullingCheckbox;
         private System.Windows.Forms.Timer MeshPreviewTimer;
         private System.Windows.Forms.Timer ZoomInTimer;
         private System.Windows.Forms.Timer ZoomOutTimer;

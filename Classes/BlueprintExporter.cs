@@ -88,12 +88,12 @@ namespace SPETS.Classes
                 }
             }
 
-            if(!Directory.Exists("Exports"))
+            if(!Directory.Exists("chache\\exports"))
             {
-                Directory.CreateDirectory("Exports");
+                Directory.CreateDirectory("chache\\exports");
             }
-            File.WriteAllText($"Exports/{saveName}.obj", saveFileSB.ToString());
-            Process.Start("Exports");
+            File.WriteAllText($"chache\\exports\\{saveName}.obj", saveFileSB.ToString());
+            Process.Start("chache\\exports");
         }
     }
 }

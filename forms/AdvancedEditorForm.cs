@@ -225,7 +225,7 @@ namespace SPETS.forms
                     string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     FileInfo info = new FileInfo(ofd.FileName);
                 
-                    File.Copy(info.FullName, exePath + "\\Images\\" + info.FullName.Split("\\").Last(), true);
+                    File.Copy(info.FullName, exePath + "\\cache\\images\\" + info.FullName.Split("\\").Last(), true);
                 }
             }
         }
@@ -273,7 +273,7 @@ namespace SPETS.forms
                 // copy files to root folders
                 string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 FileInfo info = new FileInfo(fileName);
-                File.Copy(info.FullName, exePath + "\\Meshes\\" + info.FullName.Split("\\").Last(), true);
+                File.Copy(info.FullName, exePath + "\\cache\\meshes\\" + info.FullName.Split("\\").Last(), true);
             }
 
             //LoadGLFromFile(fileName);
@@ -302,7 +302,7 @@ namespace SPETS.forms
             // copy files to root folders
             string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             FileInfo info = new FileInfo(fileName);
-            File.Copy(info.FullName, exePath + "\\Blueprints\\" + info.FullName.Split("\\").Last(), true);
+            File.Copy(info.FullName, exePath + "\\cache\\blueprints\\" + info.FullName.Split("\\").Last(), true);
         }
 
         private void LoadFileButton_Click(object sender, EventArgs e)
@@ -336,26 +336,6 @@ namespace SPETS.forms
         #endregion
 
         #region PREVIEW_CONTROLS
-
-        private void ShowFacesCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void ShowVerticesCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void ShowWireframeCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void BFCullingCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            
-        }
 
         // mouse pan
 

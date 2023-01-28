@@ -12,7 +12,7 @@ public static class ResourceHandler
 
     public static void Load()
     {
-        NGonLookup = JsonConvert.DeserializeObject<List<List<int>>>(File.ReadAllText("Resources/NGonLookup.txt"));
+        NGonLookup = JsonConvert.DeserializeObject<List<List<int>>>(File.ReadAllText("resources/NGonLookup.txt"));
 
     }
 

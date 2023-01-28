@@ -24,11 +24,11 @@ namespace SPETS.Classes
             Mesh mesh = null;
             if (Type == "mesh")
             {
-                mesh = MeshLoader.FromOBJ(exeRoot + "\\Meshes\\" + ModelName);
+                mesh = MeshLoader.FromOBJ(exeRoot + "\\cache\\meshes\\" + ModelName);
             }
             else if (Type == "blueprint")
             {
-                List<Mesh> blueprintMeshes = MeshLoader.FromBlueprint(exeRoot + "\\Blueprints\\" + ModelName.Split("/")[0]);
+                List<Mesh> blueprintMeshes = MeshLoader.FromBlueprint(exeRoot + "\\cache\\blueprints\\" + ModelName.Split("/")[0]);
 
                 int i;
                 if(int.TryParse(ModelName.Split("/")[1], out i))
@@ -43,7 +43,7 @@ namespace SPETS.Classes
 
                 if(TextureName != "")
                 {
-                    iObj.SetTexture(Image.FromFile(exeRoot + "\\Images\\" + TextureName), exeRoot + "\\Images\\" + TextureName);
+                    iObj.SetTexture(Image.FromFile(exeRoot + "\\cache\\images\\" + TextureName), exeRoot + "\\cache\\images\\" + TextureName);
                     iObj.SetTextureDist(TextureDistance);
                     iObj.SetTextureSize(TextureSize);
                 }
@@ -138,7 +138,7 @@ namespace SPETS.Classes
                     string exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     FileInfo info = new FileInfo(file);
 
-                    File.Copy(info.FullName, exePath + "\\Images\\" + info.FullName.Split("\\").Last(), true);
+                    File.Copy(info.FullName, exePath + "\\cache\\images\\" + info.FullName.Split("\\").Last(), true);
 
                     SetTexture(Image.FromFile(file), file);
                     break;
