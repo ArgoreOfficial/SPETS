@@ -93,13 +93,13 @@ namespace SPETS
                     StartButton.Enabled = false;
                 }
             }
-            else if (ToolDropdown.SelectedIndex == 2)
+            else if (ToolDropdown.SelectedIndex == 2) // advanced editor
             {
                 advImporterForm = new AdvancedEditorForm(this);
                 advImporterForm.Show();
                 StartButton.Enabled = false;
             }
-            else if (ToolDropdown.SelectedIndex == 3)
+            else if (ToolDropdown.SelectedIndex == 3) // terrain editor NOT PUBLIC YET
             {
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Filter = "Terrain Dump (*.TXT)|*.TXT";
