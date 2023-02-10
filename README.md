@@ -2,7 +2,4 @@
 
 ## A standalone collection of tools for Sprocket. Download [here](https://github.com/ArgoreOfficial/SPETS/releases/latest/)
 
-### Tutorials
-- [Importing Tutorial](https://github.com/ArgoreOfficial/SPETS/wiki/Importing-Tutorial)
-- [Exporting Tutorial](https://github.com/ArgoreOfficial/SPETS/wiki/Exporting-Tutorial) (wip)
-- [Advanced Editor Tutorial](https://github.com/ArgoreOfficial/SPETS/wiki/Advanced-Tutorial) (wip)
+[Tutorials can be found on the website](https://argoreofficial.github.io/SPETS/tutorials/).
