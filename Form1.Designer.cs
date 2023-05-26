@@ -42,7 +42,8 @@ namespace SPETS
             this.ToolDropdown.Items.AddRange(new object[] {
             "Import from OBJ",
             "Export to OBJ",
-            "Advanced Editor (Experimental)"});
+            "Advanced Editor (Experimental)",
+            "Terrain Editor"});
             this.ToolDropdown.Location = new System.Drawing.Point(12, 53);
             this.ToolDropdown.Name = "ToolDropdown";
             this.ToolDropdown.Size = new System.Drawing.Size(176, 23);

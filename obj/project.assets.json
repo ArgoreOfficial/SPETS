@@ -26,10 +26,14 @@
           "Microsoft.NETCore.Platforms": "3.1.0"
         },
         "compile": {
-          "ref/netstandard2.0/_._": {}
+          "ref/netstandard2.0/_._": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netstandard2.0/Microsoft.Win32.SystemEvents.dll": {}
+          "lib/netstandard2.0/Microsoft.Win32.SystemEvents.dll": {
+            "related": ".xml"
+          }
         },
         "runtimeTargets": {
           "runtimes/win/lib/netcoreapp3.0/Microsoft.Win32.SystemEvents.dll": {
@@ -41,19 +45,27 @@
       "Newtonsoft.Json/13.0.1": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
         }
       },
       "SharpGL/3.1.1": {
         "type": "package",
         "compile": {
-          "lib/netcoreapp3.1/SharpGL.dll": {}
+          "lib/netcoreapp3.1/SharpGL.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netcoreapp3.1/SharpGL.dll": {}
+          "lib/netcoreapp3.1/SharpGL.dll": {
+            "related": ".xml"
+          }
         }
       },
       "SharpGL.SceneGraph/3.1.1": {
@@ -63,10 +75,14 @@
           "System.Drawing.Common": "4.7.0"
         },
         "compile": {
-          "lib/netcoreapp3.1/SharpGL.SceneGraph.dll": {}
+          "lib/netcoreapp3.1/SharpGL.SceneGraph.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netcoreapp3.1/SharpGL.SceneGraph.dll": {}
+          "lib/netcoreapp3.1/SharpGL.SceneGraph.dll": {
+            "related": ".xml"
+          }
         }
       },
       "SharpGL.Serialization/3.1.1": {
@@ -76,10 +92,14 @@
           "SharpGL.SceneGraph": "3.1.1"
         },
         "compile": {
-          "lib/netcoreapp3.1/SharpGL.Serialization.dll": {}
+          "lib/netcoreapp3.1/SharpGL.Serialization.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netcoreapp3.1/SharpGL.Serialization.dll": {}
+          "lib/netcoreapp3.1/SharpGL.Serialization.dll": {
+            "related": ".xml"
+          }
         }
       },
       "SharpGL.WinForms/3.1.1": {
@@ -91,10 +111,14 @@
           "System.Data.DataSetExtensions": "4.5.0"
         },
         "compile": {
-          "lib/netcoreapp3.1/SharpGL.WinForms.dll": {}
+          "lib/netcoreapp3.1/SharpGL.WinForms.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netcoreapp3.1/SharpGL.WinForms.dll": {}
+          "lib/netcoreapp3.1/SharpGL.WinForms.dll": {
+            "related": ".xml"
+          }
         },
         "frameworkReferences": [
           "Microsoft.WindowsDesktop.App.WindowsForms"
@@ -128,7 +152,9 @@
           "Microsoft.Win32.SystemEvents": "4.7.0"
         },
         "compile": {
-          "ref/netcoreapp3.0/System.Drawing.Common.dll": {}
+          "ref/netcoreapp3.0/System.Drawing.Common.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
           "lib/netstandard2.0/System.Drawing.Common.dll": {}
@@ -458,23 +484,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\argor\\.nuget\\packages\\": {},
+    "C:\\Users\\jostb\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj",
+      "projectUniqueName": "C:\\Users\\jostb\\Documents\\Github\\SPETS\\SPETS.csproj",
       "projectName": "SPETS",
-      "projectPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\SPETS.csproj",
-      "packagesPath": "C:\\Users\\argor\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\argor\\Desktop\\Github\\SPETS\\obj\\",
+      "projectPath": "C:\\Users\\jostb\\Documents\\Github\\SPETS\\SPETS.csproj",
+      "packagesPath": "C:\\Users\\jostb\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jostb\\Documents\\Github\\SPETS\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\argor\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jostb\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -483,7 +509,8 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://www.myget.org/F/lithiumtoast/api/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp3.1": {
@@ -520,7 +547,8 @@
           "net47",
           "net471",
           "net472",
-          "net48"
+          "net48",
+          "net481"
         ],
         "assetTargetFallback": true,
         "warn": true,
@@ -532,7 +560,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.410\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.103\\RuntimeIdentifierGraph.json"
       }
     }
   }

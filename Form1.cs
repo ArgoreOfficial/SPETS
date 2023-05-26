@@ -57,20 +57,32 @@ namespace SPETS
                 
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Filter = "Wavefront Model (*.OBJ)|*.OBJ";
+                ofd.Multiselect = true;
 
                 DialogResult dr = ofd.ShowDialog();
                 if (dr == DialogResult.OK)
                 {
-                    Mesh loadMesh = MeshLoader.FromOBJ(ofd.FileName);
-                    
-                    /// null check
-                    if (loadMesh.Faces.Count != 0 && loadMesh.Vertices.Count != 0)
+                    List<Mesh> meshes = new List<Mesh>();
+                    List<string> names = new List<string>();
+
+                    for (int i = 0; i < ofd.FileNames.Length; i++)
                     {
-                        FileInfo file = new FileInfo(ofd.FileName);
+                        // load mesh
+                        Mesh mesh = MeshLoader.FromOBJ(ofd.FileNames[i]);
+                        FileInfo file = new FileInfo(ofd.FileNames[i]);
+                        if (mesh.Faces.Count == 0 || mesh.Vertices.Count == 0) continue; // if empty, skip
+
+                        meshes.Add(mesh); // add to list
+                        names.Add(ofd.FileNames[i].Split('\\').Last().Replace(file.Extension, ""));
+                    }
+
+                    // just incase weird things happen, skip
+                    if (meshes.Count != 0)
+                    {
                         
                         importForm = new ImportForm(this);
                         importForm.Show();
-                        importForm.LoadModel(loadMesh, ofd.FileName.Split('\\').Last().Replace(file.Extension, ""), GetFileSize(file));
+                        importForm.LoadModel(meshes.ToArray(), names.ToArray());
                         StartButton.Enabled = false;
                     }
                 }

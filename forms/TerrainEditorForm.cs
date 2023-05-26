@@ -25,6 +25,7 @@ namespace SPETS.forms
     {
         ActionSelectForm asf;
         List<int> m_Heightmap = new List<int>();
+        List<int> m_SplatDatabase = new List<int>();
         int[,] Heightmap2D;
         Vector3 MapScale;
         int MapSize = 0;
@@ -76,7 +77,7 @@ namespace SPETS.forms
                     int h;
                     if(int.TryParse(splitline.Last(), out h))
                     {
-                        m_Heightmap.Add(h);
+                        m_Heightmap.Add(h * 0 + 1);
                     }
                 }
                 else if(currentAttribute == "m_PrecomputedError")
@@ -241,6 +242,13 @@ namespace SPETS.forms
             m_PrecomputedErrorSB.AppendLine($"   1 Array Array({m_PrecomputedError.Count} items)");
             m_PrecomputedErrorSB.Append($"    0 int size = {m_PrecomputedError.Count}");
 
+            // detailpatches, grass and trees
+            StringBuilder m_Patches = new StringBuilder();
+            m_Patches.AppendLine("  0 vector m_Patches");
+            m_Patches.AppendLine("   1 Array Array (256 items)");
+            m_Patches.Append(    "    0 int size = 256");
+
+
             Debug.WriteLine("Saving...");
 
             string currentAttribute = "";
@@ -279,7 +287,7 @@ namespace SPETS.forms
                             NewFile.AppendLine(m_PrecomputedErrorSB.ToString());
 
                             int n = 0;
-                            float highestF = m_PrecomputedError.Max();
+                            float highestF = m_PrecomputedError.Min();
                             // create new precomputedError points
                             foreach(float f in m_PrecomputedError)
                             {
@@ -288,6 +296,37 @@ namespace SPETS.forms
                                 n++;
                             }
                         }
+                        else if (currentAttribute == "m_Patches")
+                        {
+                            NewFile.AppendLine(m_Patches.ToString());
+
+                            // create detailDatabase
+                            for (int patch = 0; patch < 256; patch++)
+                            {
+                                NewFile.AppendLine($"    [{patch}]");
+                                NewFile.AppendLine("     0 DetailPatch data");
+                                NewFile.AppendLine("      0 vector layerIndices");
+                                NewFile.AppendLine("       1 Array Array (0 items)");
+                                NewFile.AppendLine("        0 int size = 0");
+                                NewFile.AppendLine("      0 vector numberOfObjects");
+                                NewFile.AppendLine("       1 Array Array (0 items)");
+                                NewFile.AppendLine("        0 int size = 0");
+                            }
+                        }
+                        else if (currentAttribute == "m_MinMaxPatchHeights")
+                        {
+                            NewFile.AppendLine("  0 vector m_MinMaxPatchHeights");
+                            NewFile.AppendLine("   1 Array Array (2730 items)");
+                            NewFile.AppendLine("    0 int size = 2730");
+
+                            // create detailDatabase
+                            for (int patch = 0; patch < 2730; patch++)
+                            {
+                                NewFile.AppendLine($"    [{patch}]");
+                                NewFile.AppendLine( "     0 float data = 0");
+                            }
+                        }
+
 
                         break;
                     }
@@ -295,6 +334,8 @@ namespace SPETS.forms
 
                 if (currentAttribute == "m_Heights") continue;
                 if (currentAttribute == "m_PrecomputedError") continue;
+                if (currentAttribute == "m_Patches") continue;
+                if (currentAttribute == "m_MinMaxPatchHeights") continue;
 
                 NewFile.AppendLine(currentline);
 

@@ -13,6 +13,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace SPETS.forms
 {
@@ -20,11 +21,11 @@ namespace SPETS.forms
     {
         ActionSelectForm asf;
 
-        Mesh loaded;
+        Mesh[] loadedMeshes;
         CompartmentRoot compRoot;
         List<Vector3> vectorPoints = new List<Vector3>(); // used for checking vertices with x y and z
         string[] factions;
-        string saveName;
+        string[] saveNames;
         int totalWork;
         int selectedFaction;
 
@@ -46,14 +47,11 @@ namespace SPETS.forms
             }
             FactionsCombobox.SelectedIndex = 0;
         }
-
-        public void LoadModel(Mesh mesh, string name, string fileSize)
+        
+        public void LoadModel(Mesh[] meshes, string[] names)
         {
-            loaded = mesh;
-            compRoot = new CompartmentRoot(name);
-            saveName = name;
-            FileNameLabel.Text = name;
-            FileSizeLabel.Text = fileSize;
+            loadedMeshes = meshes;
+            saveNames = names;
         }
 
         private void ImportButton_Click(object sender, EventArgs e)
@@ -83,89 +81,101 @@ namespace SPETS.forms
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("sv-SE");
 
-            totalWork += loaded.Vertices.Count;
-            for (int i = 0; i < loaded.Faces.Count; i++)
+            for (int i = 0; i < loadedMeshes.Length; i++)
             {
-                for (int f = 0; f < loaded.Faces[i].Count; f++)
-                {
-                    totalWork += 4;
-                }
-            }
-            int doneWork = 0;
-
-
-
-            for (int f = 0; f < loaded.Faces.Count; f++)
-            {
-                doneWork++;
-                ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
-
-                // null face check
-                if (loaded.Faces[f].Count < 3 || loaded.Faces[f].Count > ResourceHandler.NGonLookup.Count) continue;
-
-                // faces
-                compRoot.compartment.faceMap.Add(CreateNGon(loaded.Faces[f].Count, compRoot.compartment.points.Count / 3));
-
-                // vertices
-                for (int fP = 0; fP < loaded.Faces[f].Count; fP++)
-                {
-                    compRoot.compartment.points.Add(-loaded.Vertices[loaded.Faces[f][fP] - 1].X);
-                    compRoot.compartment.points.Add(loaded.Vertices[loaded.Faces[f][fP] - 1].Y);
-                    compRoot.compartment.points.Add(loaded.Vertices[loaded.Faces[f][fP] - 1].Z);
-
-                    vectorPoints.Add(loaded.Vertices[loaded.Faces[f][fP] - 1] * new Vector3(-1, 1, 1));
-                }
+                totalWork += loadedMeshes[i].Vertices.Count;
             }
 
-
-
-            // thicknessmap
-            for (int i = 0; i < compRoot.compartment.points.Count; i++)
+            for (int meshI = 0; meshI < loadedMeshes.Length; meshI++)
             {
-                doneWork++;
-                ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
-
-                compRoot.compartment.thicknessMap.Add(1);
-            }
+                Mesh currentMesh = loadedMeshes[meshI];
+                compRoot = new CompartmentRoot(saveNames[meshI]);
+                string saveName = saveNames[meshI];
 
 
-
-            // sharedpoints
-            List<int> foundIndexes = new List<int>();
-            for (int p1 = 0; p1 < vectorPoints.Count; p1++)
-            {
-                doneWork++;
-                ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
-                if (foundIndexes.Contains(p1)) continue;
-
-                List<int> shared = new List<int>();
-
-                shared.Add(p1);
-
-                for (int p2 = p1 + 1; p2 < vectorPoints.Count; p2++)
+                for (int i = 0; i < currentMesh.Faces.Count; i++)
                 {
-                    if (vectorPoints[p1] == vectorPoints[p2])
+                    for (int f = 0; f < currentMesh.Faces[i].Count; f++)
                     {
-                        shared.Add(p2);
-                        foundIndexes.Add(p2);
+                        totalWork += 4;
+                    }
+                }
+                int doneWork = 0;
+
+
+
+                for (int f = 0; f < currentMesh.Faces.Count; f++)
+                {
+                    doneWork++;
+                    ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
+
+                    // null face check
+                    if (currentMesh.Faces[f].Count < 3 || currentMesh.Faces[f].Count > ResourceHandler.NGonLookup.Count) continue;
+
+                    // faces
+                    compRoot.compartment.faceMap.Add(CreateNGon(currentMesh.Faces[f].Count, compRoot.compartment.points.Count / 3));
+
+                    // vertices
+                    for (int fP = 0; fP < currentMesh.Faces[f].Count; fP++)
+                    {
+                        compRoot.compartment.points.Add(-currentMesh.Vertices[currentMesh.Faces[f][fP] - 1].X);
+                        compRoot.compartment.points.Add(currentMesh.Vertices[currentMesh.Faces[f][fP] - 1].Y);
+                        compRoot.compartment.points.Add(currentMesh.Vertices[currentMesh.Faces[f][fP] - 1].Z);
+
+                        vectorPoints.Add(currentMesh.Vertices[currentMesh.Faces[f][fP] - 1] * new Vector3(-1, 1, 1));
                     }
                 }
 
-                compRoot.compartment.sharedPoints.Add(shared);
+
+
+                // thicknessmap
+                for (int i = 0; i < compRoot.compartment.points.Count; i++)
+                {
+                    doneWork++;
+                    ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
+
+                    compRoot.compartment.thicknessMap.Add(1);
+                }
+
+
+
+                // sharedpoints
+                List<int> foundIndexes = new List<int>();
+                for (int p1 = 0; p1 < vectorPoints.Count; p1++)
+                {
+                    doneWork++;
+                    ImportWorker.ReportProgress((int)((float)doneWork / totalWork * 100f));
+                    if (foundIndexes.Contains(p1)) continue;
+
+                    List<int> shared = new List<int>();
+
+                    shared.Add(p1);
+
+                    for (int p2 = p1 + 1; p2 < vectorPoints.Count; p2++)
+                    {
+                        if (vectorPoints[p1] == vectorPoints[p2])
+                        {
+                            shared.Add(p2);
+                            foundIndexes.Add(p2);
+                        }
+                    }
+
+                    compRoot.compartment.sharedPoints.Add(shared);
+                }
+
+
+
+                string savePath = factions[selectedFaction];
+
+                if (!Directory.Exists($"{savePath}/Blueprints/Compartments"))
+                {
+                    Directory.CreateDirectory($"{savePath}/Blueprints/Compartments");
+                }
+                string compJson = JsonConvert.SerializeObject(compRoot);
+
+                CompartmentBaseRoot cbRoot = new CompartmentBaseRoot("Compartment", compJson, "");
+                File.WriteAllText($"{savePath}/Blueprints/Compartments/{saveName}.blueprint", $"[\n{JsonConvert.SerializeObject(cbRoot, Formatting.Indented)},\n]");
             }
-
-
-
-            string savePath = factions[selectedFaction];
-
-            if (!Directory.Exists($"{savePath}/Blueprints/Compartments"))
-            {
-                Directory.CreateDirectory($"{savePath}/Blueprints/Compartments");
-            }
-            string compJson = JsonConvert.SerializeObject(compRoot);
-
-            CompartmentBaseRoot cbRoot = new CompartmentBaseRoot("Compartment", compJson, "");
-            File.WriteAllText($"{savePath}/Blueprints/Compartments/{saveName}.blueprint", $"[\n{JsonConvert.SerializeObject(cbRoot, Formatting.Indented)},\n]");
 
             ImportWorker.ReportProgress(100);
             MessageBox.Show("Import finished", "Import finished", MessageBoxButtons.OK, MessageBoxIcon.Information);
