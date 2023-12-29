@@ -1,0 +1,18 @@
+#     directories
+
+.vs/
+bin/
+obj/
+
+#     files
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.blend1
+*.idb
+*.pdb
+*.lastbuildstate
+*.tlog
+*.exe
+imgui.ini

@@ -1,0 +1,53 @@
+#pragma once
+#include <vector>
+#include <Wyvern/Math/Types.h>
+
+                       ////////////////////////////////////////////////
+                       //                                            //
+                       //  TODO: figure out a way to not use vector  //
+                       //                                            //
+                       ////////////////////////////////////////////////
+
+namespace wv
+{
+
+///////////////////////////////////////////////////////////////////////////////////////
+	
+	struct sVertexBufferElement
+	{
+		WV_TYPE      type;
+		unsigned int count;
+		unsigned int size;
+	};
+
+///////////////////////////////////////////////////////////////////////////////////////
+	
+	class cVertexBufferLayout
+	{
+	
+	public:
+
+		 cVertexBufferLayout( void );
+		~cVertexBufferLayout( void );
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+		void push( WV_TYPE _type, unsigned int _count );
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+		const std::vector<sVertexBufferElement> getElements( void ) const { return m_elements; }
+		unsigned int                            getStride  ( void ) const { return m_stride; }
+
+///////////////////////////////////////////////////////////////////////////////////////
+	
+	private:
+
+		std::vector<sVertexBufferElement> m_elements;
+		
+		unsigned int m_stride = 0;
+	};
+
+///////////////////////////////////////////////////////////////////////////////////////
+
+}
