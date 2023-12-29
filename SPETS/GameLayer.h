@@ -2,11 +2,8 @@
 
 #include <Wyvern/Core/iLayer.h>
 #include <Wyvern/cApplication.h>
-#include <Wyvern/Logging/cLogging.h>
-#include <Wyvern/Managers/cEventManager.h>
-#include <Wyvern/Assets/cModel.h>
-#include <Wyvern/Managers/cResourceManager.h>
-#include <Wyvern/Assets/cSprite.h>
+
+#include "cImportingWindow.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -41,5 +38,6 @@ public:
 	wv::iCamera*     m_camera3D = nullptr;
 	wv::iCamera*     m_camera2D = nullptr;
 
+	cImportingWindow m_importingWindow;
 };
 

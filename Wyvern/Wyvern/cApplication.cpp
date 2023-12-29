@@ -157,6 +157,7 @@ void cApplication::initImgui( void )
 		style.WindowRounding = 0.0f;
 		style.Colors[ ImGuiCol_WindowBg ].w = 1.0f;
 	}
+	
 
 	// should prbably be moved out somewhere else
 	m_viewport.initImguiImpl();

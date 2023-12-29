@@ -84,6 +84,8 @@ void cViewport::create( std::string _title, unsigned int _width, unsigned int _h
 
 	}
 	WV_DEBUG( "GLFW Initialized" );
+	
+	glfwWindowHint( GLFW_RESIZABLE, 0 );
 
 	m_window = glfwCreateWindow( _width, _height, _title.c_str(), nullptr, nullptr);
 	

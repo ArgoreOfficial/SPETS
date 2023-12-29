@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Wyvern/Core/iSceneObject.h>
-
-class cImportingWindow : public wv::iSceneObject
+#include <string>
+class cImportingWindow
 {
 public:
 	cImportingWindow();
 	~cImportingWindow();
 
-	void drawUI() override;
-
+	void drawUI();
+	std::string openFile();
 };

@@ -1,6 +1,7 @@
 #include "cImportingWindow.h"
 #include <imgui.h>
-
+#include <windows.h>
+#include <shobjidl.h> 
 cImportingWindow::cImportingWindow()
 {
 }
@@ -11,10 +12,21 @@ cImportingWindow::~cImportingWindow()
 
 void cImportingWindow::drawUI()
 {
-	ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID); // disable multi-viewport on this window
-	if ( ImGui::Begin( "Import" ) )
+	if ( ImGui::BeginChild( "ImportingWindow" ) )
 	{
+		if ( ImGui::Button( "Load" ) )
+		{
+			printf( openFile().c_str() );
+
+		}
 
 	}
-	ImGui::End();
+	ImGui::EndChild();	
+}
+
+std::string cImportingWindow::openFile()
+{
+	std::string out = "err: not implemented yet\n";
+
+	return out;
 }
