@@ -1,10 +1,11 @@
-local path = require "./path"
-PROJECT_NAME = path.getProjectName( 2 )
+
+PROJECT_NAME = "SPETS"
 
 workspace (PROJECT_NAME)
 	configurations { "Debug", "Release", "Final" }
 	platforms { "x64", "x86" }
 	location "../../"
+	startproject (PROJECT_NAME)
 
 project (PROJECT_NAME)
 	kind "ConsoleApp"
@@ -20,9 +21,14 @@ project (PROJECT_NAME)
 
 	includedirs { 
 		"../../src",
-		"../../dependencies/assimp/include" 
+		"../../libs/assimp/include" ,
+		"../../libs/glad/include/", 
+		"../../libs/glfw/include/", 
+		"../../libs/glm/", 
+		"../../libs/imgui/", 
+		"../../libs/imgui/examples" 
 	}
-	libdirs { "../../dependencies/assimp/lib" }
+	libdirs { "../../libs/assimp/lib" }
 
 	files { 
 		"../../src/**.h", 
@@ -30,7 +36,7 @@ project (PROJECT_NAME)
 		"../../src/**.hpp"
 	}
 
-	links { "assimp-vc143-mt.lib", "zlibstatic.lib" }
+	links { "assimp-vc143-mt.lib", "zlibstatic.lib", "GLFW", "GLM", "GLAD", "ImGui" }
 
 	filter "configurations:Debug"
       defines { "DEBUG" }
@@ -43,4 +49,13 @@ project (PROJECT_NAME)
       defines { "FINAL" }
 	  symbols "Off"
 	  optimize "Full"
+
+	filter "system:windows"
+	  defines { "_WINDOWS" }
 	
+group "Dependencies"
+
+include "../../libs/glfw.lua"
+include "../../libs/glad.lua"
+include "../../libs/glm.lua"
+include "../../libs/imgui.lua"

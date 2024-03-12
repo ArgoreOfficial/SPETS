@@ -14,5 +14,4 @@ obj/
 *.pdb
 *.lastbuildstate
 *.tlog
-*.exe
 imgui.ini
