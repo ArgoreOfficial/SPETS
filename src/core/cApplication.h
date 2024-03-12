@@ -4,6 +4,7 @@
 #include "cRenderer.h"
 #include <string>
 
+#include <window/cHubWindow.h>
 
 class cApplication
 {
@@ -31,6 +32,8 @@ private:
 
 	cWindow m_window;
 	cRenderer m_renderer;
+
+	cHubWindow m_hub_window;
 
 	cApplication::sVersion m_version;
 };

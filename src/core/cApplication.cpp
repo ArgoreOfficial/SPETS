@@ -46,6 +46,7 @@ void cApplication::run()
 		m_renderer.beginFrame();
 
 		m_renderer.clear( 0x00000000 );
+		m_hub_window.draw();
 
 		m_window.endFrame();
 		m_renderer.endFrame();

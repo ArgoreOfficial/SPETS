@@ -20,4 +20,9 @@ public:
 
 private:
 
+	void setupImGui( cWindow& _window );
+	void shutdownImGui();
+
+	void setupImGuiStyle();
+
 };
