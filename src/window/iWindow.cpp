@@ -4,14 +4,14 @@
 
 void iWindow::draw( void )
 {
-	float t = static_cast<float>( m_state );
+	float t = static_cast<float>( m_internal_state );
 
 	if ( m_popup_interpolator.getProgress() < 1.0f )
 	{
 		m_popup_interpolator.update( ImGui::GetIO().DeltaTime );
 
 		t = m_popup_interpolator.easeOutExpo();
-		if ( !m_state )
+		if ( !m_internal_state )
 			t = 1.0f - t;
 
 		float fade_pad_width = m_width_fade_amount - m_width_fade_amount * t;
@@ -39,7 +39,8 @@ void iWindow::draw( void )
 
 void iWindow::open( void )
 {
-	m_state = true;
+	m_internal_state = true;
+	m_is_open = true;
 	m_just_opened = true;
 	m_popup_interpolator.setProgress( 0.0f );
 	m_popup_interpolator.setDuration( 0.5f );
@@ -47,16 +48,17 @@ void iWindow::open( void )
 
 void iWindow::close( void )
 {
-	m_state = false;
+	m_internal_state = false;
+	m_is_open = false;
 	m_popup_interpolator.setProgress( 0.0f );
-	m_popup_interpolator.setDuration( 0.2f );
+	m_popup_interpolator.setDuration( 0.5f );
 
 	m_saved_window_pos = m_last_window_pos;
 }
 
 void iWindow::toggle( void )
 {
-	if ( m_state )
+	if ( m_internal_state )
 		close();
 	else
 		open();
@@ -64,9 +66,16 @@ void iWindow::toggle( void )
 
 void iWindow::forceToggle( void )
 {
-	forceState( !m_state );
-	m_popup_interpolator.setProgress( static_cast<float>( m_state ) );
+	forceState( !m_internal_state );
+	m_popup_interpolator.setProgress( static_cast<float>( m_internal_state ) );
 }
+
+void iWindow::forceState( bool _state )
+{
+	m_internal_state = _state; 
+	m_is_open = _state;
+	m_just_opened = m_internal_state;
+};
 
 void iWindow::update()
 {
@@ -82,5 +91,11 @@ void iWindow::update()
 		              mouse_pos.y >= min_y && mouse_pos.y < max_y );
 
 	cApplication::getInstance()->checkScreenBounds( min_x, min_y, max_x, max_y, hovering );
+
+	if ( m_is_open != m_internal_state )
+	{
+		close();
+		m_is_open = m_internal_state;
+	}
 }
 

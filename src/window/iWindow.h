@@ -18,8 +18,8 @@ public:
 	void toggle     ( void );
 	void forceToggle( void );
 	
-	void forceState( bool _state ) { m_state = _state; m_just_opened = m_state; };
-	bool getState  ( void )        { return m_state; };
+	void forceState( bool _state );
+	bool getState  ( void ) { return m_internal_state; };
 
 	virtual void onCreate() = 0;
 	virtual void onDestroy() = 0;
@@ -30,14 +30,15 @@ protected:
 
 	void update();
 
-	bool m_state = false;
+	bool m_is_open = false;
 	
 	float m_width = 400;
 	float m_height = 400;
-	float m_width_fade_amount = 30;
-	float m_height_fade_amount = 30;
+	float m_width_fade_amount = 40;
+	float m_height_fade_amount = 40;
 
 private:
+	bool m_internal_state = false;
 
 	bool m_just_opened = false;
 

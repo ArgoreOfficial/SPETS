@@ -24,7 +24,7 @@ void cHubWindow::onDestroy( void )
 
 void cHubWindow::drawWindow()
 {
-	if ( ImGui::Begin( "SPETS Tool Hub", &m_state, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking ) )
+	if ( ImGui::Begin( "SPETS Tool Hub", &m_is_open, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking ) )
 	{
 		if ( ImGui::BeginTabBar( "HUB_BAR" ) )
 		{

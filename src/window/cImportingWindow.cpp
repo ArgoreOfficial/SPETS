@@ -31,7 +31,7 @@ void cImportingWindow::onDestroy( void )
 
 void cImportingWindow::drawWindow()
 {
-	if ( ImGui::Begin( "Import Blueprint" ) )
+	if ( ImGui::Begin( "Import Blueprint", &m_is_open ) )
 	{
 		if ( ImGui::BeginCombo( "Faction", m_selected_faction.c_str() ) )
 		{
