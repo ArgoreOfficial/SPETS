@@ -77,6 +77,10 @@ void iWindow::update()
 	int max_x = std::max( min_x + ImGui::GetWindowSize().x, ImGui::GetWindowSize().x );
 	int max_y = std::max( min_y + ImGui::GetWindowSize().y, ImGui::GetWindowSize().y );
 
-	cApplication::getInstance()->checkScreenBounds( min_x, min_y, max_x, max_y, ImGui::IsWindowHovered() );
+	ImVec2 mouse_pos = ImGui::GetMousePos();
+	bool hovering = ( mouse_pos.x >= min_x && mouse_pos.x < max_x &&
+		              mouse_pos.y >= min_y && mouse_pos.y < max_y );
+
+	cApplication::getInstance()->checkScreenBounds( min_x, min_y, max_x, max_y, hovering );
 }
 

@@ -21,7 +21,8 @@ cImportingWindow::~cImportingWindow()
 void cImportingWindow::onCreate( void )
 {
 	getFactions();
-	m_selected_faction = m_factions[ 0 ];
+
+	m_selected_faction = "Default";
 }
 
 void cImportingWindow::onDestroy( void )
@@ -32,23 +33,22 @@ void cImportingWindow::drawWindow()
 {
 	if ( ImGui::Begin( "Import Blueprint" ) )
 	{
-		update();
-
-		if ( ImGui::BeginCombo( "Faction", m_selected_faction.c_str() ) ) // The second parameter is the label previewed before opening the combo.
+		if ( ImGui::BeginCombo( "Faction", m_selected_faction.c_str() ) )
 		{
 			for ( int n = 0; n < m_factions.size(); n++ )
 			{
-				bool is_selected = ( m_selected_faction == m_factions[ n ] ); // You can store your selection however you want, outside or inside your objects
+				bool is_selected = ( m_selected_faction == m_factions[ n ] );
 
 				if ( ImGui::Selectable( m_factions[ n ].c_str(), is_selected) )
 					m_selected_faction = m_factions[ n ];
 				if ( is_selected )
-					ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+					ImGui::SetItemDefaultFocus();
 
 			}
 			ImGui::EndCombo();
 		}
 
+		update();
 	}
 	ImGui::End();
 }

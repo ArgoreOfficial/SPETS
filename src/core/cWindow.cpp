@@ -37,8 +37,6 @@ int cWindow::create( unsigned int _width, unsigned int _height, const char* _tit
 	glfwWindowHint( GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE );
 	glfwWindowHint( GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE );
 
-	//glfwWindowHint( GLFW_MAXIMIZED, GLFW_TRUE );
-
 	glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
 #ifndef DEBUG
 #endif

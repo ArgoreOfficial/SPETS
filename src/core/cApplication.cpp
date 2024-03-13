@@ -48,15 +48,15 @@ void cApplication::run()
 		m_window.beginFrame();
 		m_renderer.beginFrame();
 
-		if ( !m_hovering )
-		{
-			glfwSetWindowAttrib( m_window.getWindowObject(), GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE );
-		}
+
 		resetScreenBounds();
 		
 		m_renderer.clear( 0x00000000 );
 		
 		m_hub_window.draw();
+
+		glfwSetWindowAttrib( m_window.getWindowObject(), GLFW_MOUSE_PASSTHROUGH, !m_hovering );
+		
 		m_renderer.endFrame();
 		m_window.endFrame();
 
