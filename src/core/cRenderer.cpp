@@ -66,7 +66,6 @@ void cRenderer::endFrame()
 		ImGui::UpdatePlatformWindows();
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent( backup_current_context );
-
 	}
 }
 
@@ -79,8 +78,8 @@ void cRenderer::setupImGui( cWindow& _window )
 
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	
 	ImGui_ImplGlfw_InitForOpenGL( _window.getWindowObject(), true );
 	ImGui_ImplOpenGL3_Init( "#version 430" );
 

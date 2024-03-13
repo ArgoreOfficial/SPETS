@@ -4,7 +4,7 @@
 
 cHubWindow::cHubWindow( void )
 {
-
+	
 }
 
 cHubWindow::~cHubWindow( void )
@@ -12,18 +12,27 @@ cHubWindow::~cHubWindow( void )
 
 }
 
+void cHubWindow::onCreate( void )
+{
+	m_importing_window.onCreate();
+}
+
+void cHubWindow::onDestroy( void )
+{
+	m_importing_window.onDestroy();
+}
+
 void cHubWindow::drawWindow()
 {
-	if ( ImGui::Begin( "SPETS Tool Hub", 0, ImGuiWindowFlags_AlwaysAutoResize ) )
+	if ( ImGui::Begin( "SPETS Tool Hub", &m_state, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking ) )
 	{
-		/* shoebox style */
-		/*
-		*/
 		if ( ImGui::BeginTabBar( "HUB_BAR" ) )
 		{
 			if ( ImGui::BeginTabItem( "Blueprints" ) )
 			{
-				ImGui::Button( "Import", { 100, 100 } );
+				if ( ImGui::Button( "Import", { 100, 100 } ) )
+					m_importing_window.toggle();
+
 				ImGui::SameLine();
 				ImGui::Button( "Export", { 100, 100 } );
 				ImGui::SameLine();
@@ -40,35 +49,10 @@ void cHubWindow::drawWindow()
 			}
 		}
 		ImGui::EndTabBar();
-		
-		/*
-		if ( ImGui::BeginTabBar( "HUB_BAR" ) )
-		{
-			if ( ImGui::BeginTabItem( "Import" ) )
-			{
-				ImGui::Spacing();
-				ImGui::Spacing();
-				ImGui::Spacing();
-				ImGui::Text( "Imagine there's like settings and shit here idfk" );
 
-				ImGui::Button( "Load", { 60, 20 } );
-				ImGui::SameLine();
-				ImGui::Button( "Import", { 60, 20 } );
-
-				ImGui::Spacing();
-				ImGui::Text( "some more settings but in a different place tm" );
-
-				ImGui::EndTabItem();
-			}
-
-			if ( ImGui::BeginTabItem( "Export" ) ) ImGui::EndTabItem();
-			if ( ImGui::BeginTabItem( "Advanced" ) ) ImGui::EndTabItem();
-			if ( ImGui::BeginTabItem( "Edit" ) ) ImGui::EndTabItem();
-		}
-		ImGui::EndTabBar();
-		*/
-
-
-		ImGui::End();
+		update();
 	}
+	ImGui::End();
+
+	m_importing_window.draw();
 }

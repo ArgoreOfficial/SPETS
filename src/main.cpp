@@ -6,7 +6,7 @@
 
 int main( int argc, char* argv[] )
 {
-	cApplication app;
+	cApplication& app = *cApplication::getInstance();;
 	app.start();
 	app.run();
 	app.shutdown();

@@ -35,32 +35,66 @@ void cApplication::start()
 	m_window.create( 300, 300, title.c_str() );
 	m_renderer.create( m_window );
 
+	m_hub_window.onCreate();
+	m_hub_window.forceState( true );
 
+	resetScreenBounds();
 }
 
 void cApplication::run()
 {
-	while ( !m_window.shouldClose() )
+	while ( !m_window.shouldClose() && m_hub_window.getState() )
 	{
 		m_window.beginFrame();
 		m_renderer.beginFrame();
 
+		if ( !m_hovering )
+		{
+			glfwSetWindowAttrib( m_window.getWindowObject(), GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE );
+		}
+		resetScreenBounds();
+		
 		m_renderer.clear( 0x00000000 );
+		
 		m_hub_window.draw();
-
-		m_window.endFrame();
 		m_renderer.endFrame();
+		m_window.endFrame();
+
+		
+		m_window.setSize( m_max_x + 20, m_max_y + 20 );
+
 	}
 }
 
 void cApplication::shutdown()
 {
-	m_renderer.destroy();
+	m_hub_window.onDestroy();
 
+	m_renderer.destroy();
 	m_window.destroy();
 }
 
 std::string cApplication::getVersion()
 {
 	return std::format( "{}{}.{}-{}.{}", m_version.type, m_version.major, m_version.minor, m_version.year, m_version.revision );
+}
+
+void cApplication::checkScreenBounds( int _min_x, int _min_y, int _max_x, int _max_y, bool _hovering )
+{
+	if ( _min_x < m_min_x ) m_min_x = _min_x;
+	if ( _min_y < m_min_y ) m_min_y = _min_y;
+
+	if ( _max_x > m_max_x ) m_max_x = _max_x;
+	if ( _max_y > m_max_y ) m_max_y = _max_y;
+
+	if ( _hovering ) m_hovering = true;
+}
+
+void cApplication::resetScreenBounds()
+{
+	m_min_x = INT32_MAX;
+	m_min_y = INT32_MAX;
+	m_max_x = INT32_MIN;
+	m_max_y = INT32_MIN;
+	m_hovering = false;
 }

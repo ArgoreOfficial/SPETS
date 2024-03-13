@@ -15,10 +15,13 @@ public:
 	void endFrame  ( void );
 
 	bool shouldClose( void ) const { return glfwWindowShouldClose( m_window_object ); }
+	void close() { glfwSetWindowShouldClose( m_window_object, true ); }
 
 	GLFWwindow* const getWindowObject( void ) { return m_window_object; }
 	unsigned int getWidth ( void ) const { return m_width; }
 	unsigned int getHeight( void ) const { return m_height; }
+
+	void setSize( int _width, int _height );
 
 private:
 

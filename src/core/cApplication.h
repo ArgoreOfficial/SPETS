@@ -19,7 +19,20 @@ public:
 
 	std::string getVersion();
 
+	static cApplication* getInstance()
+	{
+		static cApplication* instance = nullptr;
+		if ( !instance )
+			instance = new cApplication();
+
+		return instance;
+	}
+
+	void checkScreenBounds( int _min_x, int _min_y, int _max_x, int _max_y, bool _hovering );
+
 private:
+
+	void resetScreenBounds();
 
 	struct sVersion
 	{
@@ -36,4 +49,10 @@ private:
 	cHubWindow m_hub_window;
 
 	cApplication::sVersion m_version;
+
+	int m_min_x = 0;
+	int m_min_y = 0;
+	int m_max_x = 0;
+	int m_max_y = 0;
+	bool m_hovering = false;
 };

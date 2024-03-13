@@ -37,8 +37,10 @@ int cWindow::create( unsigned int _width, unsigned int _height, const char* _tit
 	glfwWindowHint( GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE );
 	glfwWindowHint( GLFW_MOUSE_PASSTHROUGH, GLFW_TRUE );
 
-#ifndef DEBUG
+	//glfwWindowHint( GLFW_MAXIMIZED, GLFW_TRUE );
+
 	glfwWindowHint( GLFW_DECORATED, GLFW_FALSE );
+#ifndef DEBUG
 #endif
 	printf( "GLFW version: %s\n", glfwGetVersionString() );
 
@@ -81,4 +83,9 @@ void cWindow::endFrame( void )
 {
 	glfwSwapBuffers( m_window_object );
 	glfwPollEvents();
+}
+
+void cWindow::setSize( int _width, int _height )
+{
+	glfwSetWindowSize( m_window_object, _width, _height );
 }

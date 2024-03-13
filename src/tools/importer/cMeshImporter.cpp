@@ -4,7 +4,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include <hash/MurmurHash3.h>
+#include <math/hash/MurmurHash3.h>
 
 #include <fstream>
 #include <map>
