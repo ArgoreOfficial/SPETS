@@ -68,6 +68,4 @@ void cImportingWindow::getFactions()
 		}
 
 	}
-	
-	/* My Games\Sprocket\Factions */
 }

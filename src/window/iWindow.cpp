@@ -14,8 +14,11 @@ void iWindow::draw( void )
 		if ( !m_internal_state )
 			t = 1.0f - t;
 
-		float fade_pad_width = m_width_fade_amount - m_width_fade_amount * t;
-		float fade_pad_height = m_height_fade_amount - m_height_fade_amount * t;
+		float width_scaling  = m_width_fade_amount  * m_width;
+		float height_scaling = m_height_fade_amount * m_height;
+
+		float fade_pad_width  = width_scaling  - ( width_scaling  * t );
+		float fade_pad_height = height_scaling - ( height_scaling * t );
 
 		ImVec2 pos = m_saved_window_pos;
 		pos.x += fade_pad_width / 2;
@@ -39,6 +42,9 @@ void iWindow::draw( void )
 
 void iWindow::open( void )
 {
+	if ( m_popup_interpolator.getProgress() != 1.0f )
+		return;
+
 	m_internal_state = true;
 	m_is_open = true;
 	m_just_opened = true;
@@ -48,6 +54,9 @@ void iWindow::open( void )
 
 void iWindow::close( void )
 {
+	if ( m_popup_interpolator.getProgress() != 1.0f )
+		return;
+
 	m_internal_state = false;
 	m_is_open = false;
 	m_popup_interpolator.setProgress( 0.0f );
@@ -86,7 +95,13 @@ void iWindow::update()
 	int max_x = std::max( min_x + ImGui::GetWindowSize().x, ImGui::GetWindowSize().x );
 	int max_y = std::max( min_y + ImGui::GetWindowSize().y, ImGui::GetWindowSize().y );
 
-	ImVec2 mouse_pos = ImGui::GetMousePos();
+	/*
+	 * winapi is used here because imgui doesn't update 
+	 * mouse position if another window has focus
+	 */ 
+	POINT mouse_pos;
+	GetCursorPos( &mouse_pos );
+	
 	bool hovering = ( mouse_pos.x >= min_x && mouse_pos.x < max_x &&
 		              mouse_pos.y >= min_y && mouse_pos.y < max_y );
 

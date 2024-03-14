@@ -37,7 +37,7 @@ void cApplication::start()
 
 	m_hub_window.onCreate();
 	m_hub_window.forceState( true );
-
+	
 	resetScreenBounds();
 }
 
