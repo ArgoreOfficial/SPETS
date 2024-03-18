@@ -13,8 +13,11 @@
 
 #define RAD_DEG_CONST 57.2957795
 
-cMeshImporter::cMeshImporter( std::string _path, std::string _out, eMeshImporterFlags _flags )
+cMeshImporter::cMeshImporter( std::string _path, std::string _out, eMeshImporterFlags _flags ):
+	m_outpath{ _out }
 {
+	m_filename = _path.substr( _path.find_last_of( "/\\" ) + 1 );
+	m_filename = m_filename.substr( 0, m_filename.find_last_of( "." ) );
 
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile( _path, aiProcess_Triangulate | aiProcess_ConvertToLeftHanded );
@@ -29,7 +32,7 @@ cMeshImporter::cMeshImporter( std::string _path, std::string _out, eMeshImporter
 	processAssimpNode( scene->mRootNode, scene );	
 	loadCompartments();
 
-	if ( _flags & MeshImporterFlags_ImportAsBlueprint )
+	if ( _flags & MeshImporterFlags_ImportAsVehicle )
 		importAsBlueprint();
 	else
 		importAsCompartments();
@@ -143,7 +146,7 @@ void cMeshImporter::importAsBlueprint( void )
 	}
 
 	// save to file
-	std::ofstream file( "vehicle.blueprint" );
+	std::ofstream file( m_outpath + "\\" + m_filename + ".blueprint");
 	file << vehicle.serialize();
 }
 
@@ -162,7 +165,7 @@ void cMeshImporter::importAsCompartments( void )
 		};
 
 		// save to file
-		std::ofstream file( comp.name + ".blueprint" );
+		std::ofstream file( m_outpath + comp.name + ".blueprint" );
 		file << bp.serialize();
 	}
 }

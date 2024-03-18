@@ -6,6 +6,8 @@
 
 #include <window/cHubWindow.h>
 
+#include <window/cDragDropSurface.h>
+
 template<typename T>
 struct sPoint 
 { 
@@ -40,10 +42,14 @@ public:
 
 	void checkScreenBounds( int _min_x, int _min_y, int _max_x, int _max_y, bool _hovering );
 	
-	sPoint<int> getCursorPosition( void ) { return m_cursor_pos; }
-	bool        getLMouseState   ( void ) { return m_lmouse_state; }
-	bool        wasMouseJustDown ( void ) { return  m_lmouse_state && !m_lmouse_state_prev; }
-	bool        wasMouseJustUp   ( void ) { return !m_lmouse_state &&  m_lmouse_state_prev; }
+	cDragDropSurface& getDragDropSurface( void ) { return m_drag_drop_surface; }
+	sPoint<int>       getCursorPosition ( void ) { return m_cursor_pos; }
+	bool              getLMouseState    ( void ) { return m_lmouse_state; }
+
+	bool              wasMouseJustDown  ( void ) { return  m_lmouse_state && !m_lmouse_state_prev; }
+	bool              wasMouseJustUp    ( void ) { return !m_lmouse_state &&  m_lmouse_state_prev; }
+
+	cWindow& getWindow( void ) { return m_window; }
 
 private:
 
@@ -58,10 +64,10 @@ private:
 		int revision;
 	};
 
-	cWindow m_window;
-	cRenderer m_renderer;
-
-	cHubWindow m_hub_window;
+	cWindow          m_window;
+	cRenderer        m_renderer;
+	cHubWindow       m_hub_window;
+	cDragDropSurface m_drag_drop_surface;
 
 	cApplication::sVersion m_version;
 

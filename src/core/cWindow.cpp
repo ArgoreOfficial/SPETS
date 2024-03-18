@@ -55,15 +55,6 @@ int cWindow::create( unsigned int _width, unsigned int _height, const char* _tit
 
 	glfwSwapInterval( 1 ); /* enable vsync so it doesn't eat 100% of the gpu */
 
-#ifndef DEBUG
-	{ /* hide host window from taskbar */
-		auto hwnd = glfwGetWin32Window( m_window_object );
-		ShowWindow( hwnd, SW_HIDE );
-		SetWindowLong( hwnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW );
-		ShowWindow( hwnd, SW_SHOW );
-	}
-#endif
-
 }
 
 void cWindow::destroy()
@@ -81,6 +72,11 @@ void cWindow::endFrame( void )
 {
 	glfwSwapBuffers( m_window_object );
 	glfwPollEvents();
+}
+
+void cWindow::setPosition( int _x, int _y )
+{
+	glfwSetWindowPos( m_window_object, _x, _y );
 }
 
 void cWindow::setSize( int _width, int _height )

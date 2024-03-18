@@ -6,19 +6,15 @@
 
 int main( int argc, char* argv[] )
 {
+#ifdef FINAL
+	ShowWindow( GetConsoleWindow(), SW_HIDE );
+#endif
+
 	cApplication& app = *cApplication::getInstance();;
 	app.start();
 	app.run();
 	app.shutdown();
-	/*
-	std::string path = "../res/cubes.glb";
-
-	if ( argc > 1 )
-		path = argv[ 1 ];
-
-	cMeshImporter importer( path, "./" );
-	*/
-
+	
 	return 0;
 }
 

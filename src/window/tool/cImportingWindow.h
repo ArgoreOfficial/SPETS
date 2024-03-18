@@ -25,5 +25,9 @@ private:
 
 	std::vector<std::string> m_factions;
 	std::string m_selected_faction;
+	std::string m_factions_dir;
+
+	bool m_merge_compartments = false;
+	bool m_import_as_vehicle = false;
 
 };

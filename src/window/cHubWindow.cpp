@@ -3,10 +3,10 @@
 #include <imgui.h>
 
 cHubWindow::cHubWindow( void ):
-	m_import_button  ( "Import",   &m_importing_window ),
-	m_export_button  ( "Export",   &m_importing_window ),
-	m_advanced_button( "Advanced", &m_importing_window ),
-	m_edit_button    ( "Edit",     &m_importing_window )
+	m_import_button  ( "Import",   &m_importing_window, { "dae", "obj", "fbx", "gltf" } ),
+	m_export_button  ( "Export",   nullptr, { "blueprint" } ),
+	m_advanced_button( "Advanced", nullptr ),
+	m_edit_button    ( "Edit",     nullptr )
 {
 	
 }
@@ -57,25 +57,4 @@ void cHubWindow::drawWindow()
 	ImGui::End();
 
 	m_importing_window.draw();
-}
-
-STDMETHODIMP_( HRESULT __stdcall ) cHubWindow::DragEnter( IDataObject* _pDataObj, DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect )
-{
-	return S_OK;
-}
-
-STDMETHODIMP_( HRESULT __stdcall ) cHubWindow::DragOver( DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect )
-{
-
-	return S_OK;
-}
-
-STDMETHODIMP_( HRESULT __stdcall ) cHubWindow::DragLeave()
-{
-	return S_OK;
-}
-
-STDMETHODIMP_( HRESULT __stdcall ) cHubWindow::Drop( IDataObject* _pDataObj, DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect )
-{
-	return S_OK;
 }

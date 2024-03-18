@@ -4,9 +4,7 @@
 #include "tool/cImportingWindow.h"
 #include "tool/cToolButton.h"
 
-#include <oleidl.h>
-
-class cHubWindow : public iWindow, public IDropTarget
+class cHubWindow : public iWindow
 {
 public:
 
@@ -15,18 +13,8 @@ public:
 
 	virtual void onCreate ( void ) override;
 	virtual void onDestroy( void ) override;
-	
-	STDMETHODIMP DragEnter( IDataObject* _pDataObj, DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect ) override;
-	STDMETHODIMP DragOver ( DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect ) override;
-	STDMETHODIMP DragLeave() override;
-	STDMETHODIMP Drop     ( IDataObject* _pDataObj, DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect ) override;
-
 
 private:
-
-	ULONG AddRef() override { return 0; }
-	HRESULT QueryInterface( REFIID _riid, void** _object ) override { return S_OK; }
-	ULONG Release() override { return 0; }
 
 	virtual void drawWindow() override;
 

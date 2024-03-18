@@ -40,13 +40,9 @@ void cApplication::start()
 	
 	resetScreenBounds();
 
-	HRESULT drag_drop_result = RegisterDragDrop( m_window.getWin32Handle(), &m_hub_window );
-	switch ( drag_drop_result )
-	{
-	case DRAGDROP_E_INVALIDHWND:       printf( "DRAGDROP_E_INVALIDHWND\n" ); break;
-	case DRAGDROP_E_ALREADYREGISTERED: printf( "DRAGDROP_E_ALREADYREGISTERED\n" ); break;
-	case E_OUTOFMEMORY:                printf( "E_OUTOFMEMORY\n" ); break;
-	}
+	// drag drop surface
+	OleInitialize( NULL );
+	RegisterDragDrop( m_window.getWin32Handle(), (IDropTarget*)&m_drag_drop_surface );
 }
 
 void cApplication::run()

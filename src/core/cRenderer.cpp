@@ -99,7 +99,7 @@ void cRenderer::setupImGuiStyle()
 	ImGuiStyle& style = ImGui::GetStyle();
 
 	style.Alpha = 1.0f;
-	style.DisabledAlpha = 1.0f;
+	style.DisabledAlpha = 0.3f;
 	style.WindowPadding = ImVec2( 12.0f, 12.0f );
 	style.WindowRounding = 0.0f;
 	style.WindowBorderSize = 0.0f;

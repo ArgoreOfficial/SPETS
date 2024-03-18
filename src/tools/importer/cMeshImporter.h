@@ -14,7 +14,7 @@ enum eMeshImporterFlags
 {
 	MeshImporterFlags_None              = 0b00000000,
 	MeshImporterFlags_MergeCompartments = 0b00000001,
-	MeshImporterFlags_ImportAsBlueprint = 0b00000010,
+	MeshImporterFlags_ImportAsVehicle = 0b00000010,
 };
 
 class cMeshImporter
@@ -44,5 +44,7 @@ private:
 
 	std::vector<sCompartment*> m_compartments;
 	std::vector<sMesh*> m_meshes;
+	std::string m_outpath;
+	std::string m_filename;
 
 };

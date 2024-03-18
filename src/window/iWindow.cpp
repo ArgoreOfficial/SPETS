@@ -42,7 +42,7 @@ void iWindow::draw( void )
 
 void iWindow::open( void )
 {
-	if ( m_popup_interpolator.getProgress() != 1.0f )
+	if ( m_internal_state || m_popup_interpolator.getProgress() != 1.0f )
 		return;
 
 	m_internal_state = true;
@@ -54,7 +54,7 @@ void iWindow::open( void )
 
 void iWindow::close( void )
 {
-	if ( m_popup_interpolator.getProgress() != 1.0f )
+	if ( !m_internal_state || m_popup_interpolator.getProgress() != 1.0f )
 		return;
 
 	m_internal_state = false;

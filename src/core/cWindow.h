@@ -22,6 +22,7 @@ public:
 	unsigned int getWidth ( void ) const { return m_width; }
 	unsigned int getHeight( void ) const { return m_height; }
 
+	void setPosition( int _x, int _y );
 	void setSize( int _width, int _height );
 
 private:
