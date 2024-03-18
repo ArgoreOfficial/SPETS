@@ -6,6 +6,16 @@
 
 #include <window/cHubWindow.h>
 
+template<typename T>
+struct sPoint 
+{ 
+	T x, y; 
+	bool intersectsRect( sPoint<T> _min, sPoint<T> _max )
+	{
+		return ( x >= _min.x && x < _max.x && y >= _min.y && y < _max.y );
+	}
+};
+
 class cApplication
 {
 
@@ -29,6 +39,11 @@ public:
 	}
 
 	void checkScreenBounds( int _min_x, int _min_y, int _max_x, int _max_y, bool _hovering );
+	
+	sPoint<int> getCursorPosition( void ) { return m_cursor_pos; }
+	bool        getLMouseState   ( void ) { return m_lmouse_state; }
+	bool        wasMouseJustDown ( void ) { return  m_lmouse_state && !m_lmouse_state_prev; }
+	bool        wasMouseJustUp   ( void ) { return !m_lmouse_state &&  m_lmouse_state_prev; }
 
 private:
 
@@ -49,6 +64,11 @@ private:
 	cHubWindow m_hub_window;
 
 	cApplication::sVersion m_version;
+
+	// input state
+	sPoint<int> m_cursor_pos;
+	bool m_lmouse_state      = false;
+	bool m_lmouse_state_prev = false;
 
 	int m_min_x = 0;
 	int m_min_y = 0;

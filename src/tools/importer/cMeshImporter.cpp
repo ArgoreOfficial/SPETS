@@ -13,7 +13,7 @@
 
 #define RAD_DEG_CONST 57.2957795
 
-cMeshImporter::cMeshImporter( std::string _path )
+cMeshImporter::cMeshImporter( std::string _path, std::string _out, eMeshImporterFlags _flags )
 {
 
 	Assimp::Importer importer;
@@ -29,7 +29,7 @@ cMeshImporter::cMeshImporter( std::string _path )
 	processAssimpNode( scene->mRootNode, scene );	
 	loadCompartments();
 
-	if ( m_meshes.size() > 1 )
+	if ( _flags & MeshImporterFlags_ImportAsBlueprint )
 		importAsBlueprint();
 	else
 		importAsCompartments();
@@ -40,6 +40,11 @@ cMeshImporter::cMeshImporter( std::string _path )
 
 cMeshImporter::~cMeshImporter( void )
 {
+	for ( int i = 0; i < m_compartments.size(); i++ )
+		delete m_compartments[ i ];
+	
+	for ( int i = 0; i < m_meshes.size(); i++ )
+		delete m_meshes[ i ];
 
 }
 
@@ -193,9 +198,9 @@ sMesh* cMeshImporter::processAssimpMesh( aiMesh* _assimp_mesh, const aiScene* _s
 	mesh->rotation = { rot.x * RAD_DEG_CONST, rot.y * RAD_DEG_CONST, rot.z * RAD_DEG_CONST };
 	
 	// process vertices
+	sVertex v;
 	for ( int i = 0; i < _assimp_mesh->mNumVertices; i++ )
 	{
-		sVertex v;
 		v.x = _assimp_mesh->mVertices[ i ].x * scale.x;
 		v.y = _assimp_mesh->mVertices[ i ].y * scale.y;
 		v.z = _assimp_mesh->mVertices[ i ].z * scale.z;

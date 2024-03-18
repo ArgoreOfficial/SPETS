@@ -23,6 +23,8 @@ void cImportingWindow::onCreate( void )
 	getFactions();
 
 	m_selected_faction = "Default";
+	m_width = 300;
+	m_height = 200;
 }
 
 void cImportingWindow::onDestroy( void )
@@ -31,7 +33,7 @@ void cImportingWindow::onDestroy( void )
 
 void cImportingWindow::drawWindow()
 {
-	if ( ImGui::Begin( "Import Blueprint", &m_is_open ) )
+	if ( ImGui::Begin( "Import Blueprint", &m_is_open, ImGuiWindowFlags_NoResize ) )
 	{
 		if ( ImGui::BeginCombo( "Faction", m_selected_faction.c_str() ) )
 		{
@@ -68,4 +70,9 @@ void cImportingWindow::getFactions()
 		}
 
 	}
+}
+
+void cImportingWindow::importMesh()
+{
+
 }

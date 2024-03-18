@@ -2,14 +2,18 @@
 
 #include <imgui.h>
 
-cHubWindow::cHubWindow( void )
+cHubWindow::cHubWindow( void ):
+	m_import_button  ( "Import",   &m_importing_window ),
+	m_export_button  ( "Export",   &m_importing_window ),
+	m_advanced_button( "Advanced", &m_importing_window ),
+	m_edit_button    ( "Edit",     &m_importing_window )
 {
 	
 }
 
 cHubWindow::~cHubWindow( void )
 {
-
+	
 }
 
 void cHubWindow::onCreate( void )
@@ -30,16 +34,14 @@ void cHubWindow::drawWindow()
 		{
 			if ( ImGui::BeginTabItem( "Blueprints" ) )
 			{
-				if ( ImGui::Button( "Import", { 100, 100 } ) )
-					m_importing_window.toggle();
+				m_import_button.draw();
+				ImGui::SameLine();
+				m_export_button.draw();
+				ImGui::SameLine();
+				m_advanced_button.draw();
+				ImGui::SameLine();
+				m_edit_button.draw();
 
-				ImGui::SameLine();
-				ImGui::Button( "Export", { 100, 100 } );
-				ImGui::SameLine();
-				ImGui::Button( "Advanced", { 100, 100 } );
-				ImGui::SameLine();
-				ImGui::Button( "Edit", { 100, 100 } );
-				
 				ImGui::EndTabItem();
 			}
 			
@@ -55,4 +57,25 @@ void cHubWindow::drawWindow()
 	ImGui::End();
 
 	m_importing_window.draw();
+}
+
+STDMETHODIMP_( HRESULT __stdcall ) cHubWindow::DragEnter( IDataObject* _pDataObj, DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect )
+{
+	return S_OK;
+}
+
+STDMETHODIMP_( HRESULT __stdcall ) cHubWindow::DragOver( DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect )
+{
+
+	return S_OK;
+}
+
+STDMETHODIMP_( HRESULT __stdcall ) cHubWindow::DragLeave()
+{
+	return S_OK;
+}
+
+STDMETHODIMP_( HRESULT __stdcall ) cHubWindow::Drop( IDataObject* _pDataObj, DWORD _grfKeyState, POINTL _pt, DWORD* _pdwEffect )
+{
+	return S_OK;
 }

@@ -88,24 +88,24 @@ void iWindow::forceState( bool _state )
 
 void iWindow::update()
 {
+	cApplication& application = *cApplication::getInstance();
+
 	m_last_window_pos = ImGui::GetWindowPos();
 
-	int min_x = m_last_window_pos.x;
-	int min_y = m_last_window_pos.y;
-	int max_x = std::max( min_x + ImGui::GetWindowSize().x, ImGui::GetWindowSize().x );
-	int max_y = std::max( min_y + ImGui::GetWindowSize().y, ImGui::GetWindowSize().y );
+	sPoint<int> min = {
+		m_last_window_pos.x,
+		m_last_window_pos.y
+	};
 
-	/*
-	 * winapi is used here because imgui doesn't update 
-	 * mouse position if another window has focus
-	 */ 
-	POINT mouse_pos;
-	GetCursorPos( &mouse_pos );
+	sPoint<int> max = {
+		std::max( min.x + ImGui::GetWindowSize().x, ImGui::GetWindowSize().x ),
+		std::max( min.y + ImGui::GetWindowSize().y, ImGui::GetWindowSize().y )
+	};
 	
-	bool hovering = ( mouse_pos.x >= min_x && mouse_pos.x < max_x &&
-		              mouse_pos.y >= min_y && mouse_pos.y < max_y );
+	sPoint<int> mouse_pos = application.getCursorPosition();
+	bool hovering = mouse_pos.intersectsRect( min, max );
 
-	cApplication::getInstance()->checkScreenBounds( min_x, min_y, max_x, max_y, hovering );
+	application.checkScreenBounds( min.x, min.y, max.x, max.y, hovering );
 
 	if ( m_is_open != m_internal_state )
 	{

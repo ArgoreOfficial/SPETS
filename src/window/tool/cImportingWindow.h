@@ -1,11 +1,11 @@
 #pragma once
 
-#include "iWindow.h"
+#include "iToolWindow.h"
 
 #include <vector>
 #include <string>
 
-class cImportingWindow : public iWindow
+class cImportingWindow : public iToolWindow
 {
 public:
 	 cImportingWindow();
@@ -13,12 +13,13 @@ public:
 
 	virtual void onCreate ( void ) override;
 	virtual void onDestroy( void ) override;
-
+	
 private:
 
 	virtual void drawWindow() override;
 
 	void getFactions();
+	void importMesh();
 
 private:
 

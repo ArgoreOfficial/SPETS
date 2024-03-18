@@ -10,11 +10,18 @@ struct aiNode;
 struct aiScene;
 struct aiMesh;
 
+enum eMeshImporterFlags
+{
+	MeshImporterFlags_None              = 0b00000000,
+	MeshImporterFlags_MergeCompartments = 0b00000001,
+	MeshImporterFlags_ImportAsBlueprint = 0b00000010,
+};
+
 class cMeshImporter
 {
 
 public:
-	 cMeshImporter( std::string _path );
+	 cMeshImporter( std::string _path, std::string _out = "./", eMeshImporterFlags _flags = MeshImporterFlags_None );
 	~cMeshImporter( void );
 
 //////////////////////////////////////////////////////////////////

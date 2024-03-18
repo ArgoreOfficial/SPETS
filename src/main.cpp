@@ -16,7 +16,7 @@ int main( int argc, char* argv[] )
 	if ( argc > 1 )
 		path = argv[ 1 ];
 
-	cMeshImporter importer( path );
+	cMeshImporter importer( path, "./" );
 	*/
 
 	return 0;

@@ -18,6 +18,7 @@ public:
 	void close() { glfwSetWindowShouldClose( m_window_object, true ); }
 
 	GLFWwindow* const getWindowObject( void ) { return m_window_object; }
+	HWND        const getWin32Handle ( void ) { return glfwGetWin32Window( m_window_object ); }
 	unsigned int getWidth ( void ) const { return m_width; }
 	unsigned int getHeight( void ) const { return m_height; }
 

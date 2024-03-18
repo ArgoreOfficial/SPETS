@@ -1,6 +1,6 @@
 #pragma once
 
-#define DECLARE_INTERFACE( _class )                  \
+#define SPETS_INTERFACE( _class )                  \
 	public:                                          \
 		virtual ~_class( void ) = default;           \
 	protected:                                       \

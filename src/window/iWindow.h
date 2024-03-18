@@ -7,7 +7,7 @@
 
 class iWindow
 {
-	DECLARE_INTERFACE( iWindow )
+	SPETS_INTERFACE( iWindow )
 
 public:
 
@@ -34,8 +34,8 @@ protected:
 	
 	float m_width = 400;
 	float m_height = 400;
-	float m_width_fade_amount = -4.0f;
-	float m_height_fade_amount = -4.0f;
+	float m_width_fade_amount = 0.3f;
+	float m_height_fade_amount = 0.3f;
 
 private:
 	bool m_internal_state = false;
