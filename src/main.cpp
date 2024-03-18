@@ -6,7 +6,7 @@
 
 int main( int argc, char* argv[] )
 {
-#ifdef FINAL
+#ifndef DEBUG
 	ShowWindow( GetConsoleWindow(), SW_HIDE );
 #endif
 

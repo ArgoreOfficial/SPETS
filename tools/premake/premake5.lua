@@ -1,6 +1,13 @@
 
 PROJECT_NAME = "SPETS"
 
+local PROJECT_VERSION_MINOR = 2
+local PROJECT_VERSION_MAJOR = 0
+local PROJECT_VERSION_YEAR = 24
+local PROJECT_VERSION_REVISION = 0
+
+local PROJECT_VERSION = PROJECT_VERSION_MAJOR .. "." .. PROJECT_VERSION_MINOR .. "-" .. PROJECT_VERSION_YEAR .. "." .. PROJECT_VERSION_REVISION
+
 workspace (PROJECT_NAME)
 	configurations { "Debug", "Release", "Final" }
 	platforms { "x64", "x86" }
@@ -12,8 +19,6 @@ project (PROJECT_NAME)
 	language "C++"
 	cppdialect "C++20"
 	
-	targetname (PROJECT_NAME .. "_%{cfg.buildcfg}")
-
 	targetdir "../../bin"
 	objdir "../../bin/obj/"
 
@@ -40,13 +45,16 @@ project (PROJECT_NAME)
 
 	filter "configurations:Debug"
       defines { "DEBUG" }
-	  
-	  filter "configurations:Release"
+	  targetname (PROJECT_NAME .. "d" .. PROJECT_VERSION .. "_Debug" )
+	
+	filter "configurations:Release"
       defines { "NDEBUG", "RELEASE" }
+	  targetname (PROJECT_NAME .. "_p" .. PROJECT_VERSION )
 	  optimize "On"
 	 
 	filter "configurations:Final"
       defines { "FINAL" }
+	  targetname (PROJECT_NAME .. "_r" .. PROJECT_VERSION )
 	  symbols "Off"
 	  optimize "Full"
 
