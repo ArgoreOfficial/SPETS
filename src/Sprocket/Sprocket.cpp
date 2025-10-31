@@ -24,3 +24,16 @@ bool Sprocket::loadCompartmentFromFile( const std::string& _path, MeshData& _out
 	
 	return true;
 }
+
+bool Sprocket::saveCompartmentToFile( const std::string& _path, const MeshData& _compartment )
+{
+	std::ofstream f( _path );
+	if ( !f.is_open() )
+		return false;
+
+	nlohmann::json json = _compartment;
+	f << json.dump();
+	f.close();
+
+    return true;
+}
