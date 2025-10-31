@@ -37,7 +37,7 @@ struct SerializedFace
 	union ThickenModes_t
 	{
 		ThickenMode arr[ 4 ];
-		uint32_t u32 = 16843009; // auto auto auto auto
+		int32_t u32 = 16843009; // auto auto auto auto
 	} thickenModes;  // "tm"
 
 	union ThickenEdgeIndicies_t

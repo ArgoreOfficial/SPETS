@@ -72,7 +72,8 @@ void Sprocket::to_json( nlohmann::json& j, const Sprocket::MeshData& p )
 		{ "smoothAngle", p.smoothAngle },
 		{ "gridSize",    p.gridSize },
 		{ "format",      p.format },
-		{ "mesh",        p.mesh }
+		{ "mesh",        p.mesh },
+		{ "rivets",      p.rivets }
 	};
 }
 
