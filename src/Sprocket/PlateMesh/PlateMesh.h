@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <array>
 
 #include "Rivets.h"
 
@@ -50,6 +51,7 @@ struct SerializedFace
 
 enum SerializedEdgeFlags : uint8_t
 {
+	SerializedEdgeFlags_None = 0,
 	SerializedEdgeFlags_Sharp = 1
 };
 
@@ -62,39 +64,16 @@ struct MeshBlueprint
 	std::vector<SerializedEdgeFlags> serializedEdgeFlags; // "edgeFlags"
 	std::vector<SerializedFace> serializedFaces; // "faces"
 
+	void addFace( const std::vector<float>& _vertexPositions );
+
 	size_t getNumVertices() const { 
 		return vertexPositions.size() / 3; 
 	}
 
-	void setVertexPosition( size_t _index, float _x, float _y, float _z ) {
-		if ( _index < 0 || _index >= getNumVertices() )
-			throw std::out_of_range( "Vertex index out of range" );
+	void setVertexPosition( size_t _index, float _x, float _y, float _z );
+	void getVertexPosition( size_t _index, float* _outX, float* _outY, float* _outZ );
+	void moveVertexPosition( size_t _index, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f );
 
-		size_t realIndex = _index * 3;
-		vertexPositions[ realIndex + 0 ] = _x;
-		vertexPositions[ realIndex + 1 ] = _y;
-		vertexPositions[ realIndex + 2 ] = _z;
-	}
-
-	void getVertexPosition( size_t _index, float* _outX, float* _outY, float* _outZ ) {
-		if ( _index < 0 || _index >= getNumVertices() )
-			throw std::out_of_range( "Vertex index out of range" );
-
-		size_t realIndex = _index * 3;
-		if ( _outX ) *_outX = vertexPositions[ realIndex + 0 ];
-		if ( _outY ) *_outY = vertexPositions[ realIndex + 1 ];
-		if ( _outZ ) *_outZ = vertexPositions[ realIndex + 2 ];
-	}
-
-	void moveVertexPosition( size_t _index, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f ) {
-		if ( _index < 0 || _index >= getNumVertices() )
-			throw std::out_of_range( "Vertex index out of range" );
-
-		size_t realIndex = _index * 3;
-		vertexPositions[ realIndex + 0 ] += _x;
-		vertexPositions[ realIndex + 1 ] += _y;
-		vertexPositions[ realIndex + 2 ] += _z;
-	}
 };
 
 /**
