@@ -67,7 +67,7 @@ void Sprocket::to_json( nlohmann::json& j, const Sprocket::MeshBlueprint& p )
 void Sprocket::to_json( nlohmann::json& j, const Sprocket::MeshData& p ) 
 {
 	j = nlohmann::json{
-		{ "v",           p.v },
+		{ "v",           p.version },
 		{ "name",        p.name },
 		{ "smoothAngle", p.smoothAngle },
 		{ "gridSize",    p.gridSize },
@@ -141,7 +141,7 @@ void Sprocket::from_json( const nlohmann::json& j, Sprocket::MeshBlueprint& p )
 // MeshData
 void Sprocket::from_json( const nlohmann::json& j, Sprocket::MeshData& p ) 
 {
-	j.at( "v" ).get_to( p.v );
+	j.at( "v" ).get_to( p.version );
 	j.at( "name" ).get_to( p.name );
 	j.at( "smoothAngle" ).get_to( p.smoothAngle );
 	j.at( "gridSize" ).get_to( p.gridSize );

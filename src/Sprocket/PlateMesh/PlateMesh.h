@@ -102,7 +102,7 @@ struct MeshBlueprint
  */
 struct MeshData
 {
-	std::string v = "0.2"; // game version 
+	std::string version = "0.2"; 
 	std::string name = "";
 	uint32_t    smoothAngle = 0;
 	uint32_t    gridSize = 1;
