@@ -1,17 +1,4 @@
-#     directories
-
-.vs/
-bin/
-obj/
-
-#     files
-*.sln
-*.vcxproj
-*.vcxproj.user
-*.vcxproj.filters
-*.blend1
-*.idb
-*.pdb
-*.lastbuildstate
-*.tlog
-imgui.ini
+﻿.vscode
+.xmake
+bin
+build
