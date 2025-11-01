@@ -7,5 +7,6 @@ namespace Sprocket {
 
 bool loadCompartmentFromFile( const std::string& _path, MeshData& _out );
 bool saveCompartmentToFile( const std::string& _path, const MeshData& _compartment );
-	
+bool importMesh( const std::string& _path, MeshData& _outMesh );
+
 }

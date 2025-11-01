@@ -3,12 +3,12 @@ set_languages("clatest", "cxxlatest")
 add_rules "mode.debug"
 add_rules "mode.release"
 
-add_requires("nlohmann_json")
+add_requires("nlohmann_json", "assimp")
 
 target "SPETS"
     set_kind "binary" 
     
-    add_packages("nlohmann_json")
+    add_packages("nlohmann_json", "assimp")
 
     if is_mode("debug") then 
         set_basename "SPETS_debug_$(arch)"

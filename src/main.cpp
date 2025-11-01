@@ -3,17 +3,19 @@
 
 int main()
 {
-	Sprocket::MeshData compartment;
-	if ( Sprocket::loadCompartmentFromFile( "../blueprints/Plate Structures/Turret.blueprint", compartment ) )
+	Sprocket::MeshData importedMesh;
+	if ( Sprocket::importMesh( "../models/teapot.glb", importedMesh ) )
 	{
-		printf( "Loaded compartment \"%s\"\n", compartment.name.c_str() );
-		
-		for ( size_t i = 0; i < compartment.mesh.getNumVertices(); i++ )
-			compartment.mesh.moveVertexPosition( i, 0.0f, 1.0f, 0.0f );
-		
-		compartment.name = "Turret2";
+		importedMesh.name = "Teapot";
 
-		Sprocket::saveCompartmentToFile( "Turret2.blueprint", compartment );
+		// scale and move the vertices
+		for ( size_t i = 0; i < importedMesh.mesh.getNumVertices(); i++ )
+		{
+			importedMesh.mesh.scaleVertexPosition( i, 0.5f, 0.5f, 0.5f );
+			importedMesh.mesh.moveVertexPosition( i, 0.0f, -0.5f, 0.0f );
+		}
+
+		Sprocket::saveCompartmentToFile( "teapot.blueprint", importedMesh );
 	}
 	
 	return 0;
