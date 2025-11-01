@@ -64,8 +64,6 @@ struct MeshBlueprint
 	std::vector<SerializedEdgeFlags> serializedEdgeFlags; // "edgeFlags"
 	std::vector<SerializedFace> serializedFaces; // "faces"
 
-	void addFace( const std::vector<float>& _vertexPositions );
-
 	size_t getNumVertices() const { 
 		return vertexPositions.size() / 3; 
 	}
@@ -73,6 +71,7 @@ struct MeshBlueprint
 	void setVertexPosition( size_t _index, float _x, float _y, float _z );
 	void getVertexPosition( size_t _index, float* _outX, float* _outY, float* _outZ );
 	void moveVertexPosition( size_t _index, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f );
+	void scaleVertexPosition( size_t _index, float _x = 1.0f, float _y = 1.0f, float _z = 1.0f );
 
 };
 
