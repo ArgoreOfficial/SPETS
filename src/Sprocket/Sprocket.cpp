@@ -6,9 +6,15 @@
 #include <fstream>
 #include <unordered_map>
 
+#include <windows.h>
+#include <shlobj.h>
+#include <filesystem>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+#pragma comment(lib, "shell32.lib")
 
 bool Sprocket::loadCompartmentFromFile( const std::string& _path, MeshData& _out )
 {
@@ -93,7 +99,7 @@ bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 			meshData.mesh.serializedFaces.push_back( serializedFace );
 		}
 
-		printf( "Parsed %s vertices\n", mesh->mName.C_Str() );
+		//printf( "Parsed %s vertices\n", mesh->mName.C_Str() );
 		indexOffset += mesh->mNumVertices;
 	}
 
@@ -104,9 +110,24 @@ bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 		meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
 	}
 
-	printf( "Constructed edge map\n" );
+	//printf( "Constructed edge map\n" );
 
-	// final copy and return
 	_outMesh = meshData;
 	return true;
+}
+
+bool Sprocket::doesFactionExist( const std::string& _name )
+{
+	return std::filesystem::is_directory( getFactionPath( _name ) );
+}
+
+std::string Sprocket::getFactionPath( const std::string& _name )
+{
+	CHAR myDocumentsStr[ MAX_PATH ];
+	HRESULT result = SHGetFolderPath( NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, myDocumentsStr );
+
+	if ( result != S_OK )
+		return "";
+
+	return std::string{ myDocumentsStr } + "\\My Games\\Sprocket\\Factions\\" + _name + "\\";
 }
