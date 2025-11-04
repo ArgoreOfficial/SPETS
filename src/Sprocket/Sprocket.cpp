@@ -9,22 +9,24 @@
 #include <windows.h>
 #include <shlobj.h>
 #include <filesystem>
+#include <locale>
+#include <codecvt>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 #pragma comment(lib, "shell32.lib")
+#pragma comment(lib, "Ole32.lib")
 
 bool Sprocket::loadCompartmentFromFile( const std::string& _path, MeshData& _out )
 {
 	std::ifstream f( _path );
-	if ( !f.is_open() )
+	if ( !f )
 		return false;
 
 	nlohmann::json json = nlohmann::json::parse( f );
-	f.close(); // immediately close file
-
+	
 	if ( json[ "v" ] == "2.0" )
 	{
 		printf( "Vehicle Blueprint, NOT IMPLEMENTED YET" );
@@ -39,13 +41,12 @@ bool Sprocket::loadCompartmentFromFile( const std::string& _path, MeshData& _out
 bool Sprocket::saveCompartmentToFile( const std::string& _path, const MeshData& _compartment )
 {
 	std::ofstream f( _path );
-	if ( !f.is_open() )
+	if ( !f )
 		return false;
 
 	nlohmann::json json = _compartment;
 	f << json.dump();
-	f.close();
-
+	
     return true;
 }
 
@@ -121,13 +122,63 @@ bool Sprocket::doesFactionExist( const std::string& _name )
 	return std::filesystem::is_directory( getFactionPath( _name ) );
 }
 
-std::string Sprocket::getFactionPath( const std::string& _name )
+std::filesystem::path getFolderPath( const KNOWNFOLDERID& _id )
 {
-	CHAR myDocumentsStr[ MAX_PATH ];
-	HRESULT result = SHGetFolderPath( NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, myDocumentsStr );
-
-	if ( result != S_OK )
+	wchar_t* wpath = nullptr;
+	if ( SHGetKnownFolderPath( _id, 0, NULL, &wpath ) != S_OK )
+	{
+		CoTaskMemFree( static_cast<void*>( wpath ) );
 		return "";
+	}
 
-	return std::string{ myDocumentsStr } + "\\My Games\\Sprocket\\Factions\\" + _name + "\\";
+	std::wstringstream stream;
+	stream << wpath;
+
+	std::filesystem::path path = wpath;
+	CoTaskMemFree( static_cast<void*>( wpath ) );
+
+	return path;
+}
+
+std::filesystem::path Sprocket::getSprocketDataPath()
+{
+	std::filesystem::path path = getFolderPath( FOLDERID_Documents );
+	return path / "My Games" / "Sprocket";
+}
+
+std::filesystem::path Sprocket::getFactionPath( const std::string& _name )
+{
+	std::filesystem::path data = Sprocket::getSprocketDataPath();
+	return data / "Factions" / _name;
+}
+
+std::string Sprocket::getCurrentFaction()
+{
+	std::filesystem::path appdata = getFolderPath( FOLDERID_LocalAppDataLow );
+	std::filesystem::path path = appdata / "HD" / "Sprocket" / "CurrentFactip";
+
+	std::ifstream f{ path };
+	if ( !f )
+		return "Default"; // failed to open CurrentFaction file 
+
+	std::stringstream s{};
+	s << f.rdbuf();
+	return s.str();
+}
+
+Sprocket::FactionInfo Sprocket::getFactionInfo( const std::string& _name )
+{
+	std::filesystem::path path = Sprocket::getFactionPath( _name );
+	std::ifstream f( path / ( _name + ".fdef") );
+	if ( !f )
+		return {};
+
+	nlohmann::json json = nlohmann::json::parse( f );
+
+	FactionInfo info{};
+	json.at( "name" ).get_to( info.name );
+	json.at( "designPrefix" ).get_to( info.designPrefix );
+	json.at( "designCounter" ).get_to( info.designCounter );
+
+	return info;
 }

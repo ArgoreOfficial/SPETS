@@ -3,23 +3,9 @@
 #include "SPETS/ArgParser.h"
 #include "Sprocket/Sprocket.h"
 
-int main( int _argc, char* _argv[] )
+SPETS::ArgParser createParser()
 {
 	SPETS::ArgParser parser{};
-
-	/*
-	std::vector<char*> argv = { 
-		_argv[ 0 ],
-		(char*)"-f", (char*)"DEV",
-		(char*)"-i", (char*)"..\\models\\teapot.glb",
-		(char*)"-o", (char*)"Teapot"
-	};
-	*/
-
-	std::vector<char*> argv = {
-		_argv[ 0 ],
-		(char*)"--help"
-	};
 
 	parser.addArg( "-f" )
 		.setInputName( "faction" )
@@ -44,8 +30,24 @@ int main( int _argc, char* _argv[] )
 		.setDefault( false )
 		.setImplicit( true );
 
+	return parser;
+}
+
+int main( int _argc, char* _argv[] )
+{
+	Sprocket::FactionInfo defaultInfo = Sprocket::getFactionInfo( "Default" );
+
+	SPETS::ArgParser parser = createParser();
 	bool parsed = false;
-	
+
+	// debug build test stuff
+	std::vector<char*> argv = { 
+		_argv[ 0 ],
+		(char*)"-f", (char*)"DEV",
+		(char*)"-i", (char*)"..\\models\\teapot.glb",
+		(char*)"-o", (char*)"Teapot"
+	};
+
 	if( _argc == 1 )
 		parsed = parser.parseArguments( argv.size(), argv.data() );
 	else
@@ -78,15 +80,15 @@ int main( int _argc, char* _argv[] )
 		{
 			printf( "Importing... " );
 
-			std::string factionPath = Sprocket::getFactionPath( faction );
-			std::string exportPath = factionPath + "Blueprints\\Plate Structures\\" + output + ".blueprint";
+			std::filesystem::path factionPath = Sprocket::getFactionPath( faction );
+			std::filesystem::path exportPath = factionPath / "Blueprints" / "Plate Structures" / output / ".blueprint";
 			Sprocket::MeshData importedMesh;
 
 			if ( Sprocket::importMesh( input, importedMesh ) )
 			{
 				importedMesh.name = output;
 				Sprocket::saveCompartmentToFile( 
-					exportPath, 
+					exportPath.string(),
 					importedMesh 
 				);
 				
