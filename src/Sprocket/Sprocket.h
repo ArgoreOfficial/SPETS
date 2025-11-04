@@ -18,12 +18,15 @@ bool loadCompartmentFromFile( const std::string& _path, MeshData& _out );
 bool saveCompartmentToFile( const std::string& _path, const MeshData& _compartment );
 bool importMesh( const std::string& _path, MeshData& _outMesh );
 
+std::filesystem::path getStreamingAssetsPath();
 std::filesystem::path getSprocketDataPath();
 std::filesystem::path getFactionPath( const std::string& _name );
+std::filesystem::path getBlueprintPath( const std::string& _faction, const std::string& _name );
 
 bool doesFactionExist( const std::string& _name );
+bool doesBlueprintExist( const std::string& _faction, const std::string& _name );
+
 std::string getCurrentFaction();
 FactionInfo getFactionInfo( const std::string& _name );
-
 
 }

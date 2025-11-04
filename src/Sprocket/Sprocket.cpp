@@ -117,11 +117,6 @@ bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 	return true;
 }
 
-bool Sprocket::doesFactionExist( const std::string& _name )
-{
-	return std::filesystem::is_directory( getFactionPath( _name ) );
-}
-
 std::filesystem::path getFolderPath( const KNOWNFOLDERID& _id )
 {
 	wchar_t* wpath = nullptr;
@@ -140,6 +135,12 @@ std::filesystem::path getFolderPath( const KNOWNFOLDERID& _id )
 	return path;
 }
 
+std::filesystem::path Sprocket::getStreamingAssetsPath()
+{
+	std::filesystem::path programFiles = getFolderPath( FOLDERID_ProgramFilesX86 );
+	return programFiles / "Steam" / "steamapps" / "common" / "Sprocket" / "Sprocket_Data" / "StreamingAssets";
+}
+
 std::filesystem::path Sprocket::getSprocketDataPath()
 {
 	std::filesystem::path path = getFolderPath( FOLDERID_Documents );
@@ -150,6 +151,25 @@ std::filesystem::path Sprocket::getFactionPath( const std::string& _name )
 {
 	std::filesystem::path data = Sprocket::getSprocketDataPath();
 	return data / "Factions" / _name;
+}
+
+std::filesystem::path Sprocket::getBlueprintPath( const std::string& _faction, const std::string& _name )
+{
+	if ( !Sprocket::doesFactionExist( _faction ) )
+		return "";
+
+	return Sprocket::getFactionPath( _faction ) / "Blueprints" / "Vehicles" / ( _name + ".blueprint" );
+}
+
+bool Sprocket::doesFactionExist( const std::string& _name )
+{
+	return std::filesystem::is_directory( getFactionPath( _name ) );
+}
+
+bool Sprocket::doesBlueprintExist( const std::string& _faction, const std::string& _name )
+{
+	std::filesystem::path filePath = getBlueprintPath( _faction, _name );
+	return std::filesystem::exists( filePath );
 }
 
 std::string Sprocket::getCurrentFaction()
