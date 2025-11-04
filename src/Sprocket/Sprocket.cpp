@@ -175,7 +175,7 @@ bool Sprocket::doesBlueprintExist( const std::string& _faction, const std::strin
 std::string Sprocket::getCurrentFaction()
 {
 	std::filesystem::path appdata = getFolderPath( FOLDERID_LocalAppDataLow );
-	std::filesystem::path path = appdata / "HD" / "Sprocket" / "CurrentFactip";
+	std::filesystem::path path = appdata / "HD" / "Sprocket" / "CurrentFaction";
 
 	std::ifstream f{ path };
 	if ( !f )
