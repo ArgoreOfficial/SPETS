@@ -33,78 +33,70 @@ SPETS::ArgParser createParser()
 	return parser;
 }
 
-int main( int _argc, char* _argv[] )
+void runCommandLine( int _argc, char* _argv[] )
 {
-	std::string currentFaction = Sprocket::getCurrentFaction();
-	Sprocket::FactionInfo defaultInfo = Sprocket::getFactionInfo( currentFaction );
-	
-	Sprocket::CustomBattleConfig cbi = Sprocket::getCustomBattleSetup();
-	Sprocket::saveCustomBattleSetup( cbi );
-
 	SPETS::ArgParser parser = createParser();
-	bool parsed = false;
 
-	// debug build test stuff
-	std::vector<char*> argv = { 
-		_argv[ 0 ],
-		(char*)"-f", (char*)"DEV",
-		(char*)"-i", (char*)"..\\models\\teapot.glb",
-		(char*)"-o", (char*)"Teapot"
-	};
-
-	if( _argc == 1 )
-		parsed = parser.parseArguments( argv.size(), argv.data() );
-	else
-		parsed = parser.parseArguments( _argc, _argv );
-
-	if ( parsed )
-	{
-		if ( parser.get( "--help" ) == true )
-		{
-			parser.printHelp();
-			return 0;
-		}
-
-		SPETS::ArgInfo& factionInfo = parser.get( "-f" );
-		SPETS::ArgInfo& inputInfo   = parser.get( "-i" );
-		SPETS::ArgInfo& outputInfo  = parser.get( "-o" );
-
-		std::string faction = factionInfo.getValue<std::string>();
-		std::string input   = inputInfo.getValue<std::string>();;
-		std::string output  = outputInfo.getValue<std::string>();;
-
-		if ( !factionInfo.isSet() ) printf( "No faction specified. File will be placed in 'Default'.\n" );
-		if ( !outputInfo .isSet() ) printf( "No output file specified. Defaulting to 'Import.blueprint'\n" );
-		
-		if ( !inputInfo  .isSet() ) 
-			printf( "No file input file specified. Use -i <file>\n" );
-		else if ( !Sprocket::doesFactionExist( faction ) )
-			printf( "Faction %s does not exist.\n", faction.c_str() );
-		else
-		{
-			printf( "Importing... " );
-
-			std::filesystem::path factionPath = Sprocket::getFactionPath( faction );
-			std::filesystem::path exportPath = factionPath / "Blueprints" / "Plate Structures" / output / ".blueprint";
-			Sprocket::MeshData importedMesh;
-
-			if ( Sprocket::importMesh( input, importedMesh ) )
-			{
-				importedMesh.name = output;
-				Sprocket::saveCompartmentToFile( 
-					exportPath.string(),
-					importedMesh 
-				);
-				
-				printf( "DONE\n" );
-			}
-			else
-				printf( "ERROR :(\n" );
-		}
-	}
-	else
+	if ( !parser.parseArguments( _argc, _argv ) )
 	{
 		printf( "Error: %s\n", parser.getErrorMessage().c_str() );
+		return;
+	}
+
+	if ( parser.get( "--help" ) == true )
+	{
+		parser.printHelp();
+		return;
+	}
+
+	SPETS::ArgInfo& factionInfo = parser.get( "-f" );
+	SPETS::ArgInfo& inputInfo = parser.get( "-i" );
+	SPETS::ArgInfo& outputInfo = parser.get( "-o" );
+
+	std::string faction = factionInfo.getValue<std::string>();
+	std::string input = inputInfo.getValue<std::string>();;
+	std::string output = outputInfo.getValue<std::string>();;
+
+	if ( !factionInfo.isSet() ) printf( "No faction specified. File will be placed in 'Default'.\n" );
+	if ( !outputInfo.isSet() ) printf( "No output file specified. Defaulting to 'Import.blueprint'\n" );
+
+	if ( !inputInfo.isSet() )
+		printf( "No file input file specified. Use -i <file>\n" );
+	else if ( !Sprocket::doesFactionExist( faction ) )
+		printf( "Faction %s does not exist.\n", faction.c_str() );
+	else
+	{
+		printf( "Importing... " );
+
+		std::filesystem::path factionPath = Sprocket::getFactionPath( faction );
+		std::filesystem::path exportPath = factionPath / "Blueprints" / "Plate Structures" / output / ".blueprint";
+		Sprocket::MeshData importedMesh;
+
+		if ( Sprocket::importMesh( input, importedMesh ) )
+		{
+			importedMesh.name = output;
+			Sprocket::saveCompartmentToFile(
+				exportPath.string(),
+				importedMesh
+			);
+
+			printf( "DONE\n" );
+		}
+		else
+			printf( "ERROR :(\n" );
+	}
+}
+
+int main( int _argc, char* _argv[] )
+{
+	if ( _argc > 1 )
+		runCommandLine( _argc, _argv );
+	else
+	{
+		std::string currentFaction = Sprocket::getCurrentFaction();
+		Sprocket::FactionInfo factionInfo = Sprocket::getFactionInfo( currentFaction );
+		Sprocket::CustomBattleConfig cbi = Sprocket::getCustomBattleSetup();
+		Sprocket::saveCustomBattleSetup( cbi );
 	}
 
 	return 0;
