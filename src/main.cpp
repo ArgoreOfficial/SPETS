@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "SPETS/ArgParser.h"
-#include "Sprocket/Sprocket.h"
+#include <SPETS/ArgParser.h>
+#include <Sprocket/Sprocket.h>
 
 SPETS::ArgParser createParser()
 {
@@ -35,7 +35,11 @@ SPETS::ArgParser createParser()
 
 int main( int _argc, char* _argv[] )
 {
-	Sprocket::FactionInfo defaultInfo = Sprocket::getFactionInfo( "Default" );
+	std::string currentFaction = Sprocket::getCurrentFaction();
+	Sprocket::FactionInfo defaultInfo = Sprocket::getFactionInfo( currentFaction );
+	
+	Sprocket::CustomBattleConfig cbi = Sprocket::getCustomBattleSetup();
+	Sprocket::saveCustomBattleSetup( cbi );
 
 	SPETS::ArgParser parser = createParser();
 	bool parsed = false;

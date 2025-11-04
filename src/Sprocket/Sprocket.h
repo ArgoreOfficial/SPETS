@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Sprocket/PlateMesh/PlateMesh.h"
+#include <Sprocket/PlateMesh/PlateMesh.h>
+#include <Sprocket/CustomBattle.h>
 
 #include <string>
 #include <filesystem>

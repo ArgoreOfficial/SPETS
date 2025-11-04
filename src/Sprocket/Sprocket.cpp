@@ -1,13 +1,13 @@
 #include "Sprocket.h"
 #include "Json.h"
 
+#include <SPETS/Util.h>
+
 #include <nlohmann/json.hpp>
 
 #include <fstream>
 #include <unordered_map>
 
-#include <windows.h>
-#include <shlobj.h>
 #include <filesystem>
 #include <locale>
 #include <codecvt>
@@ -15,9 +15,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
-#pragma comment(lib, "shell32.lib")
-#pragma comment(lib, "Ole32.lib")
 
 bool Sprocket::loadCompartmentFromFile( const std::string& _path, MeshData& _out )
 {
@@ -117,33 +114,15 @@ bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 	return true;
 }
 
-std::filesystem::path getFolderPath( const KNOWNFOLDERID& _id )
-{
-	wchar_t* wpath = nullptr;
-	if ( SHGetKnownFolderPath( _id, 0, NULL, &wpath ) != S_OK )
-	{
-		CoTaskMemFree( static_cast<void*>( wpath ) );
-		return "";
-	}
-
-	std::wstringstream stream;
-	stream << wpath;
-
-	std::filesystem::path path = wpath;
-	CoTaskMemFree( static_cast<void*>( wpath ) );
-
-	return path;
-}
-
 std::filesystem::path Sprocket::getStreamingAssetsPath()
 {
-	std::filesystem::path programFiles = getFolderPath( FOLDERID_ProgramFilesX86 );
+	std::filesystem::path programFiles = SPETS::getFolderPath( FOLDERID_ProgramFilesX86 );
 	return programFiles / "Steam" / "steamapps" / "common" / "Sprocket" / "Sprocket_Data" / "StreamingAssets";
 }
 
 std::filesystem::path Sprocket::getSprocketDataPath()
 {
-	std::filesystem::path path = getFolderPath( FOLDERID_Documents );
+	std::filesystem::path path = SPETS::getFolderPath( FOLDERID_Documents );
 	return path / "My Games" / "Sprocket";
 }
 
@@ -174,7 +153,7 @@ bool Sprocket::doesBlueprintExist( const std::string& _faction, const std::strin
 
 std::string Sprocket::getCurrentFaction()
 {
-	std::filesystem::path appdata = getFolderPath( FOLDERID_LocalAppDataLow );
+	std::filesystem::path appdata = SPETS::getFolderPath( FOLDERID_LocalAppDataLow );
 	std::filesystem::path path = appdata / "HD" / "Sprocket" / "CurrentFaction";
 
 	std::ifstream f{ path };
