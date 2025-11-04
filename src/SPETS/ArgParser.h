@@ -21,6 +21,7 @@ public:
 
 	typedef std::variant<int, std::string, bool> TypeVariant_t;
 
+	ArgInfo& setInputName( const std::string& _name ) { m_inputName = _name; return *this; }
 	ArgInfo& setDesc( const std::string& _description ) { m_description = _description; return *this; }
 	ArgInfo& setType( ArgType _type ) {
 		m_type = _type; 
@@ -35,9 +36,10 @@ public:
 
 	ArgInfo& setImplicit( bool _value ) { m_implicit = _value; return *this; }
 	
-	std::string   getDesc()     { return m_description; }
-	ArgType       getType()     { return m_type; }
-	bool          getImplicit() { return m_implicit; }
+	std::string getInputName() { return m_inputName; }
+	std::string getDesc()      { return m_description; }
+	ArgType     getType()      { return m_type; }
+	bool        getImplicit()  { return m_implicit; }
 
 	template<typename Ty>
 	Ty getValue() { 
@@ -57,10 +59,11 @@ public:
 	bool isSet() { return m_hasValue; }
 
 	template<typename Ty>
-	bool operator == ( const Ty& _other ) { return m_currentValue == _other; }
+	bool operator == ( const Ty& _other ) { return std::get<Ty>( m_currentValue ) == _other; }
 
 private:
 	std::string m_description = "";
+	std::string m_inputName = "";
 	ArgType m_type = ArgType_Int;
 
 	bool m_hasDefault = false;
@@ -97,6 +100,8 @@ public:
 
 		return m_args[ _arg ];
 	}
+
+	void printHelp();
 
 private:
 	std::unordered_map<std::string, ArgInfo> m_args;

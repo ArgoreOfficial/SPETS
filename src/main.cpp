@@ -7,23 +7,42 @@ int main( int _argc, char* _argv[] )
 {
 	SPETS::ArgParser parser{};
 
+	/*
 	std::vector<char*> argv = { 
 		_argv[ 0 ],
 		(char*)"-f", (char*)"DEV",
 		(char*)"-i", (char*)"..\\models\\teapot.glb",
 		(char*)"-o", (char*)"Teapot"
 	};
+	*/
+
+	std::vector<char*> argv = {
+		_argv[ 0 ],
+		(char*)"--help"
+	};
 
 	parser.addArg( "-f" )
+		.setInputName( "faction" )
+		.setDesc( "Target faction" )
 		.setType( SPETS::ArgType_String )
 		.setDefault( "Default" );
 
 	parser.addArg( "-i" )
+		.setInputName( "file" )
+		.setDesc( "Input file" )
 		.setType( SPETS::ArgType_String );
 
 	parser.addArg( "-o" )
+		.setInputName( "name" )
+		.setDesc( "Output blueprint name" )
 		.setType( SPETS::ArgType_String )
 		.setDefault( "Import" );
+
+	parser.addArg( "--help" )
+		.setDesc( "Display this help page" )
+		.setType( SPETS::ArgType_Flag )
+		.setDefault( false )
+		.setImplicit( true );
 
 	bool parsed = false;
 	
@@ -34,6 +53,12 @@ int main( int _argc, char* _argv[] )
 
 	if ( parsed )
 	{
+		if ( parser.get( "--help" ) == true )
+		{
+			parser.printHelp();
+			return 0;
+		}
+
 		SPETS::ArgInfo& factionInfo = parser.get( "-f" );
 		SPETS::ArgInfo& inputInfo   = parser.get( "-i" );
 		SPETS::ArgInfo& outputInfo  = parser.get( "-o" );

@@ -93,3 +93,21 @@ bool SPETS::ArgParser::parseArguments( int _argc, char* _argv[] )
 
     return true;
 }
+
+void SPETS::ArgParser::printHelp()
+{
+	printf( "Usage: SPETS [options]\n" );
+	printf( "Options:\n" );
+
+	for ( auto& info : m_args )
+	{
+		std::string inputName = info.second.getInputName();
+		if( inputName == "" )
+			printf( "  %-22s%s\n", info.first.c_str(), info.second.getDesc().c_str() );
+		else
+		{
+			std::string argname = info.first + " <" + inputName + ">";
+			printf( "  %-22s%s\n", argname.c_str(), info.second.getDesc().c_str() );
+		}
+	}
+}
