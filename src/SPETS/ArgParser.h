@@ -59,7 +59,12 @@ public:
 	bool isSet() { return m_hasValue; }
 
 	template<typename Ty>
-	bool operator == ( const Ty& _other ) { return std::get<Ty>( m_currentValue ) == _other; }
+	bool operator == ( const Ty& _other ) { 
+		if ( !isSet() )
+			return false;
+
+		return std::get<Ty>( m_currentValue ) == _other; 
+	}
 
 private:
 	std::string m_description = "";
