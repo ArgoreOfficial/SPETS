@@ -35,7 +35,15 @@ std::vector<Sprocket::EraDefinition> Sprocket::getAllEras()
 
 Sprocket::EraDefinition Sprocket::getEra( const std::string& _name )
 {
-	return {};
+	std::filesystem::path sa = Sprocket::getStreamingAssetsPath() / "Eras";
+	std::filesystem::path eraPath = sa / ( _name + ".json" );
+
+	std::ifstream f( eraPath );
+	if ( !f )
+		return {};
+
+	nlohmann::json json = nlohmann::json::parse( f );
+	return json.get<Sprocket::EraDefinition>();
 }
 
 void Sprocket::saveEra( const EraDefinition& _era )
