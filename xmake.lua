@@ -13,7 +13,7 @@ target "SPETS"
     if is_mode("debug") then 
         set_basename "SPETS_debug_$(arch)"
     else
-        set_basename "SPETS_$(arch)"
+        set_basename "SPETS"
     end
 
     set_targetdir "bin"
