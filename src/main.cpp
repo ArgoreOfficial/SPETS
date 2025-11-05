@@ -69,7 +69,7 @@ void runCommandLine( int _argc, char* _argv[] )
 		printf( "Importing... " );
 
 		std::filesystem::path factionPath = Sprocket::getFactionPath( faction );
-		std::filesystem::path exportPath = factionPath / "Blueprints" / "Plate Structures" / output / ".blueprint";
+		std::filesystem::path exportPath = factionPath / "Blueprints" / "Plate Structures" / (output + ".blueprint");
 		Sprocket::MeshData importedMesh;
 
 		if ( Sprocket::importMesh( input, importedMesh ) )
@@ -93,6 +93,14 @@ int main( int _argc, char* _argv[] )
 		runCommandLine( _argc, _argv );
 	else
 	{
+		std::vector<char*> argv = { _argv[0],
+			(char*)"-f", (char*)"DEV",
+			(char*)"-i", (char*)"MarkIV.obj",
+			(char*)"-o", (char*)"MarkIV"
+		};
+
+		runCommandLine(argv.size(), argv.data());
+
 		std::string currentFaction = Sprocket::getCurrentFaction();
 		Sprocket::FactionInfo factionInfo = Sprocket::getFactionInfo( currentFaction );
 		Sprocket::CustomBattleConfig cbi = Sprocket::getCustomBattleSetup();

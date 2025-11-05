@@ -50,14 +50,11 @@ bool Sprocket::saveCompartmentToFile( const std::string& _path, const MeshData& 
 bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile( _path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile( _path, aiProcess_JoinIdenticalVertices  );
 
-	if ( scene == nullptr )
+	if ( scene == nullptr || scene->mNumMeshes == 0 )
 		return false;
 	
-	if ( scene->mNumMeshes == 0 )
-		return false;
-
 	std::unordered_map< uint16_t, uint16_t > edgeMap{};
 	uint32_t indexOffset = 0;
 	MeshData meshData{ };
@@ -105,6 +102,10 @@ bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 	{
 		meshData.mesh.serializedEdges.push_back( e.first );
 		meshData.mesh.serializedEdges.push_back( e.second );
+		meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
+		
+		meshData.mesh.serializedEdges.push_back( e.second );
+		meshData.mesh.serializedEdges.push_back( e.first );
 		meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
 	}
 
