@@ -50,13 +50,17 @@ bool Sprocket::saveCompartmentToFile( const std::string& _path, const MeshData& 
 bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile( _path, aiProcess_JoinIdenticalVertices  );
-
+	const aiScene* scene = importer.ReadFile( _path, aiProcess_JoinIdenticalVertices );
+	
 	if ( scene == nullptr || scene->mNumMeshes == 0 )
 		return false;
 	
-	std::unordered_map< uint16_t, uint16_t > edgeMap{};
-	uint32_t indexOffset = 0;
+	std::unordered_map< uint16_t, std::vector<uint16_t> > edgeMap{};
+	std::unordered_map< uint32_t, uint32_t > indexRemap{};
+	
+	uint32_t indexOffset = 0; // global mesh vertex offset
+	uint32_t indexShift  = 0; // so we can properly remove duplicate vertices and shift indices down
+
 	MeshData meshData{ };
 	meshData.name = scene->mName.C_Str();
 
@@ -68,9 +72,43 @@ bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 		for ( size_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; vertexIndex++ )
 		{
 			aiVector3D vert = mesh->mVertices[ vertexIndex ];
-			meshData.mesh.vertexPositions.push_back( vert.x );
-			meshData.mesh.vertexPositions.push_back( vert.y );
-			meshData.mesh.vertexPositions.push_back( vert.z );
+			int duplicateIndex = -1;
+
+			for ( size_t checkIndex = 0; checkIndex < vertexIndex; checkIndex++ )
+			{
+				if ( checkIndex == vertexIndex )
+					continue;
+
+				aiVector3D checkVert = mesh->mVertices[ checkIndex ];
+				if ( ( checkVert - vert ).Length() > 0.001 )
+					continue;
+
+				duplicateIndex = checkIndex;
+				break;
+			}
+
+			if ( duplicateIndex == -1 )
+			{
+				meshData.mesh.vertexPositions.push_back( vert.x );
+				meshData.mesh.vertexPositions.push_back( vert.y );
+				meshData.mesh.vertexPositions.push_back( vert.z );
+
+				// shift remap
+				if ( indexShift > 0 )
+					indexRemap[ vertexIndex + indexOffset ] = vertexIndex + indexOffset - indexShift;
+			}
+			else
+			{
+				uint32_t remapIndex = duplicateIndex + indexOffset;
+				
+				// check if remapping to a shifted index
+				if ( indexRemap.contains( remapIndex ) ) 
+					remapIndex = indexRemap[ remapIndex ];
+
+				indexRemap[ vertexIndex + indexOffset ] = remapIndex;
+
+				indexShift++;
+			}
 		}
 
 		for ( size_t faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++ )
@@ -83,13 +121,16 @@ bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 			for ( size_t i = 0; i < face.mNumIndices; i++ )
 			{
 				uint16_t edgeA = indexOffset + face.mIndices[ i ];
-				uint16_t edgeB = indexOffset + face.mIndices[ (i + 1) % face.mNumIndices ];
+				uint16_t edgeB = indexOffset + face.mIndices[ ( i + 1 ) % face.mNumIndices ];
+
+				if ( indexRemap.contains( edgeA ) ) edgeA = indexRemap[ edgeA ];
+				if ( indexRemap.contains( edgeB ) ) edgeB = indexRemap[ edgeB ];
 
 				serializedFace.vertices.push_back( edgeA );
 				serializedFace.thicknesses.push_back( 1.0f );
 
-				if ( edgeMap.count( edgeA ) == 0 )
-					edgeMap[ edgeA ] = edgeB;
+				if( edgeMap.count( edgeB ) == 0 )
+					edgeMap[ edgeA ].push_back( edgeB );
 			}
 			meshData.mesh.serializedFaces.push_back( serializedFace );
 		}
@@ -100,13 +141,12 @@ bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
 
 	for ( auto e : edgeMap )
 	{
-		meshData.mesh.serializedEdges.push_back( e.first );
-		meshData.mesh.serializedEdges.push_back( e.second );
-		meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
-		
-		meshData.mesh.serializedEdges.push_back( e.second );
-		meshData.mesh.serializedEdges.push_back( e.first );
-		meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
+		for ( size_t i = 0; i < e.second.size(); i++ )
+		{
+			meshData.mesh.serializedEdges.push_back( e.second[ i ] );
+			meshData.mesh.serializedEdges.push_back( e.first );
+			meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
+		}
 	}
 
 	//printf( "Constructed edge map\n" );
