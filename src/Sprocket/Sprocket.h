@@ -49,7 +49,7 @@ bool loadCompartmentFromFile( const std::string& _path, MeshData& _out );
 bool saveCompartmentToFile( const MeshData& _compartment, const std::string& _path );
 bool saveCompartmentToFaction( const MeshData& _compartment, const std::string& _faction, const std::string& _name );
 
-bool importMesh( const std::string& _path, MeshData& _outMesh );
+bool createCompartmentFromMesh( const std::string& _path, MeshData& _outMesh );
 
 std::filesystem::path getStreamingAssetsPath();
 std::filesystem::path getSprocketDataPath();

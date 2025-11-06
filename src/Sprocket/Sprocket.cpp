@@ -55,7 +55,7 @@ bool Sprocket::saveCompartmentToFaction( const MeshData& _compartment, const std
 	return false;
 }
 
-bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
+bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _outMesh )
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile( _path, aiProcess_JoinIdenticalVertices );

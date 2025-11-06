@@ -71,7 +71,7 @@ void runCommandLine( int _argc, char* _argv[] )
 		printf( "Importing... " );
 
 		Sprocket::MeshData importedMesh;
-		if ( Sprocket::importMesh( input, importedMesh ) )
+		if ( Sprocket::createCompartmentFromMesh( input, importedMesh ) )
 		{
 			importedMesh.name = output;
 			Sprocket::saveCompartmentToFaction( importedMesh, faction, output );
