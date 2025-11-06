@@ -3,6 +3,8 @@
 #include <SPETS/ArgParser.h>
 #include <Sprocket/Sprocket.h>
 
+#include <fstream>
+
 SPETS::ArgParser createParser()
 {
 	SPETS::ArgParser parser{};
@@ -54,8 +56,8 @@ void runCommandLine( int _argc, char* _argv[] )
 	SPETS::ArgInfo& outputInfo = parser.get( "-o" );
 
 	std::string faction = factionInfo.getValue<std::string>();
-	std::string input = inputInfo.getValue<std::string>();;
-	std::string output = outputInfo.getValue<std::string>();;
+	std::string input   = inputInfo.getValue<std::string>();;
+	std::string output  = outputInfo.getValue<std::string>();;
 
 	if ( !factionInfo.isSet() ) printf( "No faction specified. File will be placed in 'Default'.\n" );
 	if ( !outputInfo.isSet() ) printf( "No output file specified. Defaulting to 'Import.blueprint'\n" );
@@ -68,18 +70,11 @@ void runCommandLine( int _argc, char* _argv[] )
 	{
 		printf( "Importing... " );
 
-		std::filesystem::path factionPath = Sprocket::getFactionPath( faction );
-		std::filesystem::path exportPath = factionPath / "Blueprints" / "Plate Structures" / (output + ".blueprint");
 		Sprocket::MeshData importedMesh;
-
 		if ( Sprocket::importMesh( input, importedMesh ) )
 		{
 			importedMesh.name = output;
-			Sprocket::saveCompartmentToFile(
-				exportPath.string(),
-				importedMesh
-			);
-
+			Sprocket::saveCompartmentToFaction( importedMesh, faction, output );
 			printf( "DONE\n" );
 		}
 		else
@@ -95,16 +90,23 @@ int main( int _argc, char* _argv[] )
 	{
 		std::vector<char*> argv = { _argv[0],
 			(char*)"-f", (char*)"DEV",
-			(char*)"-i", (char*)"MarkIV.obj",
-			(char*)"-o", (char*)"MarkIV"
+			(char*)"-i", (char*)"../models/cube.dae",
+			(char*)"-o", (char*)"Cube"
 		};
 
 		runCommandLine(argv.size(), argv.data());
-
+		
 		std::string currentFaction = Sprocket::getCurrentFaction();
 		Sprocket::FactionInfo factionInfo = Sprocket::getFactionInfo( currentFaction );
 		Sprocket::CustomBattleConfig cbi = Sprocket::getCustomBattleSetup();
 		Sprocket::saveCustomBattleSetup( cbi );
+
+		Sprocket::VehicleBlueprint* bp = Sprocket::loadBlueprint( "Default", "B4 Bratten" );
+		if ( bp )
+		{
+			Sprocket::exportBlueprintToFile( bp );
+			delete bp;
+		}
 	}
 
 	return 0;

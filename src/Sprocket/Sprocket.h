@@ -46,9 +46,10 @@ struct FactionInfo
 };
 
 bool loadCompartmentFromFile( const std::string& _path, MeshData& _out );
-bool saveCompartmentToFile( const std::string& _path, const MeshData& _compartment );
-bool importMesh( const std::string& _path, MeshData& _outMesh );
+bool saveCompartmentToFile( const MeshData& _compartment, const std::string& _path );
+bool saveCompartmentToFaction( const MeshData& _compartment, const std::string& _faction, const std::string& _name );
 
+bool importMesh( const std::string& _path, MeshData& _outMesh );
 
 std::filesystem::path getStreamingAssetsPath();
 std::filesystem::path getSprocketDataPath();
@@ -59,6 +60,7 @@ std::filesystem::path getPlateStructurePath( const std::string& _faction, const 
 bool doesFactionExist( const std::string& _name );
 bool doesBlueprintExist( const std::string& _faction, const std::string& _name );
 VehicleBlueprint* loadBlueprint( const std::string& _faction, const std::string& _name );
+bool exportBlueprintToFile( VehicleBlueprint* _blueprint );
 
 std::string getCurrentFaction();
 FactionInfo getFactionInfo( const std::string& _name );

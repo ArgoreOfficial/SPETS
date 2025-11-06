@@ -35,7 +35,7 @@ bool Sprocket::loadCompartmentFromFile( const std::string& _path, MeshData& _out
 	return true;
 }
 
-bool Sprocket::saveCompartmentToFile( const std::string& _path, const MeshData& _compartment )
+bool Sprocket::saveCompartmentToFile( const MeshData& _compartment, const std::string& _path )
 {
 	std::ofstream f( _path );
 	if ( !f )
@@ -45,6 +45,14 @@ bool Sprocket::saveCompartmentToFile( const std::string& _path, const MeshData& 
 	f << json.dump();
 	
     return true;
+}
+
+bool Sprocket::saveCompartmentToFaction( const MeshData& _compartment, const std::string& _faction, const std::string& _name )
+{
+	std::filesystem::path path = Sprocket::getPlateStructurePath( _faction, _name );
+	Sprocket::saveCompartmentToFile( _compartment, path.string() );
+
+	return false;
 }
 
 bool Sprocket::importMesh( const std::string& _path, MeshData& _outMesh )
@@ -225,6 +233,52 @@ Sprocket::VehicleBlueprint* Sprocket::loadBlueprint( const std::string& _faction
 	
 	return nullptr;
 	*/
+}
+
+bool Sprocket::exportBlueprintToFile( VehicleBlueprint* _blueprint )
+{
+	if ( !_blueprint )
+		return false;
+
+	int unnamedMeshes = 0;
+	//printf( "Exporting %s ... ", _blueprint->header.name.c_str() );
+	if ( !std::filesystem::create_directory( _blueprint->header.name ) )
+		return false;
+
+	for ( size_t m = 0; m < _blueprint->meshes.size(); m++ )
+	{
+		std::string filename = "";
+
+		Sprocket::MeshData& mesh = _blueprint->meshes[ m ].meshData;
+		if ( mesh.name == "" )
+			filename = std::format( "unnamed{}", unnamedMeshes++ );
+		else
+			filename = mesh.name;
+
+		std::ofstream f( _blueprint->header.name + "/" + filename + ".obj" );
+		f << "# SPETS " << SPETS::VERSION_STR << "\n";
+		f << std::format( "o {}\n", filename );
+
+		float x = 0.0f, y = 0.0f, z = 0.0f;
+		for ( size_t v = 0; v < mesh.mesh.getNumVertices(); v++ )
+		{
+			mesh.mesh.getVertexPosition( v, &x, &y, &z );
+			f << std::format( "v {} {} {}\n", x, y, z );
+		}
+
+		for ( size_t i = 0; i < mesh.mesh.serializedFaces.size(); i++ )
+		{
+			Sprocket::SerializedFace& face = mesh.mesh.serializedFaces[ i ];
+			f << "f ";
+			for ( size_t v = 0; v < face.vertices.size(); v++ )
+				f << ( face.vertices[ v ] + 1 ) << " ";
+			f << "\n";
+		}
+	}
+
+	//printf( "Done\n" );
+
+	return true;
 }
 
 std::string Sprocket::getCurrentFaction()
