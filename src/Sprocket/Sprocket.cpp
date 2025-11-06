@@ -181,6 +181,14 @@ std::filesystem::path Sprocket::getBlueprintPath( const std::string& _faction, c
 	return Sprocket::getFactionPath( _faction ) / "Blueprints" / "Vehicles" / ( _name + ".blueprint" );
 }
 
+std::filesystem::path Sprocket::getPlateStructurePath( const std::string& _faction, const std::string& _name )
+{
+	if ( !Sprocket::doesFactionExist( _faction ) )
+		return "";
+
+	return Sprocket::getFactionPath( _faction ) / "Blueprints" / "Plate Structures" / ( _name + ".blueprint" );
+}
+
 bool Sprocket::doesFactionExist( const std::string& _name )
 {
 	return std::filesystem::is_directory( getFactionPath( _name ) );
@@ -190,6 +198,33 @@ bool Sprocket::doesBlueprintExist( const std::string& _faction, const std::strin
 {
 	std::filesystem::path filePath = getBlueprintPath( _faction, _name );
 	return std::filesystem::exists( filePath );
+}
+
+Sprocket::VehicleBlueprint* Sprocket::loadBlueprint( const std::string& _faction, const std::string& _name )
+{
+	std::filesystem::path path = getBlueprintPath( _faction, _name );
+	std::ifstream f{ path };
+	if ( !f )
+		return nullptr; // failed to open blueprint file 
+
+	nlohmann::json json = nlohmann::json::parse( f );
+
+	// this should be memory managed somewhere
+	// BlueprintManager?
+	Sprocket::VehicleBlueprint* bp = new Sprocket::VehicleBlueprint();
+	*bp = json.get<Sprocket::VehicleBlueprint>();
+	return bp;
+	/*
+	try
+	{
+	}
+	catch ( ... )
+	{
+		return nullptr; // JSON parsing failure
+	}
+	
+	return nullptr;
+	*/
 }
 
 std::string Sprocket::getCurrentFaction()

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "PlateMesh/PlateMesh.h"
-#include "CustomBattle.h"
-#include "Era.h"
+#include <Sprocket/Sprocket.h>
+#include <Sprocket/PlateMesh/PlateMesh.h>
+#include <Sprocket/CustomBattle.h>
+#include <Sprocket/Era.h>
 
 #include <nlohmann/json.hpp>
 
@@ -28,8 +29,14 @@ void from_json( const nlohmann::json& _json, Sprocket::MeshBlueprint& _p );
 void to_json( nlohmann::json& _json, const Sprocket::MeshData& _p );
 void from_json( const nlohmann::json& _json, Sprocket::MeshData& _p );
 
-void to_json( nlohmann::json& _json, const Sprocket::PlateStructureMesh& _p );
-void from_json( const nlohmann::json& _json, Sprocket::PlateStructureMesh& _p );
+void to_json( nlohmann::json& _json, const Sprocket::SerializableMesh& _p );
+void from_json( const nlohmann::json& _json, Sprocket::SerializableMesh& _p );
+
+void to_json( nlohmann::json& _json, const Sprocket::VehicleBlueprintHeader& _p );
+void from_json( const nlohmann::json& _json, Sprocket::VehicleBlueprintHeader& _p );
+
+void to_json( nlohmann::json& _json, const Sprocket::VehicleBlueprint& _p );
+void from_json( const nlohmann::json& _json, Sprocket::VehicleBlueprint& _p );
 
 // Custom Battles
 

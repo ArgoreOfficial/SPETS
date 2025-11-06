@@ -5,8 +5,38 @@
 
 #include <string>
 #include <filesystem>
+#include <vector>
 
 namespace Sprocket {
+
+struct VehicleObjectBlueprint
+{
+	// TODO
+};
+
+struct SerializableBlueprint
+{
+	// TODO
+};
+
+struct VehicleBlueprintHeader
+{
+	std::string version;
+	std::string name;
+	std::string gameVersion;
+	int mass;
+	std::string creationDate;
+	std::string classification;
+	std::string description;
+};
+
+struct VehicleBlueprint
+{
+	std::string version;
+	VehicleBlueprintHeader header;
+	std::vector<SerializableBlueprint> blueprints;
+	std::vector<SerializableMesh> meshes;
+};
 
 struct FactionInfo
 {
@@ -19,13 +49,16 @@ bool loadCompartmentFromFile( const std::string& _path, MeshData& _out );
 bool saveCompartmentToFile( const std::string& _path, const MeshData& _compartment );
 bool importMesh( const std::string& _path, MeshData& _outMesh );
 
+
 std::filesystem::path getStreamingAssetsPath();
 std::filesystem::path getSprocketDataPath();
 std::filesystem::path getFactionPath( const std::string& _name );
 std::filesystem::path getBlueprintPath( const std::string& _faction, const std::string& _name );
+std::filesystem::path getPlateStructurePath( const std::string& _faction, const std::string& _name );
 
 bool doesFactionExist( const std::string& _name );
 bool doesBlueprintExist( const std::string& _faction, const std::string& _name );
+VehicleBlueprint* loadBlueprint( const std::string& _faction, const std::string& _name );
 
 std::string getCurrentFaction();
 FactionInfo getFactionInfo( const std::string& _name );

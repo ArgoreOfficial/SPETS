@@ -2,6 +2,8 @@
 
 #include <nlohmann/json.hpp>
 
+#define NULLCHECK(_key, _val) if ( !_json.at( _key ).is_null() ) { _json.at( _key ).get_to( _val ); }
+
 void Sprocket::to_json( nlohmann::json& _json, const Sprocket::RivetTypeProfile& _p )
 {
 	_json = nlohmann::json{
@@ -125,16 +127,17 @@ void Sprocket::to_json( nlohmann::json& _json, const Sprocket::MeshData& _p )
 void Sprocket::from_json( const nlohmann::json& _json, Sprocket::MeshData& _p )
 {
 	_json.at( "v" ).get_to( _p.version );
-	_json.at( "name" ).get_to( _p.name );
+	NULLCHECK( "name", _p.name );
 	_json.at( "smoothAngle" ).get_to( _p.smoothAngle );
 	_json.at( "gridSize" ).get_to( _p.gridSize );
 	_json.at( "format" ).get_to( _p.format );
 	_json.at( "mesh" ).get_to( _p.mesh );
 	_json.at( "rivets" ).get_to( _p.rivets );
+
 }
 
-// PlateStructureMesh
-void Sprocket::to_json( nlohmann::json& _json, const Sprocket::PlateStructureMesh& _p )
+// SerializableMesh
+void Sprocket::to_json( nlohmann::json& _json, const Sprocket::SerializableMesh& _p )
 {
 	_json = nlohmann::json{
 		{ "vuid",     _p.vuid },
@@ -143,11 +146,30 @@ void Sprocket::to_json( nlohmann::json& _json, const Sprocket::PlateStructureMes
 	};
 }
 
-void Sprocket::from_json( const nlohmann::json& _json, Sprocket::PlateStructureMesh& _p )
+void Sprocket::from_json( const nlohmann::json& _json, Sprocket::SerializableMesh& _p )
 {
 	_json.at( "vuid" ).get_to( _p.vuid );
 	_json.at( "type" ).get_to( _p.type );
 	_json.at( "meshData" ).get_to( _p.meshData );
+}
+
+void Sprocket::from_json( const nlohmann::json& _json, Sprocket::VehicleBlueprintHeader& _p )
+{
+	_json.at( "v" ).get_to( _p.version );
+	_json.at( "name" ).get_to( _p.name );
+	_json.at( "gameVersion" ).get_to( _p.gameVersion );
+	_json.at( "creationDate" ).get_to( _p.creationDate );
+	_json.at( "mass" ).get_to( _p.mass );
+	_json.at( "class" ).get_to( _p.classification );
+	_json.at( "desc" ).get_to( _p.description );
+}
+
+void Sprocket::from_json( const nlohmann::json& _json, Sprocket::VehicleBlueprint& _p )
+{
+	_json.at( "v" ).get_to( _p.version );
+	_json.at( "header" ).get_to( _p.header );
+	//_json.at( "blueprints" ).get_to( _p.blueprints );
+	_json.at( "meshes" ).get_to( _p.meshes );
 }
 
 // EnvironmentConfig
@@ -231,7 +253,7 @@ void Sprocket::from_json( const nlohmann::json& _json, Sprocket::TeamDefinition&
 	_json.at( "paint" ).get_to( _p.paint );
 	_json.at( "condition" ).get_to( _p.condition );
 	_json.at( "dirt" ).get_to( _p.dirt );
-	
+
 	std::vector<int> budgets;
 	_json.at( "budget" ).get_to( budgets );
 	if ( budgets.size() > 0 ) _p.budget = budgets[ 0 ];

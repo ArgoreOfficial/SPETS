@@ -90,7 +90,7 @@ struct MeshData
 	Rivets rivets;
 };
 
-struct PlateStructureMesh
+struct SerializableMesh
 {
 	uint32_t vuid;
 	std::string type = "plateStructureMesh";
