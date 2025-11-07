@@ -45,12 +45,6 @@ struct FactionInfo
 	int designCounter = 0;
 };
 
-bool loadCompartmentFromFile( const std::string& _path, MeshData& _out );
-bool saveCompartmentToFile( const MeshData& _compartment, const std::string& _path );
-bool saveCompartmentToFaction( const MeshData& _compartment, const std::string& _faction, const std::string& _name );
-
-bool createCompartmentFromMesh( const std::string& _path, MeshData& _outMesh );
-
 std::filesystem::path getStreamingAssetsPath();
 std::filesystem::path getSprocketDataPath();
 std::filesystem::path getFactionPath( const std::string& _name );
@@ -59,8 +53,18 @@ std::filesystem::path getPlateStructurePath( const std::string& _faction, const 
 
 bool doesFactionExist( const std::string& _name );
 bool doesBlueprintExist( const std::string& _faction, const std::string& _name );
-VehicleBlueprint* loadBlueprint( const std::string& _faction, const std::string& _name );
-bool exportBlueprintToFile( VehicleBlueprint* _blueprint );
+
+bool createCompartmentFromMesh( const std::string& _path, MeshData& _outMesh );
+
+bool loadBlueprint( const std::string& _faction, const std::string& _name, VehicleBlueprint& _out );
+bool loadBlueprintFromFile( const std::filesystem::path& _path, VehicleBlueprint& _out );
+bool loadBlueprintFromFile( const std::string& _path, MeshData& _out );
+
+bool saveCompartmentToFile( const MeshData& _compartment, const std::string& _path );
+bool saveCompartmentToFaction( const MeshData& _compartment, const std::string& _faction, const std::string& _name );
+
+bool exportBlueprintToFile( const VehicleBlueprint& _blueprint );
+bool exportBlueprintToFile( const MeshData& _mesh, std::filesystem::path _path );
 
 std::string getCurrentFaction();
 FactionInfo getFactionInfo( const std::string& _name );

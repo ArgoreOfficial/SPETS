@@ -101,12 +101,14 @@ int main( int _argc, char* _argv[] )
 		Sprocket::CustomBattleConfig cbi = Sprocket::getCustomBattleSetup();
 		Sprocket::saveCustomBattleSetup( cbi );
 
-		Sprocket::VehicleBlueprint* bp = Sprocket::loadBlueprint( "Default", "B4 Bratten" );
-		if ( bp )
-		{
-			Sprocket::exportBlueprintToFile( bp );
-			delete bp;
-		}
+		Sprocket::VehicleBlueprint bratten;
+		if ( Sprocket::loadBlueprint( "Default", "B4 Bratten", bratten ) )
+			Sprocket::exportBlueprintToFile( bratten );
+		
+		Sprocket::MeshData bofors;
+		if ( Sprocket::loadBlueprintFromFile( "bofors shells.blueprint", bofors ) )
+			Sprocket::exportBlueprintToFile( bofors, "bofors" );
+		
 	}
 
 	return 0;

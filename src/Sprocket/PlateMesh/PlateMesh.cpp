@@ -11,7 +11,7 @@ void Sprocket::MeshBlueprint::setVertexPosition( size_t _index, float _x, float 
 	vertexPositions[ realIndex + 2 ] = _z;
 }
 
-void Sprocket::MeshBlueprint::getVertexPosition( size_t _index, float* _outX, float* _outY, float* _outZ )
+void Sprocket::MeshBlueprint::getVertexPosition( size_t _index, float* _outX, float* _outY, float* _outZ ) const
 {
 	if ( _index < 0 || _index >= getNumVertices() )
 		throw std::out_of_range( "Vertex index out of range" );

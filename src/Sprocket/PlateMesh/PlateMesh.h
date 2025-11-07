@@ -69,7 +69,7 @@ struct MeshBlueprint
 	}
 
 	void setVertexPosition( size_t _index, float _x, float _y, float _z );
-	void getVertexPosition( size_t _index, float* _outX, float* _outY, float* _outZ );
+	void getVertexPosition( size_t _index, float* _outX, float* _outY, float* _outZ ) const;
 	void moveVertexPosition( size_t _index, float _x = 0.0f, float _y = 0.0f, float _z = 0.0f );
 	void scaleVertexPosition( size_t _index, float _x = 1.0f, float _y = 1.0f, float _z = 1.0f );
 
