@@ -214,6 +214,24 @@ bool Sprocket::loadBlueprintFromFile( const std::string& _path, MeshData& _out )
 	return true;
 }
 
+bool Sprocket::saveBlueprintToFile( const VehicleBlueprint& _blueprint, const std::string& _path )
+{
+	std::ofstream f( _path );
+	if ( !f )
+		return false;
+
+	nlohmann::json json = _blueprint;
+	f << json.dump();
+
+	return true;
+}
+
+bool Sprocket::saveBlueprintToFaction( const VehicleBlueprint& _blueprint, const std::string& _faction, const std::string& _name )
+{
+	std::filesystem::path path = Sprocket::getBlueprintPath( _faction, _name );
+	return Sprocket::saveBlueprintToFile( _blueprint, path.string() );
+}
+
 bool Sprocket::saveCompartmentToFile( const MeshData& _compartment, const std::string& _path )
 {
 	std::ofstream f( _path );
@@ -229,9 +247,7 @@ bool Sprocket::saveCompartmentToFile( const MeshData& _compartment, const std::s
 bool Sprocket::saveCompartmentToFaction( const MeshData& _compartment, const std::string& _faction, const std::string& _name )
 {
 	std::filesystem::path path = Sprocket::getPlateStructurePath( _faction, _name );
-	Sprocket::saveCompartmentToFile( _compartment, path.string() );
-
-	return false;
+	return Sprocket::saveCompartmentToFile( _compartment, path.string() );
 }
 
 bool Sprocket::exportBlueprintToFile( const VehicleBlueprint& _blueprint )

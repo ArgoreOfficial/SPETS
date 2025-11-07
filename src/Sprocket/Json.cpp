@@ -153,6 +153,19 @@ void Sprocket::from_json( const nlohmann::json& _json, Sprocket::SerializableMes
 	_json.at( "meshData" ).get_to( _p.meshData );
 }
 
+void Sprocket::to_json( nlohmann::json& _json, const Sprocket::VehicleBlueprintHeader& _p )
+{
+	_json = {
+		{ "v", _p.version },
+		{ "name", _p.name },
+		{ "gameVersion", _p.gameVersion },
+		{ "creationDate", _p.creationDate },
+		{ "mass", _p.mass },
+		{ "class", _p.classification },
+		{ "desc", _p.description }
+	};
+}
+
 void Sprocket::from_json( const nlohmann::json& _json, Sprocket::VehicleBlueprintHeader& _p )
 {
 	_json.at( "v" ).get_to( _p.version );
@@ -162,6 +175,16 @@ void Sprocket::from_json( const nlohmann::json& _json, Sprocket::VehicleBlueprin
 	_json.at( "mass" ).get_to( _p.mass );
 	_json.at( "class" ).get_to( _p.classification );
 	_json.at( "desc" ).get_to( _p.description );
+}
+
+void Sprocket::to_json( nlohmann::json& _json, const Sprocket::VehicleBlueprint& _p )
+{
+	_json = {
+		{ "v", _p.version },
+		{ "header", _p.header },
+		//{ "blueprints", _p.blueprints },
+		{ "meshes", _p.meshes }
+	};
 }
 
 void Sprocket::from_json( const nlohmann::json& _json, Sprocket::VehicleBlueprint& _p )
