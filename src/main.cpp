@@ -86,6 +86,7 @@ int main( int _argc, char* _argv[] )
 {
 	if ( _argc > 1 )
 		runCommandLine( _argc, _argv );
+#ifndef NDEBUG 
 	else
 	{
 		std::vector<char*> argv = { _argv[0],
@@ -110,6 +111,7 @@ int main( int _argc, char* _argv[] )
 			Sprocket::exportBlueprintToFile( bofors, "bofors" );
 		
 	}
+#endif
 
 	return 0;
 }
