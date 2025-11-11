@@ -3,12 +3,12 @@ set_languages("clatest", "cxxlatest")
 add_rules "mode.debug"
 add_rules "mode.release"
 
-add_requires("nlohmann_json", "assimp")
+add_requires("nlohmann_json", "assimp", "wxwidgets")
 
 target "SPETS"
     set_kind "binary" 
     
-    add_packages("nlohmann_json", "assimp")
+    add_packages("nlohmann_json", "assimp", "wxwidgets")
 
     if is_mode("debug") then 
         set_basename "SPETS_debug_$(arch)"

@@ -1,9 +1,10 @@
-#include <stdio.h>
 
 #include <SPETS/ArgParser.h>
+#include <SPETS/GUI/ApplicationHub.h>
 #include <Sprocket/Sprocket.h>
 
 #include <fstream>
+#include <stdio.h>
 
 SPETS::ArgParser createParser()
 {
@@ -68,7 +69,7 @@ void runCommandLine( int _argc, char* _argv[] )
 		printf( "Faction %s does not exist.\n", faction.c_str() );
 	else
 	{
-		printf( "Importing... " );
+		printf( "Importing %s... ", output.c_str() );
 
 		Sprocket::MeshData importedMesh;
 		if ( Sprocket::createCompartmentFromMesh( input, importedMesh ) )
@@ -84,11 +85,22 @@ void runCommandLine( int _argc, char* _argv[] )
 
 int main( int _argc, char* _argv[] )
 {
+	std::string currentFaction = Sprocket::getCurrentFaction();
+	Sprocket::FactionInfo factionInfo = Sprocket::getFactionInfo( currentFaction );
+
+	printf( "================ SPETS ================\n" );
+
+	printf( "Current faction is %s\n", factionInfo.name.c_str() );
+	printf( "Prefix: '%s' (%s123)\n", factionInfo.designPrefix.c_str(), factionInfo.designPrefix.c_str() );
+	printf( "Design Count: %d\n", factionInfo.designCounter );
+	
+	printf( "=======================================\n" );
+
 	if ( _argc > 1 )
-		runCommandLine( _argc, _argv );
-#ifndef NDEBUG 
+		runCommandLine( _argc, _argv ); // run through command line
 	else
 	{
+	#ifndef NDEBUG
 		std::vector<char*> argv = { _argv[0],
 			(char*)"-f", (char*)"DEV",
 			(char*)"-i", (char*)"../models/cube.dae",
@@ -96,22 +108,12 @@ int main( int _argc, char* _argv[] )
 		};
 
 		runCommandLine(argv.size(), argv.data());
-		
-		std::string currentFaction = Sprocket::getCurrentFaction();
-		Sprocket::FactionInfo factionInfo = Sprocket::getFactionInfo( currentFaction );
-		Sprocket::CustomBattleConfig cbi = Sprocket::getCustomBattleSetup();
-		Sprocket::saveCustomBattleSetup( cbi );
+	#endif
 
-		Sprocket::VehicleBlueprint bratten;
-		if ( Sprocket::loadBlueprint( "Default", "B4 Bratten", bratten ) )
-			Sprocket::exportBlueprintToFile( bratten );
-		
-		Sprocket::MeshData bofors;
-		if ( Sprocket::loadBlueprintFromFile( "bofors shells.blueprint", bofors ) )
-			Sprocket::exportBlueprintToFile( bofors, "bofors" );
-		
+		wxEntry( _argc, _argv );
 	}
-#endif
 
 	return 0;
 }
+
+wxIMPLEMENT_APP_NO_MAIN( SPETS::Application );
