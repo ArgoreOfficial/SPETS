@@ -5,7 +5,7 @@
 
 namespace SPETS {
 
-constexpr const char* VERSION_STR = "p2.0-25.2";
+constexpr const char* VERSION_STR = "2.0";
 
 std::filesystem::path getFolderPath( const KNOWNFOLDERID& _id );
 
