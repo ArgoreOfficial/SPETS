@@ -50,6 +50,20 @@ std::filesystem::path Sprocket::getPlateStructurePath( const std::string& _facti
 	return Sprocket::getFactionPath( _faction ) / "Blueprints" / "Plate Structures" / ( _name + ".blueprint" );
 }
 
+bool Sprocket::quickImport( const std::filesystem::path& _path )
+{
+	const std::string currentFaction = Sprocket::getCurrentFaction();
+	const std::string name = _path.filename().replace_extension().string();
+
+	Sprocket::MeshData outMesh;
+	
+	if ( !Sprocket::createCompartmentFromMesh( _path.string(), outMesh ) )
+		return false;
+
+	outMesh.name = name;
+	return Sprocket::saveCompartmentToFaction( outMesh, currentFaction, name );
+}
+
 bool Sprocket::doesFactionExist( const std::string& _name )
 {
 	return std::filesystem::is_directory( getFactionPath( _name ) );

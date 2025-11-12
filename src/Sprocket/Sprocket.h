@@ -23,6 +23,8 @@ std::filesystem::path getFactionPath( const std::string& _name );
 std::filesystem::path getBlueprintPath( const std::string& _faction, const std::string& _name );
 std::filesystem::path getPlateStructurePath( const std::string& _faction, const std::string& _name );
 
+bool quickImport( const std::filesystem::path& _path );
+
 bool doesFactionExist( const std::string& _name );
 bool doesBlueprintExist( const std::string& _faction, const std::string& _name );
 
