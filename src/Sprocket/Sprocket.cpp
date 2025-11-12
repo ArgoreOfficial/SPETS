@@ -2,6 +2,7 @@
 #include "Json.h"
 
 #include <SPETS/Util.h>
+#include <Sprocket/Error.h>
 
 #include <nlohmann/json.hpp>
 
@@ -45,7 +46,10 @@ std::filesystem::path Sprocket::getBlueprintPath( const std::string& _faction, c
 std::filesystem::path Sprocket::getPlateStructurePath( const std::string& _faction, const std::string& _name )
 {
 	if ( !Sprocket::doesFactionExist( _faction ) )
+	{
+		SPROCKET_PUSH_ERROR( "Faction '{}' does not exist", _name );
 		return "";
+	}
 
 	return Sprocket::getFactionPath( _faction ) / "Blueprints" / "Plate Structures" / ( _name + ".blueprint" );
 }
@@ -56,11 +60,11 @@ bool Sprocket::quickImport( const std::filesystem::path& _path )
 	const std::string name = _path.filename().replace_extension().string();
 
 	Sprocket::MeshData outMesh;
+	outMesh.name = name;
 	
 	if ( !Sprocket::createCompartmentFromMesh( _path.string(), outMesh ) )
 		return false;
 
-	outMesh.name = name;
 	return Sprocket::saveCompartmentToFaction( outMesh, currentFaction, name );
 }
 
@@ -81,7 +85,11 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 	const aiScene* scene = importer.ReadFile( _path, aiProcess_JoinIdenticalVertices );
 
 	if ( scene == nullptr || scene->mNumMeshes == 0 )
+	{
+		//Sprocket::pushError( std::format( "'{}' : Failed to load or parse model.", _outMesh.name ) );
+		SPROCKET_PUSH_ERROR( "'{}' : Failed to load or parse model.", _outMesh.name );
 		return false;
+	}
 
 	std::unordered_map< uint16_t, std::vector<uint16_t> > edgeMap{};
 	std::unordered_map< uint32_t, uint32_t > indexRemap{};
@@ -91,6 +99,8 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 
 	MeshData meshData{ };
 	meshData.name = scene->mName.C_Str();
+
+	int ngons = 0;
 
 	for ( size_t meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++ )
 	{
@@ -143,7 +153,10 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 		{
 			aiFace face = mesh->mFaces[ faceIndex ];
 			if ( face.mNumIndices != 3 && face.mNumIndices != 4 )
+			{
+				ngons++;
 				continue;
+			}
 
 			Sprocket::SerializedFace serializedFace{};
 			for ( size_t i = 0; i < face.mNumIndices; i++ )
@@ -178,6 +191,9 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 	}
 
 	//printf( "Constructed edge map\n" );
+
+	if ( ngons > 0 )
+		SPROCKET_PUSH_ERROR( "{} ngons encountered.", ngons );
 
 	_outMesh = meshData;
 	return true;
@@ -219,7 +235,7 @@ bool Sprocket::loadBlueprintFromFile( const std::string& _path, MeshData& _out )
 
 	if ( json[ "v" ] == "2.0" )
 	{
-		printf( "Vehicle Blueprint, NOT IMPLEMENTED YET" );
+		// printf( "Vehicle Blueprint, NOT IMPLEMENTED YET" );
 		return false;
 	}
 
@@ -232,7 +248,10 @@ bool Sprocket::saveBlueprintToFile( const VehicleBlueprint& _blueprint, const st
 {
 	std::ofstream f( _path );
 	if ( !f )
+	{
+		SPROCKET_PUSH_ERROR( "Failed to open file {}", _path );
 		return false;
+	}
 
 	nlohmann::json json = _blueprint;
 	f << json.dump();
@@ -250,7 +269,10 @@ bool Sprocket::saveCompartmentToFile( const MeshData& _compartment, const std::s
 {
 	std::ofstream f( _path );
 	if ( !f )
+	{
+		SPROCKET_PUSH_ERROR( "Failed to open file {}", _path );
 		return false;
+	}
 
 	nlohmann::json json = _compartment;
 	f << json.dump();
@@ -329,7 +351,10 @@ std::string Sprocket::getCurrentFaction()
 
 	std::ifstream f{ path };
 	if ( !f )
+	{
+		SPROCKET_PUSH_ERROR( "Failed to open CurrentFaction" );
 		return "Default"; // failed to open CurrentFaction file 
+	}
 
 	std::stringstream s{};
 	s << f.rdbuf();
