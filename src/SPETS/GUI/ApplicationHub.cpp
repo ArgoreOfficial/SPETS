@@ -4,9 +4,11 @@
 #include <Sprocket/Sprocket.h>
 #include <Sprocket/Error.h>
 
-SPETS::Frame* SPETS::g_frame = nullptr;
+#include <SPETS/GUI/HubWindowDropTarget.h>
 
-SPETS::Frame::Frame() : 
+SPETS::ApplicationHubFrame* SPETS::g_frame = nullptr;
+
+SPETS::ApplicationHubFrame::ApplicationHubFrame() : 
 	wxFrame( nullptr, wxID_ANY, "SPETS", wxDefaultPosition, { 400, 250 }, wxSYSTEM_MENU | wxMINIMIZE_BOX | wxCLOSE_BOX | wxCAPTION | wxCLIP_CHILDREN )
 {
 	const int ID_TOOL_QUICK_IMPORT = 1;
@@ -16,24 +18,24 @@ SPETS::Frame::Frame() :
 	wxMenu* menuFile = new wxMenu();
 	{
 		menuFile->Append( wxID_OPEN, "&Open...\tCtrl-O", "Open a .blueprint file" );
-		// Bind( wxEVT_MENU, &Frame::OnExit, this, wxID_OPEN );
+		// Bind( wxEVT_MENU, &ApplicationHubFrame::OnExit, this, wxID_OPEN );
 		
 		menuFile->AppendSeparator();
 
 		menuFile->Append( wxID_EXIT );
-		Bind( wxEVT_MENU, &Frame::OnExit, this, wxID_EXIT );
+		Bind( wxEVT_MENU, &ApplicationHubFrame::OnExit, this, wxID_EXIT );
 	}
 	
 	wxMenu* menuTools = new wxMenu();
 	{
 		menuTools->Append( ID_TOOL_QUICK_IMPORT, "&Quick Import...\tCtrl-I", "Quickly import into the current faction" );
-		Bind( wxEVT_MENU, &Frame::OnQuickImport, this, ID_TOOL_QUICK_IMPORT );
+		Bind( wxEVT_MENU, &ApplicationHubFrame::OnQuickImport, this, ID_TOOL_QUICK_IMPORT );
 
 		menuTools->Append( ID_TOOL_QUICK_EXPORT, "&Quick Export...\tCtrl-E", "Quickly export a blueprint" );
-		Bind( wxEVT_MENU, &Frame::OnQuickExport, this, ID_TOOL_QUICK_EXPORT );
+		Bind( wxEVT_MENU, &ApplicationHubFrame::OnQuickExport, this, ID_TOOL_QUICK_EXPORT );
 
 		menuTools->Append( ID_TOOL_MERGE, "&Merge Compartments", "Merge multiple compartments into one" );
-		Bind( wxEVT_MENU, &Frame::OnMerge, this, ID_TOOL_MERGE );
+		Bind( wxEVT_MENU, &ApplicationHubFrame::OnMerge, this, ID_TOOL_MERGE );
 
 		menuTools->AppendSeparator();
 
@@ -45,7 +47,7 @@ SPETS::Frame::Frame() :
 	wxMenu* menuHelp = new wxMenu();
 	{
 		menuHelp->Append( wxID_ABOUT );
-		Bind( wxEVT_MENU, &Frame::OnAbout, this, wxID_ABOUT );
+		Bind( wxEVT_MENU, &ApplicationHubFrame::OnAbout, this, wxID_ABOUT );
 	}
 
 	wxMenuBar* menuBar = new wxMenuBar();
@@ -102,7 +104,7 @@ static void quickImportHelper( const wxArrayString& _filenames )
 
 }
 
-void SPETS::Frame::OnQuickImport( wxCommandEvent& event )
+void SPETS::ApplicationHubFrame::OnQuickImport( wxCommandEvent& event )
 {
 	std::string currentFaction = Sprocket::getCurrentFaction();
 
@@ -123,7 +125,7 @@ void SPETS::Frame::OnQuickImport( wxCommandEvent& event )
 	
 }
 
-void SPETS::Frame::OnQuickExport( wxCommandEvent& _event )
+void SPETS::ApplicationHubFrame::OnQuickExport( wxCommandEvent& _event )
 {
 	std::string currentFaction = Sprocket::getCurrentFaction();
 	std::string blueprintsDir = (Sprocket::getFactionPath( currentFaction ) / "Blueprints" ).string();
