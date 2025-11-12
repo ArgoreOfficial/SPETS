@@ -1,46 +1,53 @@
 #pragma once
 
 #include <wx/wx.h>
+#include <wx/dnd.h>
 
 #include <SPETS/Util.h>
 #include <Sprocket/Sprocket.h>
 
+#include <filesystem>
+
 namespace SPETS {
+
+
+
+class HubWindowDropTarget : public wxFileDropTarget
+{
+public:
+	HubWindowDropTarget( wxStaticBitmap* _surface, wxBitmap _bitmap, wxBitmap _bitmapHover )
+		: wxFileDropTarget{},
+		m_surface{ _surface },
+		m_bitmap{ _bitmap },
+		m_bitmapHover{ _bitmapHover }
+	{ 
+		_surface->SetBitmap( _bitmap );
+	};
+
+	// Inherited via wxFileDropTarget
+	bool OnDropFiles( wxCoord _x, wxCoord _y, const wxArrayString& _filenames ) override;
+
+	virtual wxDragResult OnEnter( wxCoord _x, wxCoord _y, wxDragResult _defResult ) {
+		if ( m_surface )
+			m_surface->SetBitmap( m_bitmapHover );
+		return wxDragResult::wxDragMove;
+	}
+
+	virtual void OnLeave() {
+		if ( m_surface )
+			m_surface->SetBitmap( m_bitmap );
+	}
+	
+private:
+	wxStaticBitmap* m_surface = nullptr;
+	wxBitmap m_bitmap;
+	wxBitmap m_bitmapHover;
+};
 
 class Frame : public wxFrame
 {
 public:
-	Frame() : wxFrame{ nullptr, wxID_ANY, "SPETS" } {
-		wxMenu* menuFile = new wxMenu();
-		menuFile->Append( ID_OPEN, "&Open...\tCtrl-O", "Open a .blueprint file" );
-		menuFile->AppendSeparator();
-		menuFile->Append( wxID_EXIT );
-
-		wxMenu* menuTools = new wxMenu();
-		menuTools->Append( ID_TOOL_QUICK_IMPORT, "&Quick Import...\tCtrl-I", "Quickly import into the current faction" );
-		menuTools->Append( ID_TOOL_QUICK_EXPORT, "&Quick Export...\tCtrl-E", "Quickly export a blueprint" );
-		menuTools->Append( ID_TOOL_MERGE,        "&Merge Compartments", "Merge multiple compartments into one" );
-
-		wxMenu* menuHelp = new wxMenu();
-		menuHelp->Append( wxID_ABOUT );
-
-		wxMenuBar* menuBar = new wxMenuBar();
-		menuBar->Append( menuFile,  "&File" );
-		menuBar->Append( menuTools, "&Tools" );
-		menuBar->Append( menuHelp,  "&Help" );
-		SetMenuBar( menuBar );
-
-		CreateStatusBar();
-		SetStatusText( std::string("SPETS ") + SPETS::VERSION_STR );
-
-		//Bind( wxEVT_MENU, &Frame::OnHello, this, ID_OPEN );
-		
-		Bind( wxEVT_MENU, &Frame::OnQuickImport, this, ID_TOOL_QUICK_IMPORT );
-		Bind( wxEVT_MENU, &Frame::OnMerge, this, ID_TOOL_MERGE );
-
-		Bind( wxEVT_MENU, &Frame::OnAbout, this, wxID_ABOUT );
-		Bind( wxEVT_MENU, &Frame::OnExit, this, wxID_EXIT );
-	}
+	Frame();
 
 private:
 	void OnAbout( wxCommandEvent& event ) {
@@ -53,25 +60,28 @@ private:
 		Close( true );
 	}
 
-	void OnQuickImport( wxCommandEvent& event ) {
-		std::string currentFaction = Sprocket::getCurrentFaction();
-		wxLogMessage( "The Current Faction is %s", currentFaction.c_str() );
-	}
-	
-	void OnMerge( wxCommandEvent& event ) {
-		wxLogMessage( "add more rivets" );
+	void OnQuickImport( wxCommandEvent& _event );
+	void OnQuickExport( wxCommandEvent& _event );
+
+	void OnHoverImport( wxMouseEvent& _event ) {
+		printf( "%s\n", _event.Dragging() ? "true" : "false" );
 	}
 
-	inline static const int ID_OPEN = 1;
-	inline static const int ID_TOOL_QUICK_IMPORT = 2;
-	inline static const int ID_TOOL_QUICK_EXPORT = 3;
-	inline static const int ID_TOOL_MERGE = 4;
+	void OnMerge( wxCommandEvent& event ) {
+		wxLogMessage( "Work in progress." );
+	}
+
+	wxPanel*  m_panel             = new wxPanel( this );
+	
 };
+
+extern Frame* g_frame;
 
 class Application : public wxApp
 {
 	bool OnInit() override { 
-		return ( new Frame )->Show(); 
+		g_frame = new Frame();
+		return g_frame->Show(); 
 	}
 };
 
