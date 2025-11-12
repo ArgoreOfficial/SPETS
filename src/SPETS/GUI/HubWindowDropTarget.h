@@ -17,7 +17,7 @@ public:
 		_surface->SetBitmap( _bitmap );
 	};
 
-	// Inherited via wxFileDropTarget
+	// implemented in ApplicationHub.cpp
 	bool OnDropFiles( wxCoord _x, wxCoord _y, const wxArrayString& _filenames ) override;
 
 	virtual wxDragResult OnEnter( wxCoord _x, wxCoord _y, wxDragResult _defResult ) {

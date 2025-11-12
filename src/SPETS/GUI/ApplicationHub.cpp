@@ -66,27 +66,58 @@ SPETS::ApplicationHubFrame::ApplicationHubFrame() :
 	staticBitmap->SetSize( m_panel->GetSize() );
 }
 
+// TODO: replace with lua tool
+static void checkedImport( const std::filesystem::path& _path, const std::string& _faction )
+{
+	std::string status = std::format( "Importing {}", _path.filename().string() );
+	printf( "%s\n", status.c_str() );
+	SPETS::g_frame->SetStatusText( status );
+
+	const std::string name = _path.filename().replace_extension().string();
+
+	Sprocket::MeshData outMesh;
+	outMesh.name = name;
+
+	if ( Sprocket::createCompartmentFromMesh( _path.string(), outMesh ) )
+		Sprocket::saveCompartmentToFaction( outMesh, _faction, name );
+}
+
+// TODO: replace with lua tool
+static void checkedExport( const std::filesystem::path& _path )
+{
+	std::string status = std::format( "Exporting {}", _path.filename().string() );
+	printf( "%s\n", status.c_str() );
+	SPETS::g_frame->SetStatusText( status );
+
+	Sprocket::BlueprintType type = Sprocket::getBlueprintFileType( _path );
+	if ( type == Sprocket::BlueprintType_Compartment )
+	{
+		Sprocket::MeshData mesh;
+		if ( Sprocket::loadBlueprintFromFile( _path.string(), mesh ) )
+			Sprocket::exportBlueprintToFile( mesh, _path.filename().replace_extension() );
+	}
+	else if ( type == Sprocket::BlueprintType_Vehicle )
+	{
+		Sprocket::VehicleBlueprint vehicle;
+		if ( Sprocket::loadBlueprintFromFile( _path.string(), vehicle ) )
+			Sprocket::exportBlueprintToFile( vehicle );
+	}
+	else
+	{
+		SPROCKET_PUSH_ERROR( "'{}' is not a valid blueprint file", _path.filename().string() );
+	}
+}
+
+// TODO: replace with lua tool
 static void quickImportHelper( const wxArrayString& _filenames )
 {
 	const std::string currentFaction = Sprocket::getCurrentFaction();
 
+	// import meshes
 	for ( size_t i = 0; i < _filenames.GetCount(); i++ )
-	{
-		std::filesystem::path p = _filenames[ i ].ToStdWstring();
-
-		std::string status = std::format( "Importing {}", p.filename().string() );
-		printf( "%s\n", status.c_str() );
-		SPETS::g_frame->SetStatusText( status );
-
-		const std::string name = p.filename().replace_extension().string();
-
-		Sprocket::MeshData outMesh;
-		outMesh.name = name;
-
-		if ( Sprocket::createCompartmentFromMesh( p.string(), outMesh ) )
-			Sprocket::saveCompartmentToFaction( outMesh, currentFaction, name );
-	}
-
+		checkedImport( _filenames[ i ].ToStdWstring(), currentFaction );
+	
+	// check for any errors
 	if ( Sprocket::hasError() )
 	{
 		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
@@ -144,33 +175,11 @@ void SPETS::ApplicationHubFrame::OnQuickExport( wxCommandEvent& _event )
 	wxArrayString paths;
 	openFileDialog.GetFilenames( paths );
 
+	// export files
 	for ( size_t i = 0; i < paths.Count(); i++ )
-	{
-		std::filesystem::path p = paths[ i ].ToStdWstring();
-
-		std::string status = std::format( "Exporting {}", p.filename().string() );
-		printf( "%s\n", status.c_str() );
-		SPETS::g_frame->SetStatusText( status );
-
-		Sprocket::BlueprintType type = Sprocket::getBlueprintFileType( p );
-		if ( type == Sprocket::BlueprintType_Compartment )
-		{
-			Sprocket::MeshData mesh;
-			if ( Sprocket::loadBlueprintFromFile( p.string(), mesh) )
-				Sprocket::exportBlueprintToFile( mesh, p.filename().replace_extension() );
-		}
-		else if ( type == Sprocket::BlueprintType_Vehicle )
-		{
-			Sprocket::VehicleBlueprint vehicle;
-			if ( Sprocket::loadBlueprintFromFile( p.string(), vehicle ) )
-				Sprocket::exportBlueprintToFile( vehicle );
-		}
-		else
-		{
-			SPROCKET_PUSH_ERROR( "'{}' is not a valid blueprint file", p.filename().string() );
-		}
-	}
-
+		checkedExport( paths[ i ].ToStdWstring() );
+	
+	// check for any errors
 	if ( Sprocket::hasError() )
 	{
 		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
@@ -189,10 +198,37 @@ void SPETS::ApplicationHubFrame::OnQuickExport( wxCommandEvent& _event )
 
 bool SPETS::HubWindowDropTarget::OnDropFiles( wxCoord _x, wxCoord _y, const wxArrayString& _filenames )
 {
+	printf( "Dropping %d files\n", _filenames.GetCount() );
+
 	if ( m_surface )
 		m_surface->SetBitmap( m_bitmap );
 
-	quickImportHelper( _filenames );
+	const std::string currentFaction = Sprocket::getCurrentFaction();
+
+	for ( size_t i = 0; i < _filenames.GetCount(); i++ )
+	{
+		std::filesystem::path p = _filenames[ i ].ToStdWstring();
+
+		if ( p.extension() == ".blueprint" )
+			checkedExport( p );
+		else
+			checkedImport( p, currentFaction );
+	}
+
+	if ( Sprocket::hasError() )
+	{
+		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
+		SPETS::g_frame->SetStatusText( s );
+
+		printf( "Errors generated:\n" );
+		while ( Sprocket::hasError() )
+			printf( "    %s\n", Sprocket::popError().c_str() );
+	}
+	else
+	{
+		std::string s = std::format( "{} meshes imported into '{}'.", _filenames.GetCount(), Sprocket::getCurrentFaction() );
+		SPETS::g_frame->SetStatusText( s );
+	}
 
 	return true;
 }
