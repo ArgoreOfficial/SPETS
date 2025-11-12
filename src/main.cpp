@@ -110,6 +110,7 @@ int main( int _argc, char* _argv[] )
 		runCommandLine(argv.size(), argv.data());
 	#endif
 
+		wxInitAllImageHandlers();
 		wxEntry( _argc, _argv );
 	}
 
