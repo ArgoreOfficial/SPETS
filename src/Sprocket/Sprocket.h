@@ -17,11 +17,21 @@ struct FactionInfo
 	int designCounter = 0;
 };
 
+enum BlueprintType
+{
+	BlueprintType_None = 0,
+
+	BlueprintType_Vehicle,
+	BlueprintType_Compartment
+};
+
 std::filesystem::path getStreamingAssetsPath();
 std::filesystem::path getSprocketDataPath();
 std::filesystem::path getFactionPath( const std::string& _name );
 std::filesystem::path getBlueprintPath( const std::string& _faction, const std::string& _name );
 std::filesystem::path getPlateStructurePath( const std::string& _faction, const std::string& _name );
+
+BlueprintType getBlueprintFileType( const std::filesystem::path& _path );
 
 bool doesFactionExist( const std::string& _name );
 bool doesBlueprintExist( const std::string& _faction, const std::string& _name );

@@ -54,6 +54,22 @@ std::filesystem::path Sprocket::getPlateStructurePath( const std::string& _facti
 	return Sprocket::getFactionPath( _faction ) / "Blueprints" / "Plate Structures" / ( _name + ".blueprint" );
 }
 
+Sprocket::BlueprintType Sprocket::getBlueprintFileType( const std::filesystem::path& _path )
+{
+	std::ifstream f{ _path };
+	if ( !f )
+		return BlueprintType_None; // failed to open blueprint file 
+
+	nlohmann::json json = nlohmann::json::parse( f );
+	if ( json.contains( "rivets" ) )
+		return BlueprintType_Compartment; // only compartments have rivets, for now
+
+	if ( json.contains( "blueprints" ) ) 
+		return BlueprintType_Vehicle; // only vehicles have blueprints, for now
+
+	return BlueprintType_None; // faulty blueprint file
+}
+
 bool Sprocket::doesFactionExist( const std::string& _name )
 {
 	return std::filesystem::is_directory( getFactionPath( _name ) );
@@ -220,7 +236,7 @@ bool Sprocket::loadBlueprintFromFile( const std::string& _path, MeshData& _out )
 
 	if ( json[ "v" ] == "2.0" )
 	{
-		// printf( "Vehicle Blueprint, NOT IMPLEMENTED YET" );
+		SPROCKET_PUSH_ERROR( "Loaded vehicle blueprint file. Currently unsupported." );
 		return false;
 	}
 
