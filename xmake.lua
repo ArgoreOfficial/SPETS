@@ -15,12 +15,12 @@ target "SPETS"
         set_configdir "bin"
     else
         set_basename "SPETS"
-        set_configdir "package/bin"
+        set_configdir "package/bin/dat"
     end
         
-    add_configfiles("res/*", {onlycopy = true})
+    add_configfiles("dat/*", {onlycopy = true})
 
-    set_targetdir "bin"
+    set_targetdir "bin/dat"
     set_objectdir "build/obj"
     
     add_includedirs "src/"

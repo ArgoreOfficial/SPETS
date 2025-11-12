@@ -62,7 +62,7 @@ SPETS::ApplicationHubFrame::ApplicationHubFrame() :
 	SetStatusText( std::string( "SPETS " ) + SPETS::VERSION_STR );
 
 	wxStaticBitmap* staticBitmap = new wxStaticBitmap( m_panel, wxID_ANY, wxNullBitmap );
-	staticBitmap->SetDropTarget( new HubWindowDropTarget( staticBitmap, { "file.png", wxBITMAP_TYPE_PNG }, { "download.png", wxBITMAP_TYPE_PNG } ) );
+	staticBitmap->SetDropTarget( new HubWindowDropTarget( staticBitmap, { "dat/file.png", wxBITMAP_TYPE_PNG }, { "dat/download.png", wxBITMAP_TYPE_PNG } ) );
 	staticBitmap->SetSize( m_panel->GetSize() );
 }
 
