@@ -54,20 +54,6 @@ std::filesystem::path Sprocket::getPlateStructurePath( const std::string& _facti
 	return Sprocket::getFactionPath( _faction ) / "Blueprints" / "Plate Structures" / ( _name + ".blueprint" );
 }
 
-bool Sprocket::quickImport( const std::filesystem::path& _path )
-{
-	const std::string currentFaction = Sprocket::getCurrentFaction();
-	const std::string name = _path.filename().replace_extension().string();
-
-	Sprocket::MeshData outMesh;
-	outMesh.name = name;
-	
-	if ( !Sprocket::createCompartmentFromMesh( _path.string(), outMesh ) )
-		return false;
-
-	return Sprocket::saveCompartmentToFaction( outMesh, currentFaction, name );
-}
-
 bool Sprocket::doesFactionExist( const std::string& _name )
 {
 	return std::filesystem::is_directory( getFactionPath( _name ) );
@@ -97,9 +83,8 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 	uint32_t indexOffset = 0; // global mesh vertex offset
 	uint32_t indexShift = 0; // so we can properly remove duplicate vertices and shift indices down
 
-	MeshData meshData{ };
-	meshData.name = scene->mName.C_Str();
-
+	MeshData meshData = _outMesh;
+	
 	int ngons = 0;
 
 	for ( size_t meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++ )
