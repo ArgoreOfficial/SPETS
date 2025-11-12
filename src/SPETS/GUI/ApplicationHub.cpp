@@ -198,7 +198,7 @@ void SPETS::ApplicationHubFrame::OnQuickExport( wxCommandEvent& _event )
 
 bool SPETS::HubWindowDropTarget::OnDropFiles( wxCoord _x, wxCoord _y, const wxArrayString& _filenames )
 {
-	printf( "Dropping %d files\n", _filenames.GetCount() );
+	printf( "Dropping %llu files\n", _filenames.GetCount() );
 
 	if ( m_surface )
 		m_surface->SetBitmap( m_bitmap );
