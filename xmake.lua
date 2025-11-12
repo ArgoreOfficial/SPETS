@@ -11,10 +11,14 @@ target "SPETS"
     add_packages("nlohmann_json", "assimp", "wxwidgets")
 
     if is_mode("debug") then 
-        set_basename "SPETS_debug_$(arch)"
+        set_basename "SPETS_debug_$(arch)"    
+        set_configdir "bin"
     else
         set_basename "SPETS"
+        set_configdir "package/bin"
     end
+        
+    add_configfiles("res/*", {onlycopy = true})
 
     set_targetdir "bin"
     set_objectdir "build/obj"
@@ -22,4 +26,5 @@ target "SPETS"
     add_includedirs "src/"
     add_headerfiles{ "src/**.h", "src/**.hpp" }
     add_files{ "src/**.c", "src/**.cpp" }
+
 target_end()
