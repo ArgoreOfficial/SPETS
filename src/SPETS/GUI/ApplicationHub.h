@@ -29,6 +29,9 @@ private:
 
 	void OnExit( wxCommandEvent& event ) {
 		Close( true );
+
+		delete m_importTool;
+		delete m_exportTool;
 	}
 
 	void OnQuickImport( wxCommandEvent& _event );
