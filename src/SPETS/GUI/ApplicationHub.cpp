@@ -28,9 +28,12 @@ SPETS::ApplicationHubFrame::ApplicationHubFrame() :
 	
 	wxMenu* menuTools = new wxMenu();
 	{
+		m_importTool = new ImportTool();
+		m_exportTool = new ExportTool();
+
 		menuTools->Append( ID_TOOL_QUICK_IMPORT, "&Quick Import...\tCtrl-I", "Quickly import into the current faction" );
 		Bind( wxEVT_MENU, &ApplicationHubFrame::OnQuickImport, this, ID_TOOL_QUICK_IMPORT );
-
+		
 		menuTools->Append( ID_TOOL_QUICK_EXPORT, "&Quick Export...\tCtrl-E", "Quickly export a blueprint" );
 		Bind( wxEVT_MENU, &ApplicationHubFrame::OnQuickExport, this, ID_TOOL_QUICK_EXPORT );
 
@@ -66,58 +69,20 @@ SPETS::ApplicationHubFrame::ApplicationHubFrame() :
 	staticBitmap->SetSize( m_panel->GetSize() );
 }
 
-// TODO: replace with lua tool
-static void checkedImport( const std::filesystem::path& _path, const std::string& _faction )
-{
-	std::string status = std::format( "Importing {}", _path.filename().string() );
-	printf( "%s\n", status.c_str() );
-	SPETS::g_frame->SetStatusText( status );
-
-	const std::string name = _path.filename().replace_extension().string();
-
-	Sprocket::MeshData outMesh;
-	outMesh.name = name;
-
-	if ( Sprocket::createCompartmentFromMesh( _path.string(), outMesh ) )
-		Sprocket::saveCompartmentToFaction( outMesh, _faction, name );
-}
-
-// TODO: replace with lua tool
-static void checkedExport( const std::filesystem::path& _path )
-{
-	std::string status = std::format( "Exporting {}", _path.filename().string() );
-	printf( "%s\n", status.c_str() );
-	SPETS::g_frame->SetStatusText( status );
-
-	Sprocket::BlueprintType type = Sprocket::getBlueprintFileType( _path );
-	if ( type == Sprocket::BlueprintType_Compartment )
-	{
-		Sprocket::MeshData mesh;
-		if ( Sprocket::loadBlueprintFromFile( _path.string(), mesh ) )
-			Sprocket::exportBlueprintToFile( mesh, _path.filename().replace_extension() );
-	}
-	else if ( type == Sprocket::BlueprintType_Vehicle )
-	{
-		Sprocket::VehicleBlueprint vehicle;
-		if ( Sprocket::loadBlueprintFromFile( _path.string(), vehicle ) )
-			Sprocket::exportBlueprintToFile( vehicle );
-	}
-	else
-	{
-		SPROCKET_PUSH_ERROR( "'{}' is not a valid blueprint file", _path.filename().string() );
-	}
-}
-
-// TODO: replace with lua tool
-static void quickImportHelper( const wxArrayString& _filenames )
+void SPETS::ApplicationHubFrame::onDropFiles( const std::vector<std::filesystem::path>& _paths )
 {
 	const std::string currentFaction = Sprocket::getCurrentFaction();
 
-	// import meshes
-	for ( size_t i = 0; i < _filenames.GetCount(); i++ )
-		checkedImport( _filenames[ i ].ToStdWstring(), currentFaction );
-	
-	// check for any errors
+	for ( size_t i = 0; i < _paths.size(); i++ )
+	{
+		std::filesystem::path p = _paths[ i ];
+
+		if ( p.extension() == ".blueprint" )
+			m_exportTool->checkedExport( p );
+		else
+			m_importTool->checkedImport( p, currentFaction );
+	}
+
 	if ( Sprocket::hasError() )
 	{
 		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
@@ -129,7 +94,7 @@ static void quickImportHelper( const wxArrayString& _filenames )
 	}
 	else
 	{
-		std::string s = std::format( "{} meshes imported into '{}'.", _filenames.GetCount(), Sprocket::getCurrentFaction() );
+		std::string s = std::format( "{} meshes imported into '{}'.", _paths.size(), Sprocket::getCurrentFaction() );
 		SPETS::g_frame->SetStatusText( s );
 	}
 
@@ -150,50 +115,24 @@ void SPETS::ApplicationHubFrame::OnQuickImport( wxCommandEvent& event )
 	if ( openFileDialog.ShowModal() != wxID_OK )
 		return;
 
-	wxArrayString paths;
-	openFileDialog.GetFilenames( paths );
-	quickImportHelper( paths );
+	std::vector<std::string> paths{};
+
+	// toStdVectorString
+	{
+		wxArrayString wxpaths;
+		openFileDialog.GetFilenames( wxpaths );
+
+		for ( size_t i = 0; i < wxpaths.GetCount(); i++ )
+			paths.push_back( wxpaths[ i ].ToStdString() );
+	}
+	
+	m_importTool->quickImportFiles( paths );
 	
 }
 
-void SPETS::ApplicationHubFrame::OnQuickExport( wxCommandEvent& _event )
+void SPETS::ApplicationHubFrame::OnMerge( wxCommandEvent& event )
 {
-	std::string currentFaction = Sprocket::getCurrentFaction();
-	std::string blueprintsDir = (Sprocket::getFactionPath( currentFaction ) / "Blueprints" ).string();
 
-	wxFileDialog openFileDialog = wxFileDialog(
-		this,
-		wxEmptyString, blueprintsDir, wxEmptyString,
-		"Blueprints (*.blueprint)|*.blueprint",
-		wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE
-	);
-
-	openFileDialog.SetFilterIndex( 0 );
-	if ( openFileDialog.ShowModal() != wxID_OK )
-		return;
-
-	wxArrayString paths;
-	openFileDialog.GetFilenames( paths );
-
-	// export files
-	for ( size_t i = 0; i < paths.Count(); i++ )
-		checkedExport( paths[ i ].ToStdWstring() );
-	
-	// check for any errors
-	if ( Sprocket::hasError() )
-	{
-		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
-		SPETS::g_frame->SetStatusText( s );
-
-		printf( "Errors generated:\n" );
-		while ( Sprocket::hasError() )
-			printf( "    %s\n", Sprocket::popError().c_str() );
-	}
-	else
-	{
-		std::string s = std::format( "{} blueprints exported.", paths.GetCount() );
-		SPETS::g_frame->SetStatusText( s );
-	}
 }
 
 bool SPETS::HubWindowDropTarget::OnDropFiles( wxCoord _x, wxCoord _y, const wxArrayString& _filenames )
@@ -203,32 +142,10 @@ bool SPETS::HubWindowDropTarget::OnDropFiles( wxCoord _x, wxCoord _y, const wxAr
 	if ( m_surface )
 		m_surface->SetBitmap( m_bitmap );
 
-	const std::string currentFaction = Sprocket::getCurrentFaction();
-
+	std::vector<std::filesystem::path> paths;
 	for ( size_t i = 0; i < _filenames.GetCount(); i++ )
-	{
-		std::filesystem::path p = _filenames[ i ].ToStdWstring();
-
-		if ( p.extension() == ".blueprint" )
-			checkedExport( p );
-		else
-			checkedImport( p, currentFaction );
-	}
-
-	if ( Sprocket::hasError() )
-	{
-		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
-		SPETS::g_frame->SetStatusText( s );
-
-		printf( "Errors generated:\n" );
-		while ( Sprocket::hasError() )
-			printf( "    %s\n", Sprocket::popError().c_str() );
-	}
-	else
-	{
-		std::string s = std::format( "{} meshes imported into '{}'.", _filenames.GetCount(), Sprocket::getCurrentFaction() );
-		SPETS::g_frame->SetStatusText( s );
-	}
+		paths.push_back( _filenames[ i ].ToStdWstring() );
+	g_frame->onDropFiles( paths );
 
 	return true;
 }

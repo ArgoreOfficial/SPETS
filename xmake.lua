@@ -12,7 +12,7 @@ target "SPETS"
 
     if is_mode("debug") then 
         set_basename "SPETS_debug_$(arch)"    
-        set_configdir "bin"
+        set_configdir "bin/dat"
     else
         set_basename "SPETS"
         set_configdir "package/bin/dat"
@@ -20,7 +20,7 @@ target "SPETS"
         
     add_configfiles("dat/*", {onlycopy = true})
 
-    set_targetdir "bin/dat"
+    set_targetdir "bin"
     set_objectdir "build/obj"
     
     add_includedirs "src/"

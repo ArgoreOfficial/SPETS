@@ -4,6 +4,8 @@
 #include <wx/dnd.h>
 
 #include <SPETS/Util.h>
+#include <SPETS/GUI/Tools/ImportTool.h>
+#include <SPETS/GUI/Tools/ExportTool.h>
 
 #include <Sprocket/Sprocket.h>
 
@@ -15,6 +17,8 @@ class ApplicationHubFrame : public wxFrame
 {
 public:
 	ApplicationHubFrame();
+
+	void onDropFiles( const std::vector<std::filesystem::path>& _paths );
 
 private:
 	void OnAbout( wxCommandEvent& event ) {
@@ -28,18 +32,18 @@ private:
 	}
 
 	void OnQuickImport( wxCommandEvent& _event );
-	void OnQuickExport( wxCommandEvent& _event );
 
-	void OnHoverImport( wxMouseEvent& _event ) {
-		printf( "%s\n", _event.Dragging() ? "true" : "false" );
+	void OnQuickExport( wxCommandEvent& _event ) { 
+		if( m_importTool ) 
+			m_importTool->onRunTool(); 
 	}
 
-	void OnMerge( wxCommandEvent& event ) {
-		wxLogMessage( "Work in progress." );
-	}
+	void OnMerge( wxCommandEvent& event );
 
-	wxPanel*  m_panel             = new wxPanel( this );
-	
+	wxPanel* m_panel = new wxPanel( this );
+	ImportTool* m_importTool = nullptr;
+	ExportTool* m_exportTool = nullptr;
+
 };
 
 extern ApplicationHubFrame* g_frame;
