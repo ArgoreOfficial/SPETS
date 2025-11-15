@@ -12,42 +12,7 @@ extern SPETS::ApplicationHubFrame* g_frame;
 
 void SPETS::ImportTool::onRunTool()
 {
-	std::string currentFaction = Sprocket::getCurrentFaction();
-	std::string blueprintsDir = ( Sprocket::getFactionPath( currentFaction ) / "Blueprints" ).string();
-
-	wxFileDialog openFileDialog = wxFileDialog(
-		this,
-		wxEmptyString, blueprintsDir, wxEmptyString,
-		"Blueprints (*.blueprint)|*.blueprint",
-		wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE
-	);
-
-	openFileDialog.SetFilterIndex( 0 );
-	if ( openFileDialog.ShowModal() != wxID_OK )
-		return;
-
-	wxArrayString paths;
-	openFileDialog.GetFilenames( paths );
-
-	// export files
-	for ( size_t i = 0; i < paths.Count(); i++ )
-		checkedExport( paths[ i ].ToStdWstring() );
-
-	// check for any errors
-	if ( Sprocket::hasError() )
-	{
-		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
-		SPETS::g_frame->SetStatusText( s );
-
-		printf( "Errors generated:\n" );
-		while ( Sprocket::hasError() )
-			printf( "    %s\n", Sprocket::popError().c_str() );
-	}
-	else
-	{
-		std::string s = std::format( "{} blueprints exported.", paths.GetCount() );
-		SPETS::g_frame->SetStatusText( s );
-	}
+	
 }
 
 void SPETS::ImportTool::checkedImport( const std::filesystem::path& _path, const std::string& _faction )
