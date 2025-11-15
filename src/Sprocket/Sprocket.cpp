@@ -112,7 +112,7 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 		{
 			aiVector3D vert = mesh->mVertices[ vertexIndex ];
 			int duplicateIndex = -1;
-
+			/*
 			for ( size_t checkIndex = 0; checkIndex < vertexIndex; checkIndex++ )
 			{
 				if ( checkIndex == vertexIndex )
@@ -125,16 +125,17 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 				duplicateIndex = checkIndex;
 				break;
 			}
+			*/
 
 			if ( duplicateIndex == -1 )
 			{
-				meshData.mesh.vertexPositions.push_back( vert.x );
+				meshData.mesh.vertexPositions.push_back( -vert.x );
 				meshData.mesh.vertexPositions.push_back( vert.y );
 				meshData.mesh.vertexPositions.push_back( vert.z );
 
 				// shift remap
-				if ( indexShift > 0 )
-					indexRemap[ vertexIndex + indexOffset ] = vertexIndex + indexOffset - indexShift;
+				//if ( indexShift > 0 )
+				//	indexRemap[ vertexIndex + indexOffset ] = vertexIndex + indexOffset - indexShift;
 			}
 			else
 			{
@@ -162,18 +163,19 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 			Sprocket::SerializedFace serializedFace{};
 			for ( size_t i = 0; i < face.mNumIndices; i++ )
 			{
-				uint16_t edgeA = indexOffset + face.mIndices[ i ];
+				uint16_t edgeA = indexOffset + face.mIndices[ ( i     ) % face.mNumIndices ];
 				uint16_t edgeB = indexOffset + face.mIndices[ ( i + 1 ) % face.mNumIndices ];
 
 				if ( indexRemap.contains( edgeA ) ) edgeA = indexRemap[ edgeA ];
 				if ( indexRemap.contains( edgeB ) ) edgeB = indexRemap[ edgeB ];
 
-				serializedFace.vertices.push_back( edgeA );
-				serializedFace.thicknesses.push_back( 1.0f );
+				serializedFace.vertices.insert( serializedFace.vertices.begin(), edgeA);
+				serializedFace.thicknesses.insert( serializedFace.thicknesses.begin(), 1.0f );
 
-				if ( edgeMap.count( edgeB ) == 0 )
+				if ( edgeMap.count( edgeA ) == 0 )
 					edgeMap[ edgeA ].push_back( edgeB );
 			}
+
 			meshData.mesh.serializedFaces.push_back( serializedFace );
 		}
 
