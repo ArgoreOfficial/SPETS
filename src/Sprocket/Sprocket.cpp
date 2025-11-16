@@ -81,7 +81,7 @@ bool Sprocket::doesBlueprintExist( const std::string& _faction, const std::strin
 	return std::filesystem::exists( filePath );
 }
 
-bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _outMesh )
+bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _outMesh, ImportMeshFlags _flags )
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile( _path, aiProcess_JoinIdenticalVertices );
@@ -103,6 +103,8 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 	
 	int ngons = 0;
 	int orphans = 0;
+
+	float tempX, tempY, tempZ;
 
 	for ( size_t meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++ )
 	{
@@ -130,9 +132,16 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 
 			if ( duplicateIndex == -1 )
 			{
-				meshData.mesh.vertexPositions.push_back( -vert.x );
-				meshData.mesh.vertexPositions.push_back( vert.y );
-				meshData.mesh.vertexPositions.push_back( vert.z );
+				tempX = -vert.x; // X is flipped by default 
+				tempY =  vert.y; 
+				tempZ =  vert.z; 
+				if ( _flags | ImportMeshFlags_FlipX ) tempX *= -1;
+				if ( _flags | ImportMeshFlags_FlipY ) tempY *= -1;
+				if ( _flags | ImportMeshFlags_FlipZ ) tempZ *= -1;
+
+				meshData.mesh.vertexPositions.push_back( tempX );
+				meshData.mesh.vertexPositions.push_back( tempY );
+				meshData.mesh.vertexPositions.push_back( tempZ );
 
 				// shift remap
 				//if ( indexShift > 0 )
