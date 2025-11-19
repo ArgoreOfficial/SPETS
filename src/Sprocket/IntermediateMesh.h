@@ -26,9 +26,10 @@ struct IntermediateMesh
 	std::vector<IntermediateVertex> vertices;
 	std::vector<IntermediateFace> faces;
 
-	bool appendIntermediateMesh( const IntermediateMesh& _mesh );
+	void appendIntermediateMesh( const IntermediateMesh& _mesh );
 };
 
 bool createIntermediateMeshFromFile( const std::filesystem::path& _path, IntermediateMesh& _out );
+bool createCompartmentFromIntermediateMesh( const IntermediateMesh& _mesh, MeshData& _out );
 
 }

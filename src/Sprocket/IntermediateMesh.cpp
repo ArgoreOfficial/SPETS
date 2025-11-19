@@ -6,6 +6,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <unordered_map>
+
 bool Sprocket::createIntermediateMeshFromFile( const std::filesystem::path& _path, IntermediateMesh& _out )
 {
 	Assimp::Importer importer;
@@ -23,6 +25,7 @@ bool Sprocket::createIntermediateMeshFromFile( const std::filesystem::path& _pat
 	IntermediateMesh imMesh{};
 
 	int ngons = 0;
+	int orphans = 0;
 
 	for ( size_t meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++ )
 	{
@@ -38,9 +41,14 @@ bool Sprocket::createIntermediateMeshFromFile( const std::filesystem::path& _pat
 		for ( size_t faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++ )
 		{
 			aiFace face = mesh->mFaces[ faceIndex ];
-			if ( face.mNumIndices != 3 && face.mNumIndices != 4 )
+			if ( face.mNumIndices > 4 )
 			{
 				ngons++;
+				continue;
+			}
+			if ( face.mNumIndices < 3 )
+			{
+				orphans++;
 				continue;
 			}
 
@@ -48,6 +56,7 @@ bool Sprocket::createIntermediateMeshFromFile( const std::filesystem::path& _pat
 			for ( size_t i = 0; i < face.mNumIndices; i++ )
 			{
 				uint16_t index = indexOffset + face.mIndices[ i ];
+				// reverse winding order because x is flipped by default
 				imFace.vertices.insert( imFace.vertices.begin(), index );
 			}
 
@@ -58,20 +67,75 @@ bool Sprocket::createIntermediateMeshFromFile( const std::filesystem::path& _pat
 	}
 
 	if ( ngons > 0 )
-		SPROCKET_PUSH_ERROR( "{} ngons encountered.", ngons );
+		SPROCKET_PUSH_ERROR( "Skipped {} ngons. Mesh has still imported", ngons );
+
+	if ( orphans > 0 )
+		SPROCKET_PUSH_ERROR( "Skipped {} orphan lines or points. Mesh has still imported", orphans );
 
 	_out = imMesh;
 	return true;
 }
 
-bool Sprocket::IntermediateMesh::appendIntermediateMesh( const IntermediateMesh& _mesh )
+bool Sprocket::createCompartmentFromIntermediateMesh( const IntermediateMesh& _mesh, MeshData& _out )
+{
+	std::unordered_map< uint16_t, std::vector<uint16_t> > edgeMap{};
+	std::unordered_map< uint32_t, uint32_t > indexRemap{};
+
+	MeshData meshData = _out;
+
+	// setup vertices
+	for ( size_t i = 0; i < _mesh.vertices.size(); i++ )
+	{
+		meshData.mesh.vertexPositions.push_back( _mesh.vertices[ i ].x );
+		meshData.mesh.vertexPositions.push_back( _mesh.vertices[ i ].y );
+		meshData.mesh.vertexPositions.push_back( _mesh.vertices[ i ].z );
+	}
+
+	for ( size_t f = 0; f < _mesh.faces.size(); f++ )
+	{
+		const IntermediateFace& face = _mesh.faces[ f ];
+		
+		Sprocket::SerializedFace serializedFace{};
+		for ( size_t i = 0; i < face.vertices.size(); i++ )
+		{
+			uint16_t edgeA = face.vertices[ ( i ) % face.vertices.size() ];
+			uint16_t edgeB = face.vertices[ ( i + 1 ) % face.vertices.size() ];
+
+			if ( indexRemap.contains( edgeA ) ) edgeA = indexRemap[ edgeA ];
+			if ( indexRemap.contains( edgeB ) ) edgeB = indexRemap[ edgeB ];
+
+			serializedFace.vertices.push_back( edgeA );
+			serializedFace.thicknesses.push_back( 1.0f );
+
+			if ( edgeMap.count( edgeA ) == 0 )
+				edgeMap[ edgeA ].push_back( edgeB );
+		}
+
+		meshData.mesh.serializedFaces.push_back( serializedFace );
+	}
+
+	for ( auto e : edgeMap )
+	{
+		for ( size_t i = 0; i < e.second.size(); i++ )
+		{
+			meshData.mesh.serializedEdges.push_back( e.second[ i ] );
+			meshData.mesh.serializedEdges.push_back( e.first );
+			meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
+		}
+	}
+
+	_out = meshData;
+	return true;
+}
+
+void Sprocket::IntermediateMesh::appendIntermediateMesh( const IntermediateMesh& _mesh )
 {
 	size_t offset = vertices.size();
 
 	if ( _mesh.vertices.size() == 0 || _mesh.faces.size() == 0 )
 	{
 		SPROCKET_PUSH_ERROR( "IntermediateMesh : Nothing to append." );
-		return false;
+		return;
 	}
 
 	for ( size_t i = 0; i < _mesh.vertices.size(); i++ )
@@ -84,6 +148,7 @@ bool Sprocket::IntermediateMesh::appendIntermediateMesh( const IntermediateMesh&
 			f.vertices[ i ] += offset;
 		faces.push_back( f );
 	}
-
-	return true;
 }
+
+}
+
