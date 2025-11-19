@@ -150,5 +150,77 @@ void Sprocket::IntermediateMesh::appendIntermediateMesh( const IntermediateMesh&
 	}
 }
 
+void Sprocket::IntermediateMesh::mergeDuplicateVertices()
+{
+	// create remap
+	std::unordered_map<uint16_t, uint16_t> remap;
+	for ( size_t index = 0; index < vertices.size(); index++ )
+	{
+		for ( size_t otherIndex = 0; otherIndex < index; otherIndex++ )
+		{
+			if ( index == otherIndex ) 
+				continue;
+
+			IntermediateVertex v = vertices[ index ] - vertices[ otherIndex ];
+			if ( v.length() > 0 )
+				continue;
+
+			if ( !remap.contains( index ) )
+				remap[ index ] = otherIndex;
+		}
+	}
+
+	// replace indices
+	for ( size_t i = 0; i < faces.size(); i++ )
+	{
+		for ( size_t v = 0; v < faces[ i ].vertices.size(); v++ )
+		{
+			uint16_t vindex = faces[ i ].vertices[ v ];
+			if ( remap.contains( vindex ) )
+				faces[ i ].vertices[ v ] = remap[ vindex ];
+		}
+	}
+
+	// reconstruct mesh
+	std::vector<IntermediateFace> newFaces;
+	std::vector<IntermediateVertex> newVertices;
+	std::unordered_map<uint16_t, uint16_t> remap2;
+
+	for ( size_t i = 0; i < faces.size(); i++ )
+	{
+		IntermediateFace face = faces[ i ];
+		
+		for ( size_t v = 0; v < face.vertices.size(); v++ )
+		{
+			uint16_t oldIndex = face.vertices[ v ];
+
+			if ( remap2.contains( face.vertices[ v ] ) )
+				face.vertices[ v ] = remap2[ oldIndex ];
+			else
+			{
+				uint16_t newIndex = newVertices.size();
+				remap2[ oldIndex ] = newIndex;
+				face.vertices[ v ] = newIndex;
+
+				newVertices.push_back( vertices[ oldIndex ] );
+			}
+		}
+
+		newFaces.push_back( face );
+	}
+
+	vertices = newVertices;
+	faces = newFaces;
+}
+
+void Sprocket::IntermediateMesh::reverseWindingOrder()
+{
+	for ( size_t i = 0; i < faces.size(); i++ )
+	{
+		IntermediateFace f{};
+		for( size_t v = faces[ i ].vertices.size(); v --> 0; )
+			f.vertices.push_back( faces[ i ].vertices[ v ] );
+		faces[ i ] = f;
+	}
 }
 
