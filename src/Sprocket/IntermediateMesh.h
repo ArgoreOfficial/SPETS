@@ -43,6 +43,7 @@ struct IntermediateFace
 
 struct IntermediateMesh
 {
+	std::string name;
 	std::vector<IntermediateVertex> vertices;
 	std::vector<IntermediateFace> faces;
 

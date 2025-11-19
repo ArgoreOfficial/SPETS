@@ -13,9 +13,7 @@
 #include <locale>
 #include <codecvt>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
+#include <Sprocket/IntermediateMesh.h>
 
 std::filesystem::path Sprocket::getStreamingAssetsPath()
 {
@@ -83,141 +81,22 @@ bool Sprocket::doesBlueprintExist( const std::string& _faction, const std::strin
 
 bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _outMesh, ImportMeshFlags _flags )
 {
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile( _path, aiProcess_JoinIdenticalVertices );
-
-	if ( scene == nullptr || scene->mNumMeshes == 0 )
-	{
-		//Sprocket::pushError( std::format( "'{}' : Failed to load or parse model.", _outMesh.name ) );
-		SPROCKET_PUSH_ERROR( "'{}' : Failed to load or parse model.", _outMesh.name );
-		return false;
-	}
-
-	std::unordered_map< uint16_t, std::vector<uint16_t> > edgeMap{};
-	std::unordered_map< uint32_t, uint32_t > indexRemap{};
-
-	uint32_t indexOffset = 0; // global mesh vertex offset
-	uint32_t indexShift = 0; // so we can properly remove duplicate vertices and shift indices down
-
-	MeshData meshData = _outMesh;
+	Sprocket::IntermediateMesh immesh;
 	
-	int ngons = 0;
-	int orphans = 0;
+	if ( !Sprocket::createIntermediateMeshFromFile( _path, immesh ) )
+		return false;
 
-	float tempX, tempY, tempZ;
+	immesh.mergeDuplicateVertices();
 
-	for ( size_t meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++ )
-	{
-		aiMesh* mesh = scene->mMeshes[ meshIndex ];
+	int flips = 0;
+	if ( _flags | ImportMeshFlags_FlipX ) { immesh.flipX(); flips++; }
+	if ( _flags | ImportMeshFlags_FlipY ) { immesh.flipY(); flips++; }
+	if ( _flags | ImportMeshFlags_FlipZ ) { immesh.flipZ(); flips++; }
 
-		// setup vertices
-		for ( size_t vertexIndex = 0; vertexIndex < mesh->mNumVertices; vertexIndex++ )
-		{
-			aiVector3D vert = mesh->mVertices[ vertexIndex ];
-			int duplicateIndex = -1;
-			/*
-			for ( size_t checkIndex = 0; checkIndex < vertexIndex; checkIndex++ )
-			{
-				if ( checkIndex == vertexIndex )
-					continue;
+	if ( flips == 1 || flips == 3 )
+		immesh.reverseWindingOrder();
 
-				aiVector3D checkVert = mesh->mVertices[ checkIndex ];
-				if ( ( checkVert - vert ).Length() > 0.001 )
-					continue;
-
-				duplicateIndex = checkIndex;
-				break;
-			}
-			*/
-
-			if ( duplicateIndex == -1 )
-			{
-				tempX = -vert.x; // X is flipped by default 
-				tempY =  vert.y; 
-				tempZ =  vert.z; 
-				if ( _flags | ImportMeshFlags_FlipX ) tempX *= -1;
-				if ( _flags | ImportMeshFlags_FlipY ) tempY *= -1;
-				if ( _flags | ImportMeshFlags_FlipZ ) tempZ *= -1;
-
-				meshData.mesh.vertexPositions.push_back( tempX );
-				meshData.mesh.vertexPositions.push_back( tempY );
-				meshData.mesh.vertexPositions.push_back( tempZ );
-
-				// shift remap
-				//if ( indexShift > 0 )
-				//	indexRemap[ vertexIndex + indexOffset ] = vertexIndex + indexOffset - indexShift;
-			}
-			else
-			{
-				uint32_t remapIndex = duplicateIndex + indexOffset;
-
-				// check if remapping to a shifted index
-				if ( indexRemap.contains( remapIndex ) )
-					remapIndex = indexRemap[ remapIndex ];
-
-				indexRemap[ vertexIndex + indexOffset ] = remapIndex;
-
-				indexShift++;
-			}
-		}
-
-		for ( size_t faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++ )
-		{
-			aiFace face = mesh->mFaces[ faceIndex ];
-			if ( face.mNumIndices > 4 )
-			{
-				ngons++;
-				continue;
-			}
-			if ( face.mNumIndices < 3 )
-			{
-				orphans++;
-				continue;
-			}
-
-			Sprocket::SerializedFace serializedFace{};
-			for ( size_t i = 0; i < face.mNumIndices; i++ )
-			{
-				uint16_t edgeA = indexOffset + face.mIndices[ ( i     ) % face.mNumIndices ];
-				uint16_t edgeB = indexOffset + face.mIndices[ ( i + 1 ) % face.mNumIndices ];
-
-				if ( indexRemap.contains( edgeA ) ) edgeA = indexRemap[ edgeA ];
-				if ( indexRemap.contains( edgeB ) ) edgeB = indexRemap[ edgeB ];
-
-				serializedFace.vertices.insert( serializedFace.vertices.begin(), edgeA);
-				serializedFace.thicknesses.insert( serializedFace.thicknesses.begin(), 1.0f );
-
-				if ( edgeMap.count( edgeA ) == 0 )
-					edgeMap[ edgeA ].push_back( edgeB );
-			}
-
-			meshData.mesh.serializedFaces.push_back( serializedFace );
-		}
-
-		//printf( "Parsed %s vertices\n", mesh->mName.C_Str() );
-		indexOffset += mesh->mNumVertices;
-	}
-
-	for ( auto e : edgeMap )
-	{
-		for ( size_t i = 0; i < e.second.size(); i++ )
-		{
-			meshData.mesh.serializedEdges.push_back( e.second[ i ] );
-			meshData.mesh.serializedEdges.push_back( e.first );
-			meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
-		}
-	}
-
-	//printf( "Constructed edge map\n" );
-
-	if ( ngons > 0 )
-		SPROCKET_PUSH_ERROR( "Skipped {} ngons. Mesh has still imported", ngons );
-
-	if ( orphans > 0 )
-		SPROCKET_PUSH_ERROR( "Skipped {} orphan lines or points. Mesh has still imported", orphans );
-
-	_outMesh = meshData;
-	return true;
+	return Sprocket::createCompartmentFromIntermediateMesh( immesh, _outMesh );
 }
 
 bool Sprocket::loadBlueprint( const std::string& _faction, const std::string& _name, VehicleBlueprint& _out )
