@@ -96,7 +96,7 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 	if ( flips == 1 || flips == 3 )
 		immesh.reverseWindingOrder();
 
-	return Sprocket::createCompartmentFromIntermediateMesh( immesh, _outMesh );
+	return immesh.createCompartment( _outMesh );
 }
 
 bool Sprocket::loadBlueprint( const std::string& _faction, const std::string& _name, VehicleBlueprint& _out )

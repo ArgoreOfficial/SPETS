@@ -66,9 +66,11 @@ struct IntermediateMesh
 	}
 
 	void reverseWindingOrder();
+
+	bool createCompartment( MeshData& _out );
+
 };
 
 bool createIntermediateMeshFromFile( const std::filesystem::path& _path, IntermediateMesh& _out );
-bool createCompartmentFromIntermediateMesh( const IntermediateMesh& _mesh, MeshData& _out );
 
 }

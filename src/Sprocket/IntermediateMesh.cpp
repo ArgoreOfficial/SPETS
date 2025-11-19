@@ -76,58 +76,6 @@ bool Sprocket::createIntermediateMeshFromFile( const std::filesystem::path& _pat
 	return true;
 }
 
-bool Sprocket::createCompartmentFromIntermediateMesh( const IntermediateMesh& _mesh, MeshData& _out )
-{
-	std::unordered_map< uint16_t, std::vector<uint16_t> > edgeMap{};
-	std::unordered_map< uint32_t, uint32_t > indexRemap{};
-
-	MeshData meshData = _out;
-
-	// setup vertices
-	for ( size_t i = 0; i < _mesh.vertices.size(); i++ )
-	{
-		meshData.mesh.vertexPositions.push_back( _mesh.vertices[ i ].x );
-		meshData.mesh.vertexPositions.push_back( _mesh.vertices[ i ].y );
-		meshData.mesh.vertexPositions.push_back( _mesh.vertices[ i ].z );
-	}
-
-	for ( size_t f = 0; f < _mesh.faces.size(); f++ )
-	{
-		const IntermediateFace& face = _mesh.faces[ f ];
-		
-		Sprocket::SerializedFace serializedFace{};
-		for ( size_t i = 0; i < face.vertices.size(); i++ )
-		{
-			uint16_t edgeA = face.vertices[ ( i ) % face.vertices.size() ];
-			uint16_t edgeB = face.vertices[ ( i + 1 ) % face.vertices.size() ];
-
-			if ( indexRemap.contains( edgeA ) ) edgeA = indexRemap[ edgeA ];
-			if ( indexRemap.contains( edgeB ) ) edgeB = indexRemap[ edgeB ];
-
-			serializedFace.vertices.push_back( edgeA );
-			serializedFace.thicknesses.push_back( 1.0f );
-
-			if ( edgeMap.count( edgeA ) == 0 )
-				edgeMap[ edgeA ].push_back( edgeB );
-		}
-
-		meshData.mesh.serializedFaces.push_back( serializedFace );
-	}
-
-	for ( auto e : edgeMap )
-	{
-		for ( size_t i = 0; i < e.second.size(); i++ )
-		{
-			meshData.mesh.serializedEdges.push_back( e.second[ i ] );
-			meshData.mesh.serializedEdges.push_back( e.first );
-			meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
-		}
-	}
-
-	_out = meshData;
-	return true;
-}
-
 void Sprocket::IntermediateMesh::appendIntermediateMesh( const IntermediateMesh& _mesh )
 {
 	size_t offset = vertices.size();
@@ -222,5 +170,57 @@ void Sprocket::IntermediateMesh::reverseWindingOrder()
 			f.vertices.push_back( faces[ i ].vertices[ v ] );
 		faces[ i ] = f;
 	}
+}
+
+bool Sprocket::IntermediateMesh::createCompartment( MeshData& _out )
+{
+	std::unordered_map< uint16_t, std::vector<uint16_t> > edgeMap{};
+	std::unordered_map< uint32_t, uint32_t > indexRemap{};
+
+	MeshData meshData = _out;
+
+	// setup vertices
+	for ( size_t i = 0; i < vertices.size(); i++ )
+	{
+		meshData.mesh.vertexPositions.push_back( vertices[ i ].x );
+		meshData.mesh.vertexPositions.push_back( vertices[ i ].y );
+		meshData.mesh.vertexPositions.push_back( vertices[ i ].z );
+	}
+
+	for ( size_t f = 0; f < faces.size(); f++ )
+	{
+		const IntermediateFace& face = faces[ f ];
+
+		Sprocket::SerializedFace serializedFace{};
+		for ( size_t i = 0; i < face.vertices.size(); i++ )
+		{
+			uint16_t edgeA = face.vertices[ ( i ) % face.vertices.size() ];
+			uint16_t edgeB = face.vertices[ ( i + 1 ) % face.vertices.size() ];
+
+			if ( indexRemap.contains( edgeA ) ) edgeA = indexRemap[ edgeA ];
+			if ( indexRemap.contains( edgeB ) ) edgeB = indexRemap[ edgeB ];
+
+			serializedFace.vertices.push_back( edgeA );
+			serializedFace.thicknesses.push_back( 1.0f );
+
+			if ( edgeMap.count( edgeA ) == 0 )
+				edgeMap[ edgeA ].push_back( edgeB );
+		}
+
+		meshData.mesh.serializedFaces.push_back( serializedFace );
+	}
+
+	for ( auto e : edgeMap )
+	{
+		for ( size_t i = 0; i < e.second.size(); i++ )
+		{
+			meshData.mesh.serializedEdges.push_back( e.second[ i ] );
+			meshData.mesh.serializedEdges.push_back( e.first );
+			meshData.mesh.serializedEdgeFlags.push_back( SerializedEdgeFlags_None );
+		}
+	}
+
+	_out = meshData;
+	return true;
 }
 
