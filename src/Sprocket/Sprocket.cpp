@@ -89,9 +89,9 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 	immesh.mergeDuplicateVertices();
 
 	int flips = 0;
-	if ( _flags | ImportMeshFlags_FlipX ) { immesh.flipX(); flips++; }
-	if ( _flags | ImportMeshFlags_FlipY ) { immesh.flipY(); flips++; }
-	if ( _flags | ImportMeshFlags_FlipZ ) { immesh.flipZ(); flips++; }
+	if ( _flags & ImportMeshFlags_FlipX ) { immesh.flipX(); flips++; }
+	if ( _flags & ImportMeshFlags_FlipY ) { immesh.flipY(); flips++; }
+	if ( _flags & ImportMeshFlags_FlipZ ) { immesh.flipZ(); flips++; }
 
 	if ( flips == 1 || flips == 3 )
 		immesh.reverseWindingOrder();
