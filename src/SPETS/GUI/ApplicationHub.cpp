@@ -73,14 +73,23 @@ void SPETS::ApplicationHubFrame::onDropFiles( const std::vector<std::filesystem:
 {
 	const std::string currentFaction = Sprocket::getCurrentFaction();
 
+	size_t imported = 0;
+	size_t exported = 0;
+
 	for ( size_t i = 0; i < _paths.size(); i++ )
 	{
 		std::filesystem::path p = _paths[ i ];
 
 		if ( p.extension() == ".blueprint" )
+		{
 			m_exportTool->checkedExport( p );
+			exported++;
+		}
 		else
+		{
 			m_importTool->checkedImport( p, currentFaction );
+			imported++;
+		}
 	}
 
 	if ( Sprocket::hasError() )
@@ -94,8 +103,15 @@ void SPETS::ApplicationHubFrame::onDropFiles( const std::vector<std::filesystem:
 	}
 	else
 	{
-		std::string s = std::format( "{} meshes imported into '{}'.", _paths.size(), Sprocket::getCurrentFaction() );
-		SPETS::g_frame->SetStatusText( s );
+		std::string status = "";
+
+		if( imported > 0 )
+			status += std::format( "{} meshes imported. ", imported );
+
+		if( exported > 0 )
+			status += std::format( "{} meshes exported. ", exported );
+
+		SPETS::g_frame->SetStatusText( status );
 	}
 
 }
