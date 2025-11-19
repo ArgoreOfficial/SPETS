@@ -102,6 +102,7 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 	MeshData meshData = _outMesh;
 	
 	int ngons = 0;
+	int orphans = 0;
 
 	for ( size_t meshIndex = 0; meshIndex < scene->mNumMeshes; meshIndex++ )
 	{
@@ -154,9 +155,14 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 		for ( size_t faceIndex = 0; faceIndex < mesh->mNumFaces; faceIndex++ )
 		{
 			aiFace face = mesh->mFaces[ faceIndex ];
-			if ( face.mNumIndices != 3 && face.mNumIndices != 4 )
+			if ( face.mNumIndices > 4 )
 			{
 				ngons++;
+				continue;
+			}
+			if ( face.mNumIndices < 3 )
+			{
+				orphans++;
 				continue;
 			}
 
@@ -196,7 +202,10 @@ bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _o
 	//printf( "Constructed edge map\n" );
 
 	if ( ngons > 0 )
-		SPROCKET_PUSH_ERROR( "{} ngons encountered.", ngons );
+		SPROCKET_PUSH_ERROR( "Skipped {} ngons. Mesh has still imported", ngons );
+
+	if ( orphans > 0 )
+		SPROCKET_PUSH_ERROR( "Skipped {} orphan lines or points. Mesh has still imported", orphans );
 
 	_outMesh = meshData;
 	return true;

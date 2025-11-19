@@ -38,20 +38,18 @@ void SPETS::ImportTool::quickImportFiles( const std::vector<std::string>& _files
 	for ( size_t i = 0; i < _files.size(); i++ )
 		checkedImport( _files[ i ], currentFaction );
 
+	std::string status = std::format( "{} meshes imported into '{}'. ", _files.size(), Sprocket::getCurrentFaction() );
+	
 	// check for any errors
 	if ( Sprocket::hasError() )
 	{
-		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
-		SPETS::g_frame->SetStatusText( s );
-
+		status += std::format( "{} errors.", Sprocket::getNumErrors() );
+		
 		printf( "Errors generated:\n" );
 		while ( Sprocket::hasError() )
 			printf( "    %s\n", Sprocket::popError().c_str() );
 	}
-	else
-	{
-		std::string s = std::format( "{} meshes imported into '{}'.", _files.size(), Sprocket::getCurrentFaction() );
-		SPETS::g_frame->SetStatusText( s );
-	}
+	
+	SPETS::g_frame->SetStatusText( status );
 }
 
