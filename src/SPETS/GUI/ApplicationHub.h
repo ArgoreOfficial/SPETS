@@ -36,10 +36,7 @@ private:
 
 	void OnQuickImport( wxCommandEvent& _event );
 
-	void OnQuickExport( wxCommandEvent& _event ) { 
-		if( m_importTool ) 
-			m_importTool->onRunTool(); 
-	}
+	void OnQuickExport( wxCommandEvent& _event );
 
 	void OnMerge( wxCommandEvent& event );
 

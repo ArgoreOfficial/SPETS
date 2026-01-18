@@ -80,6 +80,12 @@ void SPETS::ApplicationHubFrame::onDropFiles( const std::vector<std::filesystem:
 	{
 		std::filesystem::path p = _paths[ i ];
 
+		if ( p.empty() )
+		{
+			SPROCKET_PUSH_ERROR( "Dropped file had no path. Something went very wrong, please ping @argore in Sprocket Official Discord: https://discord.gg/395dvyZ9ng" );
+			continue;
+		}
+
 		if ( p.extension() == ".blueprint" )
 		{
 			m_exportTool->checkedExport( p );
@@ -92,14 +98,10 @@ void SPETS::ApplicationHubFrame::onDropFiles( const std::vector<std::filesystem:
 		}
 	}
 
-	if ( Sprocket::hasError() )
+	if ( size_t numErrors = Sprocket::dumpErrors() > 0 )
 	{
-		std::string s = std::format( "{} errors generated. Check log.", Sprocket::getNumErrors() );
+		std::string s = std::format( "{} errors generated. Check log.", numErrors );
 		SPETS::g_frame->SetStatusText( s );
-
-		printf( "Errors generated:\n" );
-		while ( Sprocket::hasError() )
-			printf( "    %s\n", Sprocket::popError().c_str() );
 	}
 	else
 	{
@@ -144,6 +146,11 @@ void SPETS::ApplicationHubFrame::OnQuickImport( wxCommandEvent& event )
 	
 	m_importTool->quickImportFiles( paths );
 	
+}
+
+void SPETS::ApplicationHubFrame::OnQuickExport( wxCommandEvent& _event )
+{
+	m_exportTool->onRunTool();
 }
 
 void SPETS::ApplicationHubFrame::OnMerge( wxCommandEvent& event )

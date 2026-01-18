@@ -18,7 +18,7 @@ void SPETS::ExportTool::onRunTool()
 	wxFileDialog openFileDialog = wxFileDialog(
 		g_frame,
 		wxEmptyString, blueprintsDir, wxEmptyString,
-		"Blueprints (*.blueprint)|*.blueprint",
+		"Sprocket Blueprints (*.blueprint)|*.blueprint",
 		wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE
 	);
 
