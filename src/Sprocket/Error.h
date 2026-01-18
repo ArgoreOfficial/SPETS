@@ -13,6 +13,9 @@ bool hasError();
 size_t getNumErrors();
 std::string popError();
 
+// returns number of errors dumped
+size_t dumpErrors();
+
 }
 
 #define SPROCKET_PUSH_ERROR( ... ) Sprocket::pushError( std::format( __FUNCTION__ "({}) : {}", __LINE__, std::format( __VA_ARGS__ ) ) )

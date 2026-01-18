@@ -118,8 +118,21 @@ bool Sprocket::loadBlueprintFromFile( const std::filesystem::path& _path, Vehicl
 		_out = json.get<Sprocket::VehicleBlueprint>();
 		return true;
 	}
+	catch ( const std::exception& ex )
+	{
+		SPROCKET_PUSH_ERROR( "Failed to parse json. {}", ex.what() );
+		_out = {};
+		return false; // JSON parsing failure
+	}
+	catch ( const std::string& ex )
+	{
+		SPROCKET_PUSH_ERROR( "Failed to parse json. {}", ex );
+		_out = {};
+		return false; // JSON parsing failure
+	}
 	catch ( ... )
 	{
+		SPROCKET_PUSH_ERROR( "Failed to parse json." );
 		_out = {};
 		return false; // JSON parsing failure
 	}
@@ -190,8 +203,12 @@ bool Sprocket::exportBlueprintToFile( const VehicleBlueprint& _blueprint )
 {
 	int unnamedMeshes = 0;
 	//printf( "Exporting %s ... ", _blueprint->header.name.c_str() );
-	if ( !std::filesystem::create_directory( _blueprint.header.name ) )
-		return false;
+
+	if ( !std::filesystem::is_directory( _blueprint.header.name ) )
+	{
+		if ( !std::filesystem::create_directory( _blueprint.header.name ) )
+			return false;
+	}
 
 	for ( size_t m = 0; m < _blueprint.meshes.size(); m++ )
 	{
@@ -214,6 +231,9 @@ bool Sprocket::exportBlueprintToFile( const VehicleBlueprint& _blueprint )
 
 bool Sprocket::exportBlueprintToFile( const MeshData& _mesh, std::filesystem::path _path )
 {
+	if ( _mesh.mesh.getNumVertices() == 0 )
+		return true; // nothing to export, just skip
+
 	std::ofstream f( _path.replace_extension( ".obj" ) );
 	if ( !f )
 		return false;

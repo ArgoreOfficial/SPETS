@@ -15,7 +15,7 @@ bool Sprocket::createIntermediateMeshFromFile( const std::filesystem::path& _pat
 
 	if ( scene == nullptr || scene->mNumMeshes == 0 )
 	{
-		SPROCKET_PUSH_ERROR( "'{}' : Failed to load model.", _path.string() );
+		SPROCKET_PUSH_ERROR( "'{}' : Failed to load model.", _path.string().c_str() );
 		return false;
 	}
 

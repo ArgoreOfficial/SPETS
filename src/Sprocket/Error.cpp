@@ -27,3 +27,17 @@ std::string Sprocket::popError()
 	g_errors.pop_front();
 	return err;
 }
+
+size_t Sprocket::dumpErrors()
+{
+	size_t numErrors = Sprocket::getNumErrors();
+
+	if ( Sprocket::hasError() )
+	{
+		printf( "Errors generated:\n" );
+		while ( Sprocket::hasError() )
+			printf( "    %s\n", Sprocket::popError().c_str() );
+	}
+	
+    return numErrors;
+}
