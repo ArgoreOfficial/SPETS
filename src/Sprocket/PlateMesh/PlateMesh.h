@@ -84,8 +84,12 @@ struct MeshData
 	std::string name = "";
 	uint32_t    smoothAngle = 0;
 	uint32_t    gridSize = 1;
-	std::string format = "freeform";
+	std::string format = "freeform"; // freeform or TST
 
+	// only used with format = "TST"
+	uint32_t generationBlueprintVuid = 69;
+
+	// only used with format = "freeform"
 	MeshBlueprint mesh;
 	Rivets rivets;
 };

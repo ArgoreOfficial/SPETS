@@ -131,7 +131,12 @@ void Sprocket::from_json( const nlohmann::json& _json, Sprocket::MeshData& _p )
 	_json.at( "smoothAngle" ).get_to( _p.smoothAngle );
 	_json.at( "gridSize" ).get_to( _p.gridSize );
 	_json.at( "format" ).get_to( _p.format );
-	_json.at( "mesh" ).get_to( _p.mesh );
+
+	if ( _p.format == "freeform" )
+		_json.at( "mesh" ).get_to( _p.mesh );
+	else if( _p.format == "TST" )
+		_json.at( "generationBlueprintVuid" ).get_to( _p.generationBlueprintVuid );
+
 	_json.at( "rivets" ).get_to( _p.rivets );
 
 }
