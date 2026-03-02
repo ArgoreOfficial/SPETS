@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <filesystem>
+#include <cmath>
 
 namespace Sprocket {
 

@@ -1,6 +1,9 @@
 #pragma once
 
-#include <wxinclude.h>
+#include <wx/wx.h>
+#include <wx/dnd.h>    // Required for wxDropTarget and wxDragResult
+#include <wx/msgdlg.h> // Common for DnD feedback
+
 
 namespace SPETS {
 

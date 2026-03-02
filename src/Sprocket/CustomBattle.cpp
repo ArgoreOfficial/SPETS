@@ -31,7 +31,14 @@ void Sprocket::TeamDefinition::addUnits( int _count, const std::string& _faction
 
 Sprocket::CustomBattleConfig Sprocket::getCustomBattleSetup()
 {
-	std::filesystem::path appdata = SPETS::getFolderPath( FOLDERID_LocalAppDataLow );
+
+#ifdef _WIN32
+    std::filesystem::path appdata = SPETS::getFolderPath( FOLDERID_LocalAppDataLow );
+#else
+    // On Linux, "AppDataLow" usually maps to ~/.local/share or ~/.config
+    std::filesystem::path appdata = SPETS::getFolderPath( "APPDATA" ); 
+#endif
+
 	std::filesystem::path path = appdata / "HD" / "Sprocket" / "CustomBattleSetup.json";
 
 	std::ifstream f( path );
@@ -44,7 +51,13 @@ Sprocket::CustomBattleConfig Sprocket::getCustomBattleSetup()
 
 void Sprocket::saveCustomBattleSetup( const CustomBattleConfig& _info )
 {
-	std::filesystem::path appdata = SPETS::getFolderPath( FOLDERID_LocalAppDataLow );
+
+#ifdef _WIN32
+    std::filesystem::path appdata = SPETS::getFolderPath( FOLDERID_LocalAppDataLow );
+#else
+    // On Linux, "AppDataLow" usually maps to ~/.local/share or ~/.config
+    std::filesystem::path appdata = SPETS::getFolderPath( "APPDATA" );
+#endif
 	std::filesystem::path path = appdata / "HD" / "Sprocket" / "CustomBattleSetup.json";
 
 	std::ofstream f( path );

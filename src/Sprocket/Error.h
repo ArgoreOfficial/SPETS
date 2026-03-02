@@ -18,4 +18,7 @@ size_t dumpErrors();
 
 }
 
-#define SPROCKET_PUSH_ERROR( ... ) Sprocket::pushError( std::format( __FUNCTION__ "({}) : {}", __LINE__, std::format( __VA_ARGS__ ) ) )
+// Corrected for cross-platform (GCC and MSVC)
+#define SPROCKET_PUSH_ERROR( ... ) \
+    Sprocket::pushError( std::format( "{} ({}) : {}", __FUNCTION__, __LINE__, std::format( __VA_ARGS__ ) ) )
+

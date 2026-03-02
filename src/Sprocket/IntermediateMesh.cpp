@@ -10,8 +10,20 @@
 
 bool Sprocket::createIntermediateMeshFromFile( const std::filesystem::path& _path, IntermediateMesh& _out )
 {
+
+    if (!std::filesystem::exists(_path)) {
+        SPROCKET_PUSH_ERROR( "File not found at: {}", std::filesystem::absolute(_path).string() );
+        return false;
+    }
+
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile( _path.string(), aiProcess_JoinIdenticalVertices);
+
+    if ( scene == nullptr ) {
+        // Assimp-specific error message
+        SPROCKET_PUSH_ERROR( "Assimp Error: {}", importer.GetErrorString() );
+        return false;
+    }
 
 	if ( scene == nullptr || scene->mNumMeshes == 0 )
 	{

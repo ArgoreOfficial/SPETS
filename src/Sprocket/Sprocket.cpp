@@ -17,8 +17,9 @@
 
 std::filesystem::path Sprocket::getStreamingAssetsPath()
 {
-	std::filesystem::path programFiles = SPETS::getFolderPath( FOLDERID_ProgramFilesX86 );
-	return programFiles / "Steam" / "steamapps" / "common" / "Sprocket" / "Sprocket_Data" / "StreamingAssets";
+    std::filesystem::path steamRoot = SPETS::getFolderPath(FOLDERID_ProgramFilesX86);
+    
+    return steamRoot / "steamapps" / "common" / "Sprocket" / "Sprocket_Data" / "StreamingAssets";
 }
 
 std::filesystem::path Sprocket::getSprocketDataPath()
@@ -81,22 +82,24 @@ bool Sprocket::doesBlueprintExist( const std::string& _faction, const std::strin
 
 bool Sprocket::createCompartmentFromMesh( const std::string& _path, MeshData& _outMesh, ImportMeshFlags _flags )
 {
-	Sprocket::IntermediateMesh immesh;
-	
-	if ( !Sprocket::createIntermediateMeshFromFile( _path, immesh ) )
-		return false;
+    std::filesystem::path resolvedPath = _path;
 
-	immesh.mergeDuplicateVertices();
+    Sprocket::IntermediateMesh immesh;
 
-	int flips = 0;
-	if ( _flags & ImportMeshFlags_FlipX ) { immesh.flipX(); flips++; }
-	if ( _flags & ImportMeshFlags_FlipY ) { immesh.flipY(); flips++; }
-	if ( _flags & ImportMeshFlags_FlipZ ) { immesh.flipZ(); flips++; }
+    if ( !Sprocket::createIntermediateMeshFromFile( resolvedPath, immesh ) )
+        return false;
 
-	if ( flips == 1 || flips == 3 )
-		immesh.reverseWindingOrder();
+    immesh.mergeDuplicateVertices();
 
-	return immesh.createCompartment( _outMesh );
+    int flips = 0;
+    if ( _flags & ImportMeshFlags_FlipX ) { immesh.flipX(); flips++; }
+    if ( _flags & ImportMeshFlags_FlipY ) { immesh.flipY(); flips++; }
+    if ( _flags & ImportMeshFlags_FlipZ ) { immesh.flipZ(); flips++; }
+
+    if ( flips == 1 || flips == 3 )
+        immesh.reverseWindingOrder();
+
+    return immesh.createCompartment( _outMesh );
 }
 
 bool Sprocket::loadBlueprint( const std::string& _faction, const std::string& _name, VehicleBlueprint& _out )
